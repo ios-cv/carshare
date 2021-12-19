@@ -7,11 +7,11 @@ class User(AbstractUser):
 
 
 class BillingAccount(models.Model):
-    BUSINESS = 'b'
-    PERSONAL = 'p'
+    BUSINESS = "b"
+    PERSONAL = "p"
     ACCOUNT_TYPE_CHOICES = [
-        (BUSINESS, 'Business'),
-        (PERSONAL, 'personal'),
+        (BUSINESS, "Business"),
+        (PERSONAL, "personal"),
     ]
 
     owner = models.ForeignKey(User, on_delete=models.PROTECT)

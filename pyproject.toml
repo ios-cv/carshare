@@ -10,6 +10,7 @@ python = "3.9"
 Django = "^4.0"
 django-tailwind = "^3.0.1"
 psycopg-binary = "^3.0.7"
+black = "^21.12b0"
 
 [tool.poetry.dev-dependencies]
 
