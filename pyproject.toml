@@ -2,7 +2,7 @@
 name = "carshare"
 version = "0.1.0"
 description = "A web based Car Share management platform."
-authors = ["Your Name <you@example.com>"]
+authors = ["George Goldberg <george@appletreetechnology.com>"]
 license = "AGPL Version 3"
 
 [tool.poetry.dependencies]
@@ -11,6 +11,8 @@ Django = "^4.0"
 django-tailwind = "^3.0.1"
 psycopg-binary = "^3.0.7"
 black = "^21.12b0"
+django-allauth = "^0.47.0"
+django-crispy-forms = "^1.13.0"
 
 [tool.poetry.dev-dependencies]
 
