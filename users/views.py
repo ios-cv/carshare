@@ -21,3 +21,7 @@ class BusinessSignUpView(views.SignupView):
 
 class LoginView(views.LoginView):
     template_name = "users/login.html"
+
+
+class EmailVerificationSentView(views.EmailVerificationSentView):
+    template_name = "users/email_verification_sent.html"

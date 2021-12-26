@@ -120,12 +120,14 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # AllAuth stuff
+ACCOUNT_ADAPTER = "users.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 LOGIN_REDIRECT_URL = "/bookings"
 LOGIN_URL = "/users/login"
 LOGOUT_REDIRECT_URL = "/"
+
 
 # ACCOUNT_FORMS = {
 #    'login': 'allauth.account.forms.LoginForm',
