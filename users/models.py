@@ -19,3 +19,4 @@ class BillingAccount(models.Model):
         max_length=1,
         choices=ACCOUNT_TYPE_CHOICES,
     )
+    account_name = models.CharField(max_length=100, null=True)
