@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from allauth.account import views
 
-from .forms import PersonalSignupForm
+from .forms import PersonalSignupForm, BusinessSignupForm
 
 
 def sign_up(request):
@@ -12,6 +12,11 @@ def sign_up(request):
 class PersonalSignUpView(views.SignupView):
     template_name = "users/signup_personal.html"
     form_class = PersonalSignupForm
+
+
+class BusinessSignUpView(views.SignupView):
+    template_name = "users/signup_business.html"
+    form_class = BusinessSignupForm
 
 
 class LoginView(views.LoginView):

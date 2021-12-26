@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('users', '0002_billingaccount'),
+        ("users", "0002_billingaccount"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='billingaccount',
-            name='account_name',
+            model_name="billingaccount",
+            name="account_name",
             field=models.CharField(max_length=100, null=True),
         ),
     ]

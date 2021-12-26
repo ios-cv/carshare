@@ -1,2 +1,2 @@
 format:
-	black *.py
+	black .
