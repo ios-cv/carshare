@@ -8,9 +8,8 @@ def sign_up(request):
 
 
 class PersonalSignUpView(views.SignupView):
-    template_name = 'users/signup_personal.html'
+    template_name = "users/signup_personal.html"
 
 
 class LoginView(views.LoginView):
-    template_name = 'users/login.html'
-
+    template_name = "users/login.html"

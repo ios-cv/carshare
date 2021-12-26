@@ -39,14 +39,14 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'django.contrib.sites',
+    "django.contrib.sites",
     "django.contrib.staticfiles",
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "tailwind",
-    'crispy_forms',
-    'crispy_tailwind',
+    "crispy_forms",
+    "crispy_tailwind",
     "theme",
 ]
 
@@ -114,18 +114,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 # AllAuth stuff
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_MIN_LENGTH = 3
-LOGIN_REDIRECT_URL = '/bookings'
-LOGIN_URL = '/users/login'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/bookings"
+LOGIN_URL = "/users/login"
+LOGOUT_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -167,4 +167,4 @@ EMAIL_PORT = 2500
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = "carshrae@ioscv.co.uk"
 EMAIL_HOST_PASSWORD = ""
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
