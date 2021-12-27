@@ -1,0 +1,14 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}
+Dear {% autoescape on %}{{ user.first_name }} {{user.last_name}}{% endautoescape %},
+
+Thank you for signing up for GO-EV Car Share.
+
+To continue setting up your account, please confirm your email address
+by clicking the following link: {% autoescape off %}{{ activate_url }}{% endautoescape %}
+
+Regards,
+
+The GO-EV Team
+{% endblock %}
