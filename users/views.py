@@ -25,3 +25,8 @@ class LoginView(views.LoginView):
 
 class EmailVerificationSentView(views.EmailVerificationSentView):
     template_name = "users/email_verification_sent.html"
+
+
+class ConfirmEmailView(views.ConfirmEmailView):
+    template_name = "users/confirm_email.html"
+

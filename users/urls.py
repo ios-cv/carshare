@@ -16,4 +16,5 @@ urlpatterns = [
         views.EmailVerificationSentView.as_view(),
         name="email_verification_sent",
     ),
+    path("confirm-email/<str:key>/", views.ConfirmEmailView.as_view(), name="confirm_email"),
 ]
