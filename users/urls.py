@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("incomplete/", views.incomplete, name="users_incomplete"),
     path("signup/", views.sign_up, name="signup"),
     path(
         "signup/personal/", views.PersonalSignUpView.as_view(), name="signup_personal"
@@ -16,5 +17,9 @@ urlpatterns = [
         views.EmailVerificationSentView.as_view(),
         name="email_verification_sent",
     ),
-    path("confirm-email/<str:key>/", views.ConfirmEmailView.as_view(), name="confirm_email"),
+    path(
+        "confirm-email/<str:key>/",
+        views.ConfirmEmailView.as_view(),
+        name="confirm_email",
+    ),
 ]

@@ -9,6 +9,11 @@ def sign_up(request):
     return render(request, "users/signup.html", context)
 
 
+def incomplete(request):
+    context = {}
+    return render(request, "users/incomplete.html", context)
+
+
 class PersonalSignUpView(views.SignupView):
     template_name = "users/signup_personal.html"
     form_class = PersonalSignupForm
@@ -29,4 +34,3 @@ class EmailVerificationSentView(views.EmailVerificationSentView):
 
 class ConfirmEmailView(views.ConfirmEmailView):
     template_name = "users/confirm_email.html"
-

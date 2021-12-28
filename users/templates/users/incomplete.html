@@ -1,0 +1,66 @@
+{% extends "portal_base.html" %}
+
+{% block portal_content %}
+
+<header>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold leading-tight text-gray-900">
+      Finish setting up your account
+    </h1>
+    <p>
+      Welcome to your new account with GO-EV Carshare. Before you can make your first booking, you need to complete the
+      following steps to finish setting up your account.
+    </p>
+  </div>
+</header>
+<main>
+  <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Create your driver profile
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              To use the GO-EV Car Share, you need to provide us with some details to allow us to verify your identify,
+              your driving license, and your eligibility to use the scheme.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+              Create Driver Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Add billing details
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              To charge you for your usage of the GO-EV Car Share scheme, we need to hold details of a valid credit or
+              debit card. Please add your billing details to provide this.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+              Add Billing Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+{% endblock %}
