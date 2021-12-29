@@ -3,6 +3,9 @@ from django.db import models
 
 
 class User(AbstractUser):
+    # Mobile Number
+    # Pending Mobile Number
+    # Pending Mobile Number Verification Code
     pass
 
 

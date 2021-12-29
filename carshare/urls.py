@@ -21,5 +21,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("bookings/", include("bookings.urls")),
+    path("drivers/", include("drivers.urls")),
     path("", include("public.urls")),
 ]
