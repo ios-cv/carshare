@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "billing.apps.BillingConfig",
     "bookings.apps.BookingsConfig",
     "drivers.apps.DriversConfig",
+    "hardware.apps.HardwareConfig",
     "public.apps.PublicConfig",
     "users.apps.UsersConfig",
     "django.contrib.admin",
