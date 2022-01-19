@@ -5,7 +5,9 @@ from users.models import User
 
 class DriverProfile(models.Model):
     # Related User ID
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="driver_profiles")
+    user = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="driver_profiles"
+    )
 
     # Full Legal Name (as per driving license)
     full_name = models.CharField(max_length=255)
@@ -65,4 +67,3 @@ class DriverProfile(models.Model):
     dvla_summary = models.FileField()  # Added by staff
     approved_to_drive = models.BooleanField(null=True)  # Final approval to drive
     approved_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
-
