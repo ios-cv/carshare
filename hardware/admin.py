@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Box, Card, Vehicle, VehicleType
+
+admin.site.register(Box)
+admin.site.register(Card)
+admin.site.register(Vehicle)
+admin.site.register(VehicleType)
