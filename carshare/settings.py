@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -25,8 +24,10 @@ SECRET_KEY = "django-insecure-7am)+z!6v!9i731!p=gntgx6j$ns21@=hu&eoyg@0!in!1d=qa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.77"]
-
+ALLOWED_HOSTS = [
+    "192.168.1.77",
+    "localhost",
+]
 
 # Application definition
 
@@ -83,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "carshare.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -131,7 +131,6 @@ LOGIN_REDIRECT_URL = "/bookings"
 LOGIN_URL = "/users/login"
 LOGOUT_REDIRECT_URL = "/"
 
-
 # ACCOUNT_FORMS = {
 #    'login': 'allauth.account.forms.LoginForm',
 #    'signup': 'users.forms.PersonalSignupForm',
@@ -154,7 +153,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -175,7 +173,6 @@ SITE_ID = 1
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
-
 
 # Emails
 EMAIL_HOST = "172.17.0.2"
