@@ -22,5 +22,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("bookings/", include("bookings.urls")),
     path("drivers/", include("drivers.urls")),
+    path("hardware/", include("hardware.urls")),
     path("", include("public.urls")),
 ]
