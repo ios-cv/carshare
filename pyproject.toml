@@ -6,7 +6,7 @@ authors = ["George Goldberg <george@appletreetechnology.com>"]
 license = "AGPL Version 3"
 
 [tool.poetry.dependencies]
-python = "3.9"
+python = "^3.9"
 Django = "^4.0"
 django-tailwind = "^3.0.1"
 psycopg-binary = "^3.0.7"
