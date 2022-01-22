@@ -1,0 +1,27 @@
+{% extends "drivers/build_profile/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block form_content %}
+<form action="#" method="POST">
+  <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
+    <div>
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Driver details</h3>
+      <p class="mt-1 text-sm text-gray-500">Please enter the following details from your driving licence.</p>
+    </div>
+
+    <div class="">
+      {% csrf_token %}
+      {{ form|crispy }}
+    </div>
+
+  </div>
+  <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+    <button type="submit"
+            class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      Continue
+    </button>
+  </div>
+  </div>
+</form>
+{% endblock %}

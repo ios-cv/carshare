@@ -182,3 +182,5 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = "carshare@ioscv.co.uk"
 EMAIL_HOST_PASSWORD = ""
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+MEDIA_ROOT = "media/"
