@@ -14,6 +14,7 @@ black = "^21.12b0"
 django-allauth = "^0.47.0"
 django-crispy-forms = "^1.13.0"
 Pillow = "^8.4.0"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 

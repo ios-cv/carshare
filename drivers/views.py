@@ -43,20 +43,20 @@ def create_profile(request):
         driver_profile = DriverProfile.create(user=request.user)
         driver_profile.save()
         print("User has no valid or invalid driver profiles. Creating a fresh one.")
-
-    # User has an incomplete driver profile. Decide which stage to send them to based on approvals
-    # received so far.
-    stage = 1
-    if not incomplete_driver_profile.is_personal_details_approved():
+    else:
+        # User has an incomplete driver profile. Decide which stage to send them to based on approvals
+        # received so far.
         stage = 1
-    elif not incomplete_driver_profile.is_driving_licence_details_approved():
-        stage = 2
-    elif not incomplete_driver_profile.is_driving_licence_approved():
-        stage = 3
-    elif not incomplete_driver_profile.is_identity_approved():
-        stage = 4
-    elif not incomplete_driver_profile.is_driving_record_approved():
-        stage = 5
+        if not incomplete_driver_profile.is_personal_details_approved():
+            stage = 1
+        elif not incomplete_driver_profile.is_driving_licence_details_approved():
+            stage = 2
+        elif not incomplete_driver_profile.is_driving_licence_approved():
+            stage = 3
+        elif not incomplete_driver_profile.is_identity_approved():
+            stage = 4
+        elif not incomplete_driver_profile.is_driving_record_approved():
+            stage = 5
 
     return redirect("drivers_build_profile", stage=stage)
 

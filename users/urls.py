@@ -22,4 +22,14 @@ urlpatterns = [
         views.ConfirmEmailView.as_view(),
         name="confirm_email",
     ),
+    path(
+        "mobile/add",
+        views.add_mobile,
+        name="users_mobile_add",
+    ),
+    path(
+        "mobile/verify",
+        views.verify_mobile,
+        name="users_mobile_verify",
+    ),
 ]
