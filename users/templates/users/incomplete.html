@@ -16,6 +16,7 @@
 <main>
   <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
+    {% if not user.has_validated_mobile %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -39,7 +40,30 @@
         </div>
       </div>
     </div>
+    {% else %}
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Confirm your mobile number
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              Thank you, your mobile number has been confirmed.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+              Confirm Mobile Number
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
+    {% if not user.has_valid_driver_profile %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -63,7 +87,12 @@
         </div>
       </div>
     </div>
+    {% else %}
 
+    {% endif %}
+
+    <!-- Hide billing details section for now as we're making the first release before this is done. -->
+    <!--
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -85,6 +114,7 @@
         </div>
       </div>
     </div>
+    -->
 
   </div>
 </main>

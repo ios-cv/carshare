@@ -19,7 +19,6 @@ def create_profile(request):
     valid_driver_profiles = DriverProfile.objects.filter(
         user=request.user, expires_at__gte=timezone.now()
     ).order_by("-expires_at")
-    valid_driver_profile = None
 
     if len(valid_driver_profiles) > 0:
         # We have a valid driver profile.
@@ -43,6 +42,7 @@ def create_profile(request):
         driver_profile = DriverProfile.create(user=request.user)
         driver_profile.save()
         print("User has no valid or invalid driver profiles. Creating a fresh one.")
+        stage = 1
     else:
         # User has an incomplete driver profile. Decide which stage to send them to based on approvals
         # received so far.

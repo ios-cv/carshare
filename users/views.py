@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from allauth.account import views
 
+from .decorators import require_incomplete_user
 from .forms import (
     PersonalSignupForm,
     BusinessSignupForm,
@@ -15,8 +16,11 @@ def sign_up(request):
     return render(request, "users/signup.html", context)
 
 
+@require_incomplete_user
 def incomplete(request):
-    context = {}
+    context = {
+        "user": request.user,
+    }
     return render(request, "users/incomplete.html", context)
 
 

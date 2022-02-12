@@ -2,6 +2,7 @@ import random
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -24,6 +25,31 @@ class User(AbstractUser):
             "9",
         ]
         return "".join([random.choice(digits) for i in range(0, 6)])
+
+    def has_validated_mobile(self):
+        """Returns True if the user has complete validation of their mobile number, otherwise False."""
+        return self.mobile is not None
+
+    def mobile_validation_pending(self):
+        """
+        Returns True if the user has requested a mobile validation token but validation is not yet complete.
+
+        Note: if the user is  changing their mobile number, this will return true even though `has_validated_mobile`
+        will also return True, as they currently have an (old) validated mobile number, but another (new) number is
+        pending validation.
+        """
+        return self.pending_mobile is not None
+
+    def has_valid_driver_profile(self):
+        """Returns True if the user has a currently valid driver profile, otherwise False."""
+        for dp in self.driver_profiles.filter(
+            approved_to_drive=True, expires_at__gt=timezone.now()
+        ):
+            print(dp.expires_at)
+            print(dp)
+            return True
+
+        return False
 
 
 class BillingAccount(models.Model):
