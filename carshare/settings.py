@@ -92,9 +92,13 @@ WSGI_APPLICATION = "carshare.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "PASSWORD": "mysecretpassword",
+        "USER": "postgres",
+        "PORT": "5433",
+        "HOST": "localhost",
+    },
 }
 
 # Custom user model
@@ -178,7 +182,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
 # Emails
-EMAIL_HOST = "172.17.0.2"
+EMAIL_HOST = "localhost"
 EMAIL_PORT = 2500
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = "carshare@ioscv.co.uk"

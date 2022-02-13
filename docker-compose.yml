@@ -1,0 +1,38 @@
+# Docker containers for development environment.
+version: '3'
+
+services:
+  database:
+    container_name: carshare_postgres
+    ports:
+      - "5433:5432"
+    image: "postgres:14"
+    restart: always
+    networks:
+      - carshare
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+
+  email:
+    container_name: carshare_inbucket
+    ports:
+      - "2500:2500"
+      - "9000:9000"
+    image: inbucket/inbucket
+    restart: always
+    networks:
+      - carshare
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    networks:
+      - carshare
+    depends_on:
+      - database
+      - email
+    command: database:5432
+
+networks:
+  carshare:
+    driver: bridge
