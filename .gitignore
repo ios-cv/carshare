@@ -6,3 +6,8 @@ db.sqlite3
 crispy_tailwind*
 
 media/
+
+# Symlinks in root
+package.json
+tailwind.config.js
+node_modules/

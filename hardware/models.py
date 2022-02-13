@@ -29,6 +29,25 @@ class Card(models.Model):
         return "{}".format(self.key)
 
 
+class Station(models.Model):
+    # The name of the station.
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Bay(models.Model):
+    # The name of the bay.
+    name = models.CharField(max_length=100)
+
+    # The station this parking bay belongs to
+    station = models.ForeignKey(Station, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.name
+
+
 class VehicleType(models.Model):
     """represents the different types of vehicle"""
 
@@ -55,6 +74,10 @@ class Vehicle(models.Model):
 
     # Type of vehicle (customer facing)
     type = models.ForeignKey(VehicleType, on_delete=models.PROTECT)
+
+    # Home parking bay
+    # FIXME: Make this not null before production
+    bay = models.ForeignKey(Bay, on_delete=models.PROTECT, null=True)
 
     # The "model" of the vehicle in terms that dictate the firmware driver that
     # will be needed to interface with it.
