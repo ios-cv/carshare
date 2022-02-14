@@ -8,6 +8,8 @@ from django.contrib.postgres.fields import (
 )
 from django.db import models
 from django.db.models import Func, Q, Subquery
+from django.utils.timezone import timezone, timedelta
+from psycopg2.extras import DateTimeTZRange
 
 from hardware.models import Vehicle
 from users.models import User
@@ -51,11 +53,24 @@ class Booking(models.Model):
             ),
         ]
 
+    @staticmethod
+    def create_booking(user, vehicle, start, end):
+        reservation_time = DateTimeTZRange(lower=start, upper=end)
+        block_time = DateTimeTZRange(lower=start, upper=end + timedelta(minutes=15))
+        b = Booking(
+            user=user,
+            vehicle=vehicle,
+            reservation_time=reservation_time,
+            block_time=block_time,
+        )
+
+        b.save()
+
 
 def get_available_vehicles(start, end, van=True, car=True, combi=True):
     return Vehicle.objects.exclude(
         id__in=Subquery(
-            Booking.objects.values("id")
+            Booking.objects.values("vehicle_id")
             .filter(
                 cancelled=False,
                 block_time__overlap=TsTzRange(start, end, RangeBoundary()),
