@@ -20,7 +20,11 @@ def home(request):
 
 @login_required
 def my_bookings(request):
-    context = {}
+    context = {
+        "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
+            "-reservation_time"
+        ),
+    }
     return render(request, "bookings/history.html", context)
 
 

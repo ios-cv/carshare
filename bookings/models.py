@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import (
 )
 from django.db import models
 from django.db.models import Func, Q, Subquery
-from django.utils.timezone import timezone, timedelta
+from django.utils.timezone import timezone, timedelta, datetime
 from psycopg2.extras import DateTimeTZRange
 
 from hardware.models import Vehicle
@@ -65,6 +65,9 @@ class Booking(models.Model):
         )
 
         b.save()
+
+    def reservation_ended(self):
+        return datetime.now(tz=timezone.utc) > self.reservation_time.upper
 
 
 def get_available_vehicles(start, end, van=True, car=True, combi=True):
