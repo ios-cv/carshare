@@ -1,0 +1,35 @@
+{% extends "portal_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block portal_header_text %}
+Find a Vehicle
+{% endblock %}
+
+{% block portal_content %}
+{% if form %}
+<div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <form action="#" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      {% include "components/submit-button.html" with label="Search" %}
+    </form>
+  </div>
+</div>
+{% else %}
+{% if vehicles|length > 0 %}
+<div class="max-w-4xl mx-auto bg-white shadow overflow-hidden sm:rounded-md">
+  <ul role="list" class="divide-y divide-gray-200">
+  {% for v in vehicles %}
+    {% include "bookings/search/search_result.html" with v=v %}
+  {% endfor %}
+  </ul>
+</div>
+{% else %}
+<p>No vehicles found.</p>
+{% endif %}
+{% endif %}
+
+
+{% endblock %}

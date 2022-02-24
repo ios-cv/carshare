@@ -36,7 +36,7 @@ def new_booking(request):
 
 @login_required
 @require_complete_user
-def new_booking_search(request):
+def search(request):
     context = {}
     if request.method == "POST":
         form = BookingSearchForm(request.POST)
@@ -54,7 +54,7 @@ def new_booking_search(request):
         form = BookingSearchForm()
         context["form"] = form
 
-    return render(request, "bookings/new_booking_search.html", context)
+    return render(request, "bookings/search.html", context)
 
 
 @login_required
