@@ -12,7 +12,8 @@ Find a Vehicle
   <div class="px-4 py-5 sm:p-6">
     <form action="#" method="POST">
       {% csrf_token %}
-      {{ form|crispy }}
+      {% crispy form form.helper %}
+      <div class="h-3">&nbsp;</div>
       {% include "components/submit-button.html" with label="Search" %}
     </form>
   </div>
