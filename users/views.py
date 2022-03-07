@@ -7,6 +7,7 @@ from .forms import (
     BusinessSignupForm,
     AddMobileForm,
     VerifyMobileForm,
+    LoginForm,
 )
 from .sms import send_sms_verification_code
 
@@ -36,6 +37,7 @@ class BusinessSignUpView(views.SignupView):
 
 class LoginView(views.LoginView):
     template_name = "users/login.html"
+    form_class = LoginForm
 
 
 class EmailVerificationSentView(views.EmailVerificationSentView):

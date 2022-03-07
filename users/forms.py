@@ -1,8 +1,22 @@
 from django import forms
 
 from allauth.account.forms import SignupForm
+from allauth.account.forms import LoginForm as AllAuthLoginForm
+
+from crispy_forms.bootstrap import InlineField
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 
 from .models import BillingAccount, User
+
+
+class LoginForm(AllAuthLoginForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout("login", "password", InlineField("remember"))
 
 
 class PersonalSignupForm(SignupForm):
