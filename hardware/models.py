@@ -4,7 +4,11 @@ from django.db import models
 class Box(models.Model):
     """represents an individual in-vehicle car share control box"""
 
-    serial = models.CharField(max_length=128, null=False)
+    # The serial number of the box (typically it's MAC address)
+    serial = models.BigIntegerField(null=False)
+
+    # The box secret (a UUID)
+    secret = models.UUIDField(null=False)
 
     class Meta:
         verbose_name_plural = "boxes"
@@ -84,10 +88,13 @@ class Vehicle(models.Model):
     firmware_model = models.CharField(max_length=255)
 
     # The box installed in this vehicle.
-    box = models.ForeignKey(Box, on_delete=models.PROTECT)
+    box = models.OneToOneField(Box, on_delete=models.PROTECT)
 
     # Cards that have "operator" privilege to always access this vehicle
     operator_cards = models.ManyToManyField(Card)
+
+    # ETag for the operator_cards list of this vehicle (incremented whenever this is changed)
+    operator_cards_etag = models.IntegerField(null=False, default=0)
 
     def __str__(self):
         return "{} - {} [{}]".format(self.name, self.registration, self.id)

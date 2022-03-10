@@ -17,7 +17,8 @@ class BookingSearchForm(forms.Form):
     start = forms.DateTimeField(label="Start Time")
     end = forms.DateTimeField(label="End Time")
     vehicle_types = VehicleTypeMultipleChoiceField(
-        queryset=VehicleType.objects.all(), widget=forms.CheckboxSelectMultiple,
+        queryset=VehicleType.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
     )
 
     def __init__(self, *args, **kwargs):
