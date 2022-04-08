@@ -4,8 +4,12 @@
     <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-red-300">
       <h3 class="text-lg leading-6 font-medium text-gray-900">Cancelled Booking</h3>
     </div>
+    {% elif booking.reservation_in_progress %}
+    <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-green-600">
+      <h3 class="text-lg leading-6 font-medium text-white">Current Booking</h3>
+    </div>
     {% elif booking.reservation_ended %}
-    <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-gray-500">
+    <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-gray-400">
       <h3 class="text-lg leading-6 font-medium text-white">Completed Booking</h3>
     </div>
     {% else %}
@@ -17,13 +21,15 @@
   <div class="w-full flex items-center justify-between p-6 space-x-6">
     <div class="flex-1 truncate">
       <div class="flex items-center space-x-3">
-        <h3 class="text-gray-900 text-sm font-medium truncate">{{booking.vehicle.registration}}</h3>
+                      <p class="text-lg text-gray-900 font-extrabold">
+                <span class="bg-yellow-300 rounded px-4">{{booking.vehicle.registration}}</span>
+              </p>
         <span
           class="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">{{booking.vehicle.type.name}}</span>
       </div>
       <p class="mt-1 text-gray-500 text-sm truncate"><strong>Location:</strong> {{booking.vehicle.bay}}</p>
-      <p class="mt-1 text-gray-500 text-sm truncate"><strong>Start:</strong> {{booking.reservation_time.lower}}</p>
-      <p class="mt-1 text-gray-500 text-sm truncate"><strong>End:</strong> {{booking.reservation_time.upper}}</p>
+      <p class="mt-1 text-gray-500 text-sm truncate"><strong>Start:</strong> {{booking.reservation_time.lower|date:"H:i - l j N Y"}}</p>
+      <p class="mt-1 text-gray-500 text-sm truncate"><strong>End:</strong> {{booking.reservation_time.upper|date:"H:i - l j N Y"}}</p>
     </div>
     <img class="w-24 h-24 bg-gray-300 rounded-full flex-shrink-0"
          src="https://images.unsplash.com/photo-1626745844804-bf833f5838e7?auto=format&fit=crop&w=120&q=80"
@@ -33,6 +39,20 @@
   {% else %}
   <div>
     <div class="-mt-px flex divide-x divide-gray-200">
+      {% if booking.reservation_in_progress %}
+      <div class="w-0 flex-1 flex">
+        <a href="#"
+           class="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:bg-gray-300">
+          <!-- Heroicon name: solid/pencil -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+          </svg>
+          <span class="ml-3">Edit</span>
+        </a>
+      </div>
+      {% elif booking.reservation_ended %}
+      {% else %}
       <div class="w-0 flex-1 flex">
         <a href="#"
            class="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:bg-gray-300">
@@ -56,6 +76,7 @@
           <span class="ml-3">Cancel</span>
         </a>
       </div>
+      {% endif %}
     </div>
   </div>
   {% endif %}
