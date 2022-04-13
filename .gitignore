@@ -11,3 +11,6 @@ media/
 package.json
 tailwind.config.js
 node_modules/
+
+# Build artifacts
+bundle.tar.gz

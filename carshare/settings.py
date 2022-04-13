@@ -30,6 +30,9 @@ ALLOWED_HOSTS = [
     "192.168.1.77",
     "localhost",
     "172.20.10.6",
+    "209.97.177.97",
+    "rosevean.do.ioscv.mm106.net",
+    "carshare-test.scilly.io",
 ]
 
 # Application definition
