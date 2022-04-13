@@ -54,7 +54,9 @@ def search(request):
             context["search_terms"] = {
                 "start": form.cleaned_data["start"],
                 "end": form.cleaned_data["end"],
-                "vehicle_types": ", ".join([vt.name for vt in form.cleaned_data["vehicle_types"]]),
+                "vehicle_types": ", ".join(
+                    [vt.name for vt in form.cleaned_data["vehicle_types"]]
+                ),
             }
 
             # This is the form data for going back to edit the search terms.

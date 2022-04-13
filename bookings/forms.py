@@ -12,7 +12,9 @@ from hardware.models import VehicleType
 
 def gen_start_time(now):
     minutes = now.minute - (now.minute % 5)
-    return now.replace(minute=minutes, second=0, microsecond=0) + timezone.timedelta(minutes=5)
+    return now.replace(minute=minutes, second=0, microsecond=0) + timezone.timedelta(
+        minutes=5
+    )
 
 
 def gen_end_time(now):
@@ -29,8 +31,8 @@ class BookingSearchForm(forms.Form):
     start = forms.SplitDateTimeField(
         label="Start time",
         widget=forms.SplitDateTimeWidget(
-            date_attrs={'type': 'date'},
-            time_attrs={'type': 'time', 'step': '60'},
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
             date_format="%Y-%m-%d",
             time_format="%H:%M",
         ),
@@ -38,8 +40,8 @@ class BookingSearchForm(forms.Form):
     end = forms.SplitDateTimeField(
         label="End time",
         widget=forms.SplitDateTimeWidget(
-            date_attrs={'type': 'date'},
-            time_attrs={'type': 'time', 'step': '60'},
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
             date_format="%Y-%m-%d",
             time_format="%H:%M",
         ),
@@ -48,7 +50,7 @@ class BookingSearchForm(forms.Form):
         label="Type of vehicle",
         queryset=VehicleType.objects.all(),
         widget=forms.CheckboxSelectMultiple,
-        error_messages={'required': 'You must select at least one type of vehicle.'}
+        error_messages={"required": "You must select at least one type of vehicle."},
     )
 
     def __init__(self, *args, **kwargs):
@@ -65,12 +67,10 @@ class BookingSearchForm(forms.Form):
         self.fields["end"].initial = gen_end_time(now)
 
     def clean_start(self):
-        start = self.cleaned_data['start']
+        start = self.cleaned_data["start"]
 
         if start + timezone.timedelta(minutes=5) < timezone.now():
-            raise ValidationError(
-                "Your booking must not start in the past."
-            )
+            raise ValidationError("Your booking must not start in the past.")
 
         return start
 
@@ -80,14 +80,10 @@ class BookingSearchForm(forms.Form):
         end = cleaned_data.get("end")
 
         if start and end and start >= end:
-            raise ValidationError(
-                "You must choose an end time after your start time."
-            )
+            raise ValidationError("You must choose an end time after your start time.")
 
         if start and end and start + timezone.timedelta(hours=1) > end:
-            raise ValidationError(
-                "Your booking must be at least 1 hour long."
-            )
+            raise ValidationError("Your booking must be at least 1 hour long.")
 
 
 class ConfirmBookingForm(forms.Form):
