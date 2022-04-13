@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.datastructures import MultiValueDict
 
 from hardware.models import Vehicle
 from users.decorators import require_complete_user
@@ -42,16 +43,38 @@ def search(request):
         form = BookingSearchForm(request.POST)
         if form.is_valid():
             print("Processing search results")
+            # TODO: Take into account chosen vehicle types.
             vehicles = get_available_vehicles(
                 form.cleaned_data["start"], form.cleaned_data["end"]
             )
             context["vehicles"] = vehicles
             context["start"] = form.cleaned_data["start"].isoformat()
             context["end"] = form.cleaned_data["end"].isoformat()
+
+            context["search_terms"] = {
+                "start": form.cleaned_data["start"],
+                "end": form.cleaned_data["end"],
+                "vehicle_types": ", ".join([vt.name for vt in form.cleaned_data["vehicle_types"]]),
+            }
+
+            # This is the form data for going back to edit the search terms.
+            context["search_form_data"] = MultiValueDict()
+            context["search_form_data"].appendlist("start_0", request.POST["start_0"])
+            context["search_form_data"].appendlist("start_1", request.POST["start_1"])
+            context["search_form_data"].appendlist("end_0", request.POST["end_0"])
+            context["search_form_data"].appendlist("end_1", request.POST["end_1"])
+            context["search_form_data"].appendlist("modify", "true")
+            for vt in request.POST.getlist("vehicle_types"):
+                context["search_form_data"].appendlist("vehicle_types", vt)
+
         else:
             context["form"] = form
     else:
-        form = BookingSearchForm()
+        if "modify" in request.GET:
+            form = BookingSearchForm(request.GET)
+        else:
+            form = BookingSearchForm()
+
         context["form"] = form
 
     return render(request, "bookings/search.html", context)
@@ -62,14 +85,14 @@ def search(request):
 def confirm_booking(request):
     # Must be a POST form.
     if request.method != "POST":
-        return redirect("new_booking_search")
+        return redirect("bookings_search")
 
     # Also data must be valid as no user entry.
     form = ConfirmBookingForm(request.POST)
     if not form.is_valid():
         print("Invalid form data submitted. This should not happen.")
         # TODO: Proper error logging here.
-        return redirect("new_booking_search")
+        return redirect("bookings_search")
 
     if form.cleaned_data["confirmed"]:
         Booking.create_booking(

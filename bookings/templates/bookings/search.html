@@ -10,7 +10,7 @@ Find a Vehicle
 {% if form %}
 <div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
   <div class="px-4 py-5 sm:p-6">
-    <form action="#" method="POST">
+    <form action="{% url 'bookings_search' %}" method="POST">
       {% csrf_token %}
       {% crispy form form.helper %}
       <div class="h-3">&nbsp;</div>
@@ -19,17 +19,62 @@ Find a Vehicle
   </div>
 </div>
 {% else %}
-{% if vehicles|length > 0 %}
 <div class="max-w-4xl mx-auto bg-white shadow overflow-hidden sm:rounded-md">
   <ul role="list" class="divide-y divide-gray-200">
-  {% for v in vehicles %}
+    <li>
+      <div class="flex items-center px-4 py-4 sm:px-6 bg-gray-100">
+        <div class="min-w-0 flex-1 flex items-center">
+          <div class="min-w-0 flex-1 px-4">
+            <p class="text-md mt-2 text-sm text-gray-500 font-bold">
+              Start Time
+            </p>
+            <p class="text-md text-sm text-gray-500">
+              {{ search_terms.start|date:"H:i - l j N Y"}}
+            </p>
+          </div>
+          <div class="min-w-0 flex-1 px-4">
+            <p class="text-md mt-2 text-sm text-gray-500 font-bold">
+              End time
+            </p>
+            <p class="text-md text-sm text-gray-500">
+              {{ search_terms.end|date:"H:i - l j N Y"}}
+            </p>
+          </div>
+          <div class="min-w-0 flex-1 px-4">
+            <p class="text-md mt-2 text-sm text-gray-500 font-bold">
+              Vehicle types
+            </p>
+            <p class="text-md text-sm text-gray-500">
+              {{ search_terms.vehicle_types}}
+            </p>
+          </div>
+        </div>
+        <div>
+          <form action="{% url 'bookings_search' %}" method="GET">
+            {% for k, l in search_form_data.lists %}
+            {% for v in l %}
+            <input type="hidden" name="{{k}}" value="{{v}}"/>
+            {% endfor %}
+            {% endfor %}
+            <button
+              type="submit"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+              Change Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </li>
+    {% if vehicles|length > 0 %}
+    {% for v in vehicles %}
     {% include "bookings/search/search_result.html" with v=v %}
-  {% endfor %}
+    {% endfor %}
+    {% else %}
+    <p class="p-8 text-center">No vehicles are available that meet your requirements. Please try changing your search
+      terms.</p>
+    {% endif %}
   </ul>
 </div>
-{% else %}
-<p>No vehicles found.</p>
-{% endif %}
 {% endif %}
 
 
