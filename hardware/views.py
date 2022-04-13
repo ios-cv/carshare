@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .decorators import require_authenticated_box, json_payload
+from .models import Card
 
 
 @csrf_exempt
@@ -42,7 +43,47 @@ def api_v1_telemetry(request, box, data):
 def api_v1_touch(request, box, data):
     """View that is called by the box when a card is touched on it."""
 
-    # TODO: Respond based on whether the card is an operator card or has a valid booking.
+    # Check a card ID has been provided.
+    card_id = data.get("card_id", None)
+    if not card_id:
+        return JsonResponse({"error": "missing card_id"}, 400)
+
+    # Fetch the card
+    card = Card.objects.get(key=card_id)
+    if not card:
+        return JsonResponse({"error": "card ID not found"}, 404)
+
+    # Fetch the vehicle
+    vehicle = box.vehicle
+    if not vehicle:
+        return JsonResponse(
+            {"error": "box is not assigned to any vehicle", "action": "reject"}
+        )
+
+    # If the card is an operator card for this vehicle, allow lock/unlock regardless of anything else
+    if card in vehicle.operator_cards.all():
+        if box.locked:
+            box.locked = False
+            box.save()
+            # TODO: Update other box state parameters.
+            return JsonResponse({"action": "unlock"})
+        else:
+            box.locked = True
+            box.save()
+            # TODO: Update other box state parameters
+            return JsonResponse({"action": "lock"})
+
+    # TODO: Retrieve the current booking for this car.
+
+    # TODO: If there is no current booking, reject.
+    # FIXME: What to do if someone returns it late? We should allow lock but not allow unlock.
+    #        Therefore, if the current state is "unlocked" then we should allow the user who is currently in their
+    #        rental to unlock the car???
+    #        Car rental state probably needs to be "locked: boolean, current_booking: booking_id (only set if unlocked), unlocked_by: card_id"
+
+    # TODO: If there is a current booking, check if the card belongs to the user who has this booking.
+
+    # TODO: In future, check if they belong to the same billing account, to allow access to delegated users.
 
     response = {
         "action": "reject",

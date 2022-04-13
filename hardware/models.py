@@ -1,22 +1,6 @@
 from django.db import models
 
 
-class Box(models.Model):
-    """represents an individual in-vehicle car share control box"""
-
-    # The serial number of the box (typically it's MAC address)
-    serial = models.BigIntegerField(null=False)
-
-    # The box secret (a UUID)
-    secret = models.UUIDField(null=False)
-
-    class Meta:
-        verbose_name_plural = "boxes"
-
-    def __str__(self):
-        return "{}".format(self.serial)
-
-
 class Card(models.Model):
     """represents an individual RFID card"""
 
@@ -31,6 +15,35 @@ class Card(models.Model):
 
     def __str__(self):
         return "{}".format(self.key)
+
+
+class Box(models.Model):
+    """represents an individual in-vehicle car share control box"""
+
+    # The serial number of the box (typically it's MAC address)
+    serial = models.BigIntegerField(null=False)
+
+    # The box secret (a UUID)
+    secret = models.UUIDField(null=False)
+
+    # Whether the server considers the car to be locked or unlocked.
+    locked = models.BooleanField(null=False, default=True, blank=True)
+
+    # The current booking for the box.
+    current_booking = models.ForeignKey(
+        "bookings.Booking", on_delete=models.PROTECT, null=True, blank=True
+    )
+
+    # The ID of the card that unlocked the box.
+    unlocked_by = models.ForeignKey(
+        Card, on_delete=models.PROTECT, null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name_plural = "boxes"
+
+    def __str__(self):
+        return "{}".format(self.serial)
 
 
 class Station(models.Model):
