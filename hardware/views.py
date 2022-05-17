@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -46,12 +47,13 @@ def api_v1_touch(request, box, data):
     # Check a card ID has been provided.
     card_id = data.get("card_id", None)
     if not card_id:
-        return JsonResponse({"error": "missing card_id"}, 400)
+        return JsonResponse({"error": "missing card_id"}, status=400)
 
     # Fetch the card
-    card = Card.objects.get(key=card_id)
-    if not card:
-        return JsonResponse({"error": "card ID not found"}, 404)
+    try:
+        card = Card.objects.get(key=card_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "card ID not found"}, status=401)
 
     # Fetch the vehicle
     vehicle = box.vehicle
