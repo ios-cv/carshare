@@ -1,7 +1,19 @@
 {% extends "portal_base.html" %}
 
 {% block portal_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <p>Your driver profile has now been submitted and is waiting for validation. This normally takes around 2 working days.</p>
+<div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="text-center">
+      <svg class="mx-auto h-36 w-36 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+           stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p class="my-6 text-md text-gray-600">
+        Thank you. Your driver profile has now been submitted and is waiting for validation by a member of the GO-EV team.
+        This normally takes around 2 working days. You will receive an email once this process is complete.
+      </p>
+    </div>
+    <p></p>
+  </div>
 </div>
 {% endblock %}
