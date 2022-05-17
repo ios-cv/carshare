@@ -7,14 +7,28 @@ Confirm Your Booking
 {% endblock %}
 
 {% block portal_content %}
+<div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
 
-<p>{{vehicle.name}} - {{vehicle.registration}} ({{vehicle.bay.name}})</p>
-<p>{{start}} - {{end}}</p>
-<p>Cost: £0</p>
-<form action="#" method="POST">
-  {% csrf_token %}
-  {{form}}
-  {% include "components/submit-button.html" with label="Confirm Booking" %}
-</form>
+    <div class="flex items-center space-x-3">
+      <p class="text-2xl font-bold">{{vehicle.name}}</p>
+      <p class="text-lg text-gray-900 font-extrabold">
+        <span class="bg-yellow-300 rounded px-4">{{vehicle.registration}}</span>
+      </p>
+      <span
+        class="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">{{vehicle.type.name}}</span>
+    </div>
+    <div class="py-2">
+      <p><span class="font-bold">Start:</span> {{start|date:"H:i - l j N Y" }}</p>
+      <p><span class="font-bold">End:</span> {{end|date:"H:i - l j N Y" }}</p>
+    </div>
+    <p class="pt-2 pb-6 text-xl">£0</p>
+    <form action="#" method="POST">
+      {% csrf_token %}
+      {{form}}
+      {% include "components/submit-button.html" with label="Confirm Booking" %}
+    </form>
 
+  </div>
+</div>
 {% endblock %}
