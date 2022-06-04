@@ -1,3 +1,5 @@
+import stripe
+
 from django import forms
 
 from allauth.account.forms import SignupForm
@@ -41,14 +43,24 @@ class PersonalSignupForm(SignupForm):
     ]
 
     def save(self, request):
+        # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
         user = super(PersonalSignupForm, self).save(request)
+
+        customer = stripe.Customer.create(
+            name=f"{user.first_name} {user.last_name}",
+            email=user.email,
+        )
 
         # Create the Billing Account here.
         billing_account = BillingAccount(
             owner=user,
             type=BillingAccount.PERSONAL,
+            stripe_customer_id=customer.id,
         )
         billing_account.save()
+
+        user.billing_account = billing_account
+        user.save()
 
         # Return the originally created user object.
         return user
@@ -83,15 +95,25 @@ class BusinessSignupForm(SignupForm):
     ]
 
     def save(self, request):
+        # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
         user = super(BusinessSignupForm, self).save(request)
+
+        customer = stripe.Customer.create(
+            name=self.cleaned_data["business_name"],
+            email=user.email,
+        )
 
         # Create the Billing Account here.
         billing_account = BillingAccount(
             owner=user,
             type=BillingAccount.BUSINESS,
             account_name=self.cleaned_data["business_name"],
+            stripe_customer_id=customer.id,
         )
         billing_account.save()
+
+        user.billing_account = billing_account
+        user.save()
 
         # Return the originally created user object.
         return user

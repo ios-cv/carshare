@@ -9,6 +9,9 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=32, null=True)
     pending_mobile = models.CharField(max_length=32, null=True)
     mobile_verification_code = models.CharField(max_length=6, null=True)
+    billing_account = models.ForeignKey(
+        "BillingAccount", null=True, on_delete=models.SET_NULL
+    )
 
     @staticmethod
     def generate_verification_code():
@@ -66,3 +69,6 @@ class BillingAccount(models.Model):
         choices=ACCOUNT_TYPE_CHOICES,
     )
     account_name = models.CharField(max_length=100, null=True)
+
+    # FIXME: Change stripe id to manadatory field before release.
+    stripe_customer_id = models.CharField(max_length=100, null=True)

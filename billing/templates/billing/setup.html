@@ -1,0 +1,72 @@
+{% extends "portal_base.html" %}
+
+{% block portal_header_text %}
+Setup your billing account
+{% endblock %}
+
+{% block portal_content %}
+<script src="https://js.stripe.com/v3/"></script>
+<div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <p class="text-gray-600 text-sm pb-6">Please provide details of a credit or debit card below. This will be charged
+      for any vehicle bookings you make.</p>
+    <form id="payment-form" data-secret="{{ client_secret }}">
+      <div id="payment-element">
+        <!-- Elements will create form elements here -->
+      </div>
+
+      <button
+        id="submit"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Save card details
+      </button>
+      <div id="error-message">
+        <!-- Display error message to your customers here -->
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script lang="javascript">
+  const stripe = Stripe('pk_test_51Jw6mVKQxBWmKd4CLruzEP8OO4hl0k6FoK4hIPP8dJHxV9DCac1h1Yc4VZEFG0fAhuSYTUbHIay9aRfOTRUepLEL00yX2XUf21');
+  const options = {
+    clientSecret: '{{ stripe_client_secret }}',
+    // Fully customizable with appearance API.
+    appearance: {/*...*/},
+  };
+
+  // Set up Stripe.js and Elements to use in checkout form, passing the client secret obtained in step 2
+  const elements = stripe.elements(options);
+
+  // Create and mount the Payment Element
+  const paymentElement = elements.create('payment');
+  paymentElement.mount('#payment-element');
+
+  const form = document.getElementById('payment-form');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const {error} = await stripe.confirmSetup({
+      //`Elements` instance that was used to create the Payment Element
+      elements,
+      confirmParams: {
+        return_url: '{{ BASE_URL }}{% url "billing_setup_complete" %}',
+      }
+    });
+
+    if (error) {
+      // This point will only be reached if there is an immediate error when
+      // confirming the payment. Show error to your customer (for example, payment
+      // details incomplete)
+      const messageContainer = document.querySelector('#error-message');
+      messageContainer.textContent = error.message;
+    } else {
+      // Your customer will be redirected to your `return_url`. For some payment
+      // methods like iDEAL, your customer will be redirected to an intermediate
+      // site first to authorize the payment, then redirected to the `return_url`.
+    }
+  });
+</script>
+{% endblock %}

@@ -7,24 +7,34 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookings', '0001_initial'),
-        ('hardware', '0006_box_current_booking_box_locked_box_unlocked_by'),
+        ("bookings", "0001_initial"),
+        ("hardware", "0006_box_current_booking_box_locked_box_unlocked_by"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='box',
-            name='current_booking',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='bookings.booking'),
+            model_name="box",
+            name="current_booking",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="bookings.booking",
+            ),
         ),
         migrations.AlterField(
-            model_name='box',
-            name='locked',
+            model_name="box",
+            name="locked",
             field=models.BooleanField(blank=True, default=True),
         ),
         migrations.AlterField(
-            model_name='box',
-            name='unlocked_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='hardware.card'),
+            model_name="box",
+            name="unlocked_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="hardware.card",
+            ),
         ),
     ]

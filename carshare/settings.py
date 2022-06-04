@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+import stripe
 
 from pathlib import Path
 
@@ -198,3 +199,10 @@ MEDIA_URL = "media/"
 
 # SMS Gateway
 SMS_API_KEY = os.environ.get("SMS_API_KEY", None)
+
+# Stripe
+STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", None)
+stripe.api_key = STRIPE_API_KEY
+
+# Base URL
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
