@@ -7,13 +7,14 @@
   <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
     <div>
       <h3 class="text-lg leading-6 font-medium text-gray-900">Driving record</h3>
-      <p class="mt-1 text-sm text-gray-500">Please provide your DVLA check code so that we can check your driving record</p>
+      <p class="mt-1 text-sm text-gray-500">Please provide your DVLA check code so that we can check your driving record.</p>
     </div>
 
     <div class="">
       {% csrf_token %}
       {{ form|crispy }}
     </div>
+    <p class="mt-1 text-sm text-gray-600">You can get a check code from <a href="https://www.gov.uk/view-driving-licence" target="_blank" class="text-blue-600 hover:underline"> the DVLA web site here</a>.</p>
 
   </div>
   <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
