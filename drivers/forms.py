@@ -1,6 +1,10 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+
 from django import forms
 from django.utils import timezone
 
+from .fields import CustomImageField
 from .models import DriverProfile
 
 
@@ -62,6 +66,14 @@ class DriverProfilePart3Form(forms.ModelForm):
         model = DriverProfile
         fields = ["licence_front", "licence_back"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            CustomImageField('licence_front'),
+            CustomImageField('licence_back'),
+        )
+
     def save(self, commit=True):
         m = super().save(commit=False)
         m.reset_driving_licence_approvals()
@@ -74,6 +86,13 @@ class DriverProfilePart4Form(forms.ModelForm):
     class Meta:
         model = DriverProfile
         fields = ["licence_selfie"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            CustomImageField('licence_selfie'),
+        )
 
     def save(self, commit=True):
         m = super().save(commit=False)

@@ -194,6 +194,7 @@ EMAIL_HOST_PASSWORD = ""
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 MEDIA_ROOT = "media/"
+MEDIA_URL = "media/"
 
 # SMS Gateway
 SMS_API_KEY = os.environ.get("SMS_API_KEY", None)
