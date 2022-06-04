@@ -54,6 +54,28 @@ class User(AbstractUser):
 
         return False
 
+    def has_valid_billing_account(self):
+        """Returns True if the user is associated with a valid billing account, otherwise False."""
+
+        # FIXME: This may need to get a bit more complicated as we don't currently track whether
+        #        there is a working card or other type of payment authorisation on the account.
+        if self.billing_account is None:
+            return False
+
+        if self.billing_account.stripe_customer_id is None:
+            return False
+
+        if len(self.billing_account.stripe_customer_id) == 0:
+            return False
+
+        if self.billing_account.credit_account:
+            return True
+
+        if not self.billing_account.stripe_setup_intent_active:
+            return False
+
+        return True
+
 
 class BillingAccount(models.Model):
     BUSINESS = "b"
@@ -70,5 +92,13 @@ class BillingAccount(models.Model):
     )
     account_name = models.CharField(max_length=100, null=True)
 
-    # FIXME: Change stripe id to manadatory field before release.
+    # FIXME: Change stripe id to mandatory field before release.
     stripe_customer_id = models.CharField(max_length=100, null=True)
+
+    # Indicates whether a setup-intent has been put in place for this billing account in stripe.
+    stripe_setup_intent_active = models.BooleanField(default=False)
+
+    # Credit account means that invoices will be raised against this customer in Stripe, but
+    # there is no payment method on file. This means a payment method does not have to be on file
+    # for their account to be treated as valid for billing.
+    credit_account = models.BooleanField(default=False)

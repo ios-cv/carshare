@@ -10,11 +10,13 @@ Set up your account
   <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
     <div class="bg-white shadow sm:rounded-lg">
       <div class="px-4 py-5 sm:p-6">
-    <p>
-      Welcome to your new account with GO-EV Car Share. Before you can make your first booking, you need to complete the
-      steps below to finish setting up your account.
-    </p>
-      </div></div>
+        <p>
+          Welcome to your new account with GO-EV Car Share. Before you can make your first booking, you need to complete
+          the
+          steps below to finish setting up your account.
+        </p>
+      </div>
+    </div>
   </div>
 </header>
 <main>
@@ -92,11 +94,10 @@ Set up your account
       </div>
     </div>
     {% else %}
-
+    <!-- TODO: "else" case for driver profile -->
     {% endif %}
 
-    <!-- Hide billing details section for now as we're making the first release before this is done. -->
-    <!--
+    {% if not user.has_valid_billing_account %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -110,15 +111,19 @@ Set up your account
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button"
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-              Add Billing Details
-            </button>
+            <a href="{% url 'billing_setup' %}">
+              <button type="button"
+                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                Add Billing Details
+              </button>
+            </a>
           </div>
         </div>
       </div>
     </div>
-    -->
+    {% else %}
+    <!-- TODO: "else" case for billing account -->
+    {% endif %}
 
   </div>
 </main>

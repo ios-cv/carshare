@@ -11,7 +11,11 @@ def require_incomplete_user(view_func=None):
         user = request.user
 
         # TODO: Add billing profile check if required here once we enable billing.
-        if user.has_validated_mobile() and user.has_valid_driver_profile():
+        if (
+            user.has_validated_mobile()
+            and user.has_valid_driver_profile()
+            and user.has_valid_billing_account()
+        ):
             return redirect("bookings_history")
         else:
             return view_func(request, *args, **kwargs)
@@ -29,7 +33,11 @@ def require_complete_user(view_func=None):
         user = request.user
 
         # TODO: Add billing profile check if required here once we enable billing.
-        if user.has_validated_mobile() and user.has_valid_driver_profile():
+        if (
+            user.has_validated_mobile()
+            and user.has_valid_driver_profile()
+            and user.has_valid_billing_account()
+        ):
             return view_func(request, *args, **kwargs)
         else:
             return redirect("users_incomplete")
