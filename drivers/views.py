@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
@@ -14,6 +15,7 @@ from .forms import (
 from .models import DriverProfile
 
 
+@login_required
 def create_profile(request):
     # See if there's already a valid driver profile.
     valid_driver_profiles = DriverProfile.objects.filter(
@@ -61,6 +63,7 @@ def create_profile(request):
     return redirect("drivers_build_profile", stage=stage)
 
 
+@login_required
 @incomplete_driver_profile_required
 def build_profile(request, stage, driver_profile):
     print(driver_profile)

@@ -1,4 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+
 from allauth.account import views
 
 from .decorators import require_incomplete_user
@@ -17,6 +19,7 @@ def sign_up(request):
     return render(request, "users/signup.html", context)
 
 
+@login_required
 @require_incomplete_user
 def incomplete(request):
     context = {
@@ -48,6 +51,7 @@ class ConfirmEmailView(views.ConfirmEmailView):
     template_name = "users/confirm_email.html"
 
 
+@login_required
 def add_mobile(request):
     if request.method == "POST":
         form = AddMobileForm(request.POST, instance=request.user)
@@ -63,6 +67,7 @@ def add_mobile(request):
     return render(request, "users/add_mobile.html", context)
 
 
+@login_required
 def verify_mobile(request):
     if request.method == "POST":
         form = VerifyMobileForm(request.POST, instance=request.user)
