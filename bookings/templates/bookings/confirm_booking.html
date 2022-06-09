@@ -22,7 +22,7 @@ Confirm Your Booking
       <p><span class="font-bold">Start:</span> {{start|date:"H:i - l j N Y" }}</p>
       <p><span class="font-bold">End:</span> {{end|date:"H:i - l j N Y" }}</p>
     </div>
-    <p class="pt-2 pb-6 text-xl">£0</p>
+    <p class="pt-2 pb-6 text-xl">£{{cost}}</p>
     <form action="#" method="POST">
       {% csrf_token %}
       {{form}}

@@ -13,6 +13,7 @@ class User(AbstractUser):
     billing_account = models.ForeignKey(
         "BillingAccount", null=True, on_delete=models.SET_NULL
     )
+    is_operator = models.BooleanField(default=False)
 
     @staticmethod
     def generate_verification_code():

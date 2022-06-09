@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.datastructures import MultiValueDict
 
+from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
 from users.decorators import require_complete_user
 
@@ -125,6 +126,12 @@ def confirm_booking(request):
         "end": form.cleaned_data["end"],
         "vehicle": Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
         "form": confirm_form,
+        "cost": calculate_booking_cost(
+            request.user,
+            Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
+            form.cleaned_data["start"],
+            form.cleaned_data["end"],
+        ),
     }
 
     return render(request, "bookings/confirm_booking.html", context)
