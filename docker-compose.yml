@@ -24,6 +24,15 @@ services:
     networks:
       - carshare
 
+  broker:
+    container_name: carshare_rabbitmq
+    ports:
+      - "5672:5672"
+    image: rabbitmq
+    restart: always
+    networks:
+      - carshare
+
   start_dependencies:
     image: dadarek/wait-for-dependencies
     networks:
@@ -31,7 +40,8 @@ services:
     depends_on:
       - database
       - email
-    command: database:5432
+      - broker
+    command: database:5432 broker:5672
 
 networks:
   carshare:

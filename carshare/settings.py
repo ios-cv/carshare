@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_tailwind",
     "theme",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -206,3 +208,9 @@ stripe.api_key = STRIPE_API_KEY
 
 # Base URL
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
+
+# Celery
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"

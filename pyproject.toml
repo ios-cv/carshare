@@ -17,6 +17,9 @@ Pillow = "^8.4.0"
 requests = "^2.27.1"
 psycopg2-binary = "^2.9.3"
 stripe = "^3.2.0"
+celery = "^5.2.7"
+django-celery-results = "^2.3.1"
+django-celery-beat = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 
