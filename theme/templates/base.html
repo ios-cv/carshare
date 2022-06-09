@@ -10,7 +10,8 @@
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="antialiased font-sans bg-white">
+<body class="antialiased font-sans {% block body-bg %}bg-blue-100{% endblock %}">
 {% block content %}{% endblock %}
+{% block footer %} {% include "footer.html" %} {% endblock %}
 </body>
 </html>

@@ -1,26 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- This example requires Tailwind CSS v2.0+ -->
-<div class="bg-white">
-  <div class="max-w-7xl mx-auto text-center py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+<div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    {% include 'components/little-logo.html' %}
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
       <span class="block">Ready to Sign Up?</span>
-      <span class="block">Select your membership type:</span>
     </h2>
-    <div class="mt-8 flex justify-center">
-      <div class="inline-flex rounded-md shadow">
+    <p class="mt-4 text-center text-sm text-gray-600">
+      If you have already signed up
+      <a href="{% url 'login' %}" class="font-medium text-blue-600 hover:text-blue-500">log in here</a>.
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 flex flex-col items-center">
+
+      <p class="block text-xl font-bold pb-2">Select your membership type:</p>
+
+      <div class="mt-4 mb-4 inline-flex rounded-md shadow">
         <a href="{% url 'signup_personal' %}"
-           class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+           class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
           Sign Up for Personal Use
         </a>
       </div>
-      <div class="ml-3 inline-flex">
+      <div class="mt-4 mb-4 inline-flex rounded-md shadow">
         <a href="{% url 'signup_business' %}"
-           class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+           class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
           Sign Up for Business Use
         </a>
       </div>
+
     </div>
   </div>
 </div>
