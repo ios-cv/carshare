@@ -20,6 +20,7 @@ def home(request):
 
 
 @login_required
+@require_complete_user
 def my_bookings(request):
     context = {
         "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
@@ -30,6 +31,7 @@ def my_bookings(request):
 
 
 @login_required
+@require_complete_user
 def new_booking(request):
     context = {}
     return render(request, "bookings/create.html", context)
