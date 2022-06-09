@@ -7,7 +7,9 @@ from django.shortcuts import render
 
 @login_required
 def setup(request):
-    context = {}
+    context = {
+        "menu": "billing",
+    }
     # TODO: Only allow the owner of the billing account to do this.
 
     billing_account = request.user.billing_account
@@ -25,7 +27,9 @@ def setup(request):
 
 @login_required
 def setup_complete(request):
-    context = {}
+    context = {
+        "menu": "billing",
+    }
     # TODO: Only allow the owner of the billing account to do this.
 
     billing_account = request.user.billing_account

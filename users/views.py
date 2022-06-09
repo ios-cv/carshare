@@ -24,6 +24,7 @@ def sign_up(request):
 def incomplete(request):
     context = {
         "user": request.user,
+        "menu": "profile",
     }
     return render(request, "users/incomplete.html", context)
 
@@ -62,7 +63,7 @@ def add_mobile(request):
     else:
         form = AddMobileForm(instance=request.user)
 
-    context = {"form": form}
+    context = {"menu": "profile", "form": form}
 
     return render(request, "users/add_mobile.html", context)
 
@@ -78,6 +79,7 @@ def verify_mobile(request):
         form = VerifyMobileForm()
 
     context = {
+        "menu": "profile",
         "form": form,
     }
     return render(request, "users/verify_mobile.html", context)

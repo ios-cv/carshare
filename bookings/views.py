@@ -15,8 +15,7 @@ def home(request):
     if True:
         return redirect("users_incomplete")
 
-    context = {}
-    return render(request, "bookings/home.html", context)
+    return redirect("bookings_history")
 
 
 @login_required
@@ -26,6 +25,7 @@ def my_bookings(request):
         "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
             "-reservation_time"
         ),
+        "menu": "my_bookings",
     }
     return render(request, "bookings/history.html", context)
 
@@ -33,14 +33,18 @@ def my_bookings(request):
 @login_required
 @require_complete_user
 def new_booking(request):
-    context = {}
+    context = {
+        "menu": "new_booking",
+    }
     return render(request, "bookings/create.html", context)
 
 
 @login_required
 @require_complete_user
 def search(request):
-    context = {}
+    context = {
+        "menu": "new_booking",
+    }
     if request.method == "POST":
         form = BookingSearchForm(request.POST)
         if form.is_valid():
@@ -116,6 +120,7 @@ def confirm_booking(request):
     }
 
     context = {
+        "menu": "new_booking",
         "start": form.cleaned_data["start"],
         "end": form.cleaned_data["end"],
         "vehicle": Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
