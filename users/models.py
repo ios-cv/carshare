@@ -2,6 +2,7 @@ import random
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 
@@ -50,6 +51,16 @@ class User(AbstractUser):
         ):
             print(dp.expires_at)
             print(dp)
+            return True
+
+        return False
+
+    def has_pending_driver_profile(self):
+        """Returns True if the user has a submitted driver profile pending review, otherwise False."""
+        for dp in self.driver_profiles.filter(
+            ~Q(approved_to_drive=True),
+            submitted_at__isnull=False,
+        ):
             return True
 
         return False

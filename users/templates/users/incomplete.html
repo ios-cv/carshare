@@ -69,7 +69,7 @@ Set up your account
     </div>
     {% endif %}
 
-    {% if not user.has_valid_driver_profile %}
+    {% if not user.has_valid_driver_profile and not user.has_pending_driver_profile %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -93,8 +93,48 @@ Set up your account
         </div>
       </div>
     </div>
+    {% elif user.has_pending_driver_profile %}
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Create your driver profile
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              Thank you, your driver profile has been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+              Create Driver Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     {% else %}
-    <!-- TODO: "else" case for driver profile -->
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Create your driver profile
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              Thank you, your driver profile has been submitted and approved.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+              Create Driver Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
 
     {% if not user.has_valid_billing_account %}
@@ -122,7 +162,26 @@ Set up your account
       </div>
     </div>
     {% else %}
-    <!-- TODO: "else" case for billing account -->
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Add billing details
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              Thank you, your billing details have been validated.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+              Add Billing Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
 
   </div>
