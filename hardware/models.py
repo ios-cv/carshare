@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 class Card(models.Model):
     """represents an individual RFID card"""
@@ -12,6 +14,11 @@ class Card(models.Model):
 
     # Whether this is an "operator" type card (True) or an "ordinary" type card (False)
     operator = models.BooleanField(default=False, null=False)
+
+    # Which user this card is assigned to.
+    user = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="cards", null=True, blank=True
+    )
 
     def __str__(self):
         return "{}".format(self.key)

@@ -21,6 +21,27 @@ class TsTzRange(Func, ABC):
 
 
 class Booking(models.Model):
+    STATE_PENDING = "pending"
+    STATE_CANCELLED = "cancelled"
+    STATE_ACTIVE = "active"
+    STATE_LATE = "late"
+    STATE_ENDED = "ended"
+    STATE_BILLED = "billed"
+
+    STATE_CHOICES = [
+        (STATE_PENDING, "pending"),
+        (STATE_CANCELLED, "cancelled"),
+        (STATE_ACTIVE, "active"),
+        (STATE_LATE, "late"),
+        (STATE_ENDED, "ended"),
+        (STATE_BILLED, "billed"),
+    ]
+
+    ALLOW_USER_UNLOCK_STATES = [
+        STATE_PENDING,
+        STATE_ACTIVE,
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -32,7 +53,10 @@ class Booking(models.Model):
         related_name="bookings",
     )
 
-    cancelled = models.BooleanField(default=False, null=False)
+    state = models.CharField(
+        max_length=16,
+        choices=STATE_CHOICES,
+    )
 
     # Actual reservation times as visible to the user.
     reservation_time = DateTimeRangeField()
@@ -75,16 +99,28 @@ class Booking(models.Model):
         now = timezone.now()
         return self.reservation_time.lower <= now <= self.reservation_time.upper
 
+    @property
+    def cancelled(self):
+        return self.state == self.STATE_CANCELLED
+
 
 def get_available_vehicles(start, end, van=True, car=True, combi=True):
     return Vehicle.objects.exclude(
         id__in=Subquery(
             Booking.objects.values("vehicle_id")
             .filter(
-                cancelled=False,
+                ~Q(state=Booking.STATE_CANCELLED),
                 block_time__overlap=TsTzRange(start, end, RangeBoundary()),
             )
             .order_by("vehicle_id")
             .distinct("vehicle_id")
         )
     )
+
+
+def get_current_booking_for_vehicle(vehicle):
+    return Booking.objects.filter(
+        ~Q(state=Booking.STATE_CANCELLED),
+        reservation_time__contains=timezone.now(),
+        vehicle=vehicle,
+    ).first()

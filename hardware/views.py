@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from bookings.models import Booking, get_current_booking_for_vehicle
+
 from .decorators import require_authenticated_box, json_payload
 from .models import Card
 
@@ -17,7 +19,13 @@ def api_v1_telemetry(request, box, data):
     response = {}
 
     # Get the Supervisor Key List ETag from the headers.
-    box_etag = int(request.headers.get("X-Carshare-Operator-Card-List-ETag", "0"))
+    try:
+        box_etag = int(request.headers.get("X-Carshare-Operator-Card-List-ETag", "0"))
+    except ValueError:
+        return JsonResponse(
+            {"error": "unable to parse X-Carshare-Operator-Card-List-ETag header"},
+            status=400,
+        )
 
     # Get the ETag from the database too.
     server_etag = box.vehicle.operator_cards_etag
@@ -75,7 +83,11 @@ def api_v1_touch(request, box, data):
             # TODO: Update other box state parameters
             return JsonResponse({"action": "lock"})
 
-    # TODO: Retrieve the current booking for this car.
+    # Retrieve the current booking for this car.
+    # FIXME: If the car is being returned late this won't find a booking. Need to handle
+    #        that case properly, by always sending a "lock" command.
+    booking = get_current_booking_for_vehicle(vehicle)
+    print(f"Fetched booking for vehicle: {booking}.")
 
     # TODO: If there is no current booking, reject.
     # FIXME: What to do if someone returns it late? We should allow lock but not allow unlock.
@@ -83,11 +95,29 @@ def api_v1_touch(request, box, data):
     #        rental to unlock the car???
     #        Car rental state probably needs to be "locked: boolean, current_booking: booking_id (only set if unlocked), unlocked_by: card_id"
 
-    # TODO: If there is a current booking, check if the card belongs to the user who has this booking.
+    # If there is a current booking, check if the card belongs to the user who has this booking.
+    if card.user != booking.user:
+        return JsonResponse({"action": "reject"})
+
+    # We now know the card belongs to the correct user. See whether we are starting or ending the booking.
+    if box.locked:
+        if booking.state in Booking.ALLOW_USER_UNLOCK_STATES:
+            box.locked = False
+            box.current_booking = booking
+            box.unlocked_by = card
+            box.save()
+            booking.state = Booking.STATE_ACTIVE
+            return JsonResponse({"action": "unlock"})
+        else:
+            return JsonResponse({"action": "reject"})
+
+    else:
+        box.locked = True
+        box.current_booking = None
+        box.unlocked_by = None
+        box.save()
+        return JsonResponse({"action": "lock"})
 
     # TODO: In future, check if they belong to the same billing account, to allow access to delegated users.
 
-    response = {
-        "action": "reject",
-    }
-    return JsonResponse(response)
+    return JsonResponse({"action": "reject"})
