@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -70,54 +71,103 @@ def api_v1_touch(request, box, data):
             {"error": "box is not assigned to any vehicle", "action": "reject"}
         )
 
-    # If the card is an operator card for this vehicle, allow lock/unlock regardless of anything else
-    if card in vehicle.operator_cards.all():
-        if box.locked:
-            box.locked = False
-            box.save()
-            # TODO: Update other box state parameters.
-            return JsonResponse({"action": "unlock"})
-        else:
-            box.locked = True
-            box.save()
-            # TODO: Update other box state parameters
-            return JsonResponse({"action": "lock"})
-
-    # Retrieve the current booking for this car.
-    # FIXME: If the car is being returned late this won't find a booking. Need to handle
-    #        that case properly, by always sending a "lock" command.
+    # Fetch the current booking for this vehicle.
     booking = get_current_booking_for_vehicle(vehicle)
     print(f"Fetched booking for vehicle: {booking}.")
 
-    # TODO: If there is no current booking, reject.
-    # FIXME: What to do if someone returns it late? We should allow lock but not allow unlock.
-    #        Therefore, if the current state is "unlocked" then we should allow the user who is currently in their
-    #        rental to unlock the car???
-    #        Car rental state probably needs to be "locked: boolean, current_booking: booking_id (only set if unlocked), unlocked_by: card_id"
+    # FIXME: If an operator opens a car during a user's booking, then closes it late,
+    #        the user can end up being treated as a late return. This needs to be
+    #        fixed as could end up with user getting texts or fines for lateness.
+    #        To do that I think we have to distinguish between "operator" access
+    #        and emergency backup card access.
 
-    # If there is a current booking, check if the card belongs to the user who has this booking.
-    if card.user != booking.user:
-        return JsonResponse({"action": "reject"})
+    # First handle the case where this is an operator card for the vehicle.
+    if card in vehicle.operator_cards.all():
+        if box.locked:
+            # Unlocking the box.
+            if booking:
+                box.current_booking = booking
+                box.unlocked_by = card
+                booking.state = Booking.STATE_ACTIVE
+                if booking.actual_start_time is None:
+                    booking.actual_start_time = timezone.now()
+                booking.actual_end_time = None
+                booking.save()
+            box.locked = False
+            box.save()
+            return JsonResponse({"action": "unlock"})
 
-    # We now know the card belongs to the correct user. See whether we are starting or ending the booking.
+        else:
+            # Locking the box.
+            if box.current_booking:
+                # If the box has a current booking then close that out with the locking.
+                box.current_booking.state = Booking.STATE_INACTIVE
+                box.current_booking.actual_end_time = timezone.now()
+                box.current_booking.save()
+            elif booking:
+                # If the box didn't have a current booking set, but there's a booking running now, close that out.
+                booking.state = Booking.STATE_INACTIVE
+                booking.actual_end_time = timezone.now()
+                booking.save()
+
+            box.locked = True
+            box.current_booking = None
+            box.unlocked_by = None
+            box.save()
+            return JsonResponse({"action": "lock"})
+
+    # Handle the cases where it is not an operator card being used.
     if box.locked:
+        # To unlock, the card must be for a booking that hasn't ended yet.
+        if booking is None:
+            return JsonResponse({"action": "reject"})
+
+        if card.user != booking.user:
+            return JsonResponse({"action": "reject"})
+
         if booking.state in Booking.ALLOW_USER_UNLOCK_STATES:
             box.locked = False
             box.current_booking = booking
             box.unlocked_by = card
             box.save()
             booking.state = Booking.STATE_ACTIVE
+            if booking.actual_start_time is None:
+                booking.actual_start_time = timezone.now()
+            booking.actual_end_time = None
+            booking.save()
             return JsonResponse({"action": "unlock"})
-        else:
-            return JsonResponse({"action": "reject"})
 
+        # If in doubt, don't unlock.
+        return JsonResponse({"action": "reject"})
+
+    # Handle the "lock" case for a non-operator.
     else:
-        box.locked = True
-        box.current_booking = None
-        box.unlocked_by = None
-        box.save()
-        return JsonResponse({"action": "lock"})
+        # First up, try and close out the booking that's set as currently active if it belongs to this user.
+        if box.current_booking and card.user == box.current_booking.user:
+            box.current_booking.state = Booking.STATE_INACTIVE
+            box.current_booking.actual_end_time = timezone.now()
+            box.current_booking.save()
+            box.locked = True
+            box.current_booking = None
+            box.unlocked_by = None
+            box.save()
+            return JsonResponse({"action": "lock"})
 
-    # TODO: In future, check if they belong to the same billing account, to allow access to delegated users.
+        # Failing that, see if the booking that's supposed to be now can trigger a lock.
+        elif booking:
+            if card.user != booking.user:
+                return JsonResponse({"action": "reject"})
+            box.locked = True
+            box.current_booking = None
+            box.unlocked_by = None
+            box.save()
+            booking.state = Booking.STATE_INACTIVE
+            booking.actual_end_time = timezone.now()
+            booking.save()
+            return JsonResponse({"action": "lock"})
 
+        # If in doubt, reject.
+        return JsonResponse({"action": "reject"})
+
+    # If in doubt, reject.
     return JsonResponse({"action": "reject"})

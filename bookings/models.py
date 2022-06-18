@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import (
     RangeOperators,
 )
 from django.db import models
-from django.db.models import Func, Q, Subquery
+from django.db.models import Func, Q, Subquery, DateTimeField
 from django.utils import timezone
 from psycopg2.extras import DateTimeTZRange
 
@@ -24,6 +24,7 @@ class Booking(models.Model):
     STATE_PENDING = "pending"
     STATE_CANCELLED = "cancelled"
     STATE_ACTIVE = "active"
+    STATE_INACTIVE = "inactive"
     STATE_LATE = "late"
     STATE_ENDED = "ended"
     STATE_BILLED = "billed"
@@ -32,6 +33,7 @@ class Booking(models.Model):
         (STATE_PENDING, "pending"),
         (STATE_CANCELLED, "cancelled"),
         (STATE_ACTIVE, "active"),
+        (STATE_INACTIVE, "inactive"),
         (STATE_LATE, "late"),
         (STATE_ENDED, "ended"),
         (STATE_BILLED, "billed"),
@@ -40,6 +42,7 @@ class Booking(models.Model):
     ALLOW_USER_UNLOCK_STATES = [
         STATE_PENDING,
         STATE_ACTIVE,
+        STATE_INACTIVE,
     ]
 
     user = models.ForeignKey(
@@ -56,6 +59,7 @@ class Booking(models.Model):
     state = models.CharField(
         max_length=16,
         choices=STATE_CHOICES,
+        default=STATE_PENDING,
     )
 
     # Actual reservation times as visible to the user.
@@ -63,6 +67,10 @@ class Booking(models.Model):
 
     # Full extents of time that this booking will block others from being created.
     block_time = DateTimeRangeField()
+
+    # Actual times - when the vehicle was first unlocked and last locked.
+    actual_start_time = DateTimeField(null=True, blank=True)
+    actual_end_time = DateTimeField(null=True, blank=True)
 
     class Meta:
         # Ensure no overlapping uncancelled bookings on any vehicle.
