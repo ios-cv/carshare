@@ -27,4 +27,8 @@ app.conf.beat_schedule = {
         "task": "run_billing",
         "schedule": 300.0,
     },
+    "manage-booking-state-updates-periodically": {
+        "task": "manage_booking_states",
+        "schedule": 60.0,
+    },
 }
