@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.utils import timezone
@@ -8,6 +10,8 @@ from bookings.models import Booking, get_current_booking_for_vehicle
 
 from .decorators import require_authenticated_box, json_payload
 from .models import Card
+
+log = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -23,6 +27,9 @@ def api_v1_telemetry(request, box, data):
     try:
         box_etag = int(request.headers.get("X-Carshare-Operator-Card-List-ETag", "0"))
     except ValueError:
+        log.info(
+            f"unable to parse X-Carshare-Operator-Card-List-ETag header for box {box.id}"
+        )
         return JsonResponse(
             {"error": "unable to parse X-Carshare-Operator-Card-List-ETag header"},
             status=400,
@@ -32,6 +39,7 @@ def api_v1_telemetry(request, box, data):
     server_etag = box.vehicle.operator_cards_etag
 
     if server_etag != box_etag:
+        log.info(f"Operator Cards ETAG has changed for box {box.id}")
         response["operator_card_list"] = {
             "cards": [card.key for card in box.vehicle.operator_cards.all()],
             "etag": server_etag,
@@ -40,7 +48,7 @@ def api_v1_telemetry(request, box, data):
     # If there's any telemetry, process it and record it.
     if "telemetry" in data:
         for k, v in data["telemetry"].items():
-            print(f"Telemetry data received from box {box.id}. {k}: {v}.")
+            log.debug(f"Telemetry data received from box {box.id}. {k}: {v}.")
         # FIXME: Actually save this data to the database somewhere.
 
     return JsonResponse(response)
@@ -56,24 +64,37 @@ def api_v1_touch(request, box, data):
     # Check a card ID has been provided.
     card_id = data.get("card_id", None)
     if not card_id:
+        log.info("Missing card ID.")
         return JsonResponse({"error": "missing card_id"}, status=400)
+
+    # Parse the card_id
+    try:
+        card_id = int(card_id, base=16)
+    except ValueError:
+        log.info("unable to parse card_id as hex encoded integer")
+        return JsonResponse(
+            {"error": "unable to parse card_id"},
+            status=400,
+        )
 
     # Fetch the card
     try:
         card = Card.objects.get(key=card_id)
     except ObjectDoesNotExist:
+        log.info(f"No card with ID {card_id} found in the database")
         return JsonResponse({"error": "card ID not found"}, status=401)
 
     # Fetch the vehicle
     vehicle = box.vehicle
     if not vehicle:
+        log.info(f"Box {box.id} is not assigned to any vehicle.")
         return JsonResponse(
             {"error": "box is not assigned to any vehicle", "action": "reject"}
         )
 
     # Fetch the current booking for this vehicle.
     booking = get_current_booking_for_vehicle(vehicle)
-    print(f"Fetched booking for vehicle: {booking}.")
+    log.debug(f"Fetched booking: {booking} for vehicle {vehicle.id}.")
 
     # FIXME: If an operator opens a car during a user's booking, then closes it late,
     #        the user can end up being treated as a late return. This needs to be
