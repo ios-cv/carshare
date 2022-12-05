@@ -21,7 +21,7 @@ class Card(models.Model):
     )
 
     def __str__(self):
-        return "{}".format(self.key)
+        return f"{self.key} [{self.id}]"
 
 
 class Box(models.Model):
@@ -50,7 +50,7 @@ class Box(models.Model):
         verbose_name_plural = "boxes"
 
     def __str__(self):
-        return "{}".format(self.serial)
+        return f"{self.serial} [{self.id}]"
 
 
 class Station(models.Model):
@@ -58,7 +58,7 @@ class Station(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} [{self.id}]"
 
 
 class Bay(models.Model):
@@ -69,7 +69,7 @@ class Bay(models.Model):
     station = models.ForeignKey(Station, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} [{self.id}]"
 
 
 class VehicleType(models.Model):
@@ -78,7 +78,7 @@ class VehicleType(models.Model):
     name = models.CharField(max_length=36)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.id)
+        return f"{self.name} [{self.id}]"
 
 
 class Vehicle(models.Model):
@@ -117,4 +117,4 @@ class Vehicle(models.Model):
     operator_cards_etag = models.IntegerField(null=False, default=0)
 
     def __str__(self):
-        return "{} - {} [{}]".format(self.name, self.registration, self.id)
+        return f"{self.name} - {self.registration} [{self.id}]"
