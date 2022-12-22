@@ -16,7 +16,6 @@ from psycopg2.extras import DateTimeTZRange
 from hardware.models import Vehicle
 from users.models import User
 
-
 log = logging.getLogger(__name__)
 
 
@@ -117,7 +116,7 @@ class Booking(models.Model):
         return self.state == self.STATE_CANCELLED
 
 
-def get_available_vehicles(start, end, van=True, car=True, combi=True):
+def get_available_vehicles(start, end, vehicle_types):
     return Vehicle.objects.exclude(
         id__in=Subquery(
             Booking.objects.values("vehicle_id")
@@ -128,10 +127,10 @@ def get_available_vehicles(start, end, van=True, car=True, combi=True):
             .order_by("vehicle_id")
             .distinct("vehicle_id")
         )
-    )
+    ).filter(type__in=vehicle_types)
 
 
-def get_unavailable_vehicles(start, end, van=True, car=True, combi=True):
+def get_unavailable_vehicles(start, end, vehicle_types):
     vehicles = Vehicle.objects.filter(
         id__in=Subquery(
             Booking.objects.values("vehicle_id")
@@ -141,7 +140,8 @@ def get_unavailable_vehicles(start, end, van=True, car=True, combi=True):
             )
             .order_by("vehicle_id")
             .distinct("vehicle_id")
-        )
+        ),
+        type__in=vehicle_types,
     )
 
     results = []
@@ -160,7 +160,9 @@ def get_unavailable_vehicles(start, end, van=True, car=True, combi=True):
 
         bf = bookings.first()
         # FIXME: Hardcoded block time window.
-        print(f"Available before {bf.block_time.lower-timezone.timedelta(minutes=15)}")
+        print(
+            f"Available before {bf.block_time.lower - timezone.timedelta(minutes=15)}"
+        )
 
         bl = bookings.last()
         print(f"Available after {bl.block_time.upper}")

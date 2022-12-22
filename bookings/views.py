@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.datastructures import MultiValueDict
@@ -8,6 +10,8 @@ from users.decorators import require_complete_user, require_user_can_make_bookin
 
 from .forms import BookingSearchForm, ConfirmBookingForm
 from .models import get_available_vehicles, get_unavailable_vehicles, Booking
+
+log = logging.getLogger(__name__)
 
 
 @login_required
@@ -45,19 +49,22 @@ def search(request):
     if request.method == "POST":
         form = BookingSearchForm(request.POST)
         if form.is_valid():
-            print("Processing search results")
+            log.debug("Processing search results")
             # TODO: Take into account chosen vehicle types.
             vehicles = get_available_vehicles(
-                form.cleaned_data["start"], form.cleaned_data["end"]
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                form.cleaned_data["vehicle_types"],
             )
             context["vehicles"] = vehicles
             context["start"] = form.cleaned_data["start"].isoformat()
             context["end"] = form.cleaned_data["end"].isoformat()
 
             unavailable_vehicles = get_unavailable_vehicles(
-                form.cleaned_data["start"], form.cleaned_data["end"]
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                form.cleaned_data["vehicle_types"],
             )
-            print(unavailable_vehicles)
             context["unavailable_vehicles"] = unavailable_vehicles
 
             context["search_terms"] = {
@@ -101,7 +108,7 @@ def confirm_booking(request):
     # Also data must be valid as no user entry.
     form = ConfirmBookingForm(request.POST)
     if not form.is_valid():
-        print("Invalid form data submitted. This should not happen.")
+        log.warning("Invalid form data submitted. This should not happen.")
         # TODO: Proper error logging here.
         return redirect("bookings_search")
 
