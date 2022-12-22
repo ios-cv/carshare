@@ -190,7 +190,14 @@ class User(AbstractUser):
         :return: True if the user can make bookings, otherwise False.
         """
         # TODO: Implement me properly with some check for a billing account that's valid and can make bookings!
-        return self.has_validated_mobile() and self.has_valid_billing_account()
+        # Note: For now we require the user to be able to drive to make bookings. If we waive this requirement
+        #       the UI will get very confusing because it would allow you to make bookings but then be unable to
+        #       actually unlock the cars, which would be extremely weird and confusing.
+        return (
+            self.has_validated_mobile()
+            and self.has_valid_billing_account()
+            and self.can_drive()
+        )
 
     def has_valid_billing_account(self):
         for ba in self.owned_billing_accounts.all():
