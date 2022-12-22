@@ -24,14 +24,23 @@ class TsTzRange(Func, ABC):
     output_field = DateTimeRangeField()
 
 
+STATE_PENDING = "pending"
+STATE_CANCELLED = "cancelled"
+STATE_ACTIVE = "active"
+STATE_INACTIVE = "inactive"
+STATE_LATE = "late"
+STATE_ENDED = "ended"
+STATE_BILLED = "billed"
+
+
 class Booking(models.Model):
-    STATE_PENDING = "pending"
-    STATE_CANCELLED = "cancelled"
-    STATE_ACTIVE = "active"
-    STATE_INACTIVE = "inactive"
-    STATE_LATE = "late"
-    STATE_ENDED = "ended"
-    STATE_BILLED = "billed"
+    STATE_PENDING = STATE_PENDING
+    STATE_CANCELLED = STATE_CANCELLED
+    STATE_ACTIVE = STATE_ACTIVE
+    STATE_INACTIVE = STATE_INACTIVE
+    STATE_LATE = STATE_LATE
+    STATE_ENDED = STATE_ENDED
+    STATE_BILLED = STATE_BILLED
 
     STATE_CHOICES = [
         (STATE_PENDING, "pending"),
@@ -77,6 +86,7 @@ class Booking(models.Model):
     actual_end_time = DateTimeField(null=True, blank=True)
 
     class Meta:
+        db_table = "booking"
         # Ensure no overlapping uncancelled bookings on any vehicle.
         constraints = [
             ExclusionConstraint(
@@ -85,7 +95,7 @@ class Booking(models.Model):
                     ("block_time", RangeOperators.OVERLAPS),
                     ("vehicle_id", RangeOperators.EQUAL),
                 ),
-                condition=Q(cancelled=False),
+                condition=~Q(state=STATE_CANCELLED),
             ),
         ]
 
@@ -127,7 +137,7 @@ def get_available_vehicles(start, end, vehicle_types):
             .order_by("vehicle_id")
             .distinct("vehicle_id")
         )
-    ).filter(type__in=vehicle_types)
+    ).filter(vehicle_type__in=vehicle_types)
 
 
 def get_unavailable_vehicles(start, end, vehicle_types):
@@ -141,7 +151,7 @@ def get_unavailable_vehicles(start, end, vehicle_types):
             .order_by("vehicle_id")
             .distinct("vehicle_id")
         ),
-        type__in=vehicle_types,
+        vehicle_type__in=vehicle_types,
     )
 
     results = []

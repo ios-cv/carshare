@@ -15,6 +15,9 @@ class User(AbstractUser):
     mobile_verification_code = models.CharField(max_length=6, null=True)
     is_operator = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = "user"
+
     @staticmethod
     def generate_verification_code():
         digits = [

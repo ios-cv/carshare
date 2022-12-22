@@ -5,6 +5,9 @@ from users.models import User
 
 
 class BillingAccount(models.Model):
+    class Meta:
+        db_table = "billing_account"
+
     BUSINESS = "b"
     PERSONAL = "p"
     ACCOUNT_TYPE_CHOICES = [
@@ -94,6 +97,9 @@ def get_personal_billing_account_for_user(user):
 
 
 class BillingAccountMember(models.Model):
+    class Meta:
+        db_table = "billing_account_member"
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     billing_account = models.ForeignKey(BillingAccount, on_delete=models.CASCADE)
 

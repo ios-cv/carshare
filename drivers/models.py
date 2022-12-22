@@ -26,6 +26,9 @@ class DriverProfile(PolymorphicModel):
         User, null=True, on_delete=models.PROTECT, related_name="+", blank=True
     )
 
+    class Meta:
+        db_table = "driver_profile"
+
 
 class FullDriverProfile(DriverProfile):
     # Full Legal Name (as per driving license)
@@ -80,6 +83,9 @@ class FullDriverProfile(DriverProfile):
 
     # ------------------- Final Approvals ---------------------- #
     dvla_summary = models.FileField(null=True, blank=True)  # Added by staff
+
+    class Meta:
+        db_table = "full_driver_profile"
 
     def __str__(self):
         return "Driver Profile [{}] for User: {}".format(self.id, self.user)

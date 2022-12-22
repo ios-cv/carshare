@@ -20,6 +20,9 @@ class Card(models.Model):
         User, on_delete=models.PROTECT, related_name="cards", null=True, blank=True
     )
 
+    class Meta:
+        db_table = "card"
+
     def __str__(self):
         return f"{self.key} [{self.id}]"
 
@@ -47,6 +50,7 @@ class Box(models.Model):
     )
 
     class Meta:
+        db_table = "box"
         verbose_name_plural = "boxes"
 
     def __str__(self):
@@ -56,6 +60,9 @@ class Box(models.Model):
 class Station(models.Model):
     # The name of the station.
     name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = "station"
 
     def __str__(self):
         return f"{self.name} [{self.id}]"
@@ -68,6 +75,9 @@ class Bay(models.Model):
     # The station this parking bay belongs to
     station = models.ForeignKey(Station, on_delete=models.PROTECT)
 
+    class Meta:
+        db_table = "bay"
+
     def __str__(self):
         return f"{self.name} [{self.id}]"
 
@@ -76,6 +86,9 @@ class VehicleType(models.Model):
     """represents the different types of vehicle"""
 
     name = models.CharField(max_length=36)
+
+    class Meta:
+        db_table = "vehicle_type"
 
     def __str__(self):
         return f"{self.name} [{self.id}]"
@@ -97,11 +110,10 @@ class Vehicle(models.Model):
     vin = models.CharField(max_length=100)
 
     # Type of vehicle (customer facing)
-    type = models.ForeignKey(VehicleType, on_delete=models.PROTECT)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.PROTECT)
 
     # Home parking bay
-    # FIXME: Make this not null before production
-    bay = models.ForeignKey(Bay, on_delete=models.PROTECT, null=True)
+    bay = models.ForeignKey(Bay, on_delete=models.PROTECT)
 
     # The "model" of the vehicle in terms that dictate the firmware driver that
     # will be needed to interface with it.
@@ -115,6 +127,9 @@ class Vehicle(models.Model):
 
     # ETag for the operator_cards list of this vehicle (incremented whenever this is changed)
     operator_cards_etag = models.IntegerField(null=False, default=0)
+
+    class Meta:
+        db_table = "vehicle"
 
     def __str__(self):
         return f"{self.name} - {self.registration} [{self.id}]"

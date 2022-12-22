@@ -50,7 +50,6 @@ def search(request):
         form = BookingSearchForm(request.POST)
         if form.is_valid():
             log.debug("Processing search results")
-            # TODO: Take into account chosen vehicle types.
             vehicles = get_available_vehicles(
                 form.cleaned_data["start"],
                 form.cleaned_data["end"],
