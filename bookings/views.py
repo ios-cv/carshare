@@ -7,7 +7,7 @@ from hardware.models import Vehicle
 from users.decorators import require_complete_user, require_user_can_make_bookings
 
 from .forms import BookingSearchForm, ConfirmBookingForm
-from .models import get_available_vehicles, Booking
+from .models import get_available_vehicles, get_unavailable_vehicles, Booking
 
 
 @login_required
@@ -53,6 +53,12 @@ def search(request):
             context["vehicles"] = vehicles
             context["start"] = form.cleaned_data["start"].isoformat()
             context["end"] = form.cleaned_data["end"].isoformat()
+
+            unavailable_vehicles = get_unavailable_vehicles(
+                form.cleaned_data["start"], form.cleaned_data["end"]
+            )
+            print(unavailable_vehicles)
+            context["unavailable_vehicles"] = unavailable_vehicles
 
             context["search_terms"] = {
                 "start": form.cleaned_data["start"],

@@ -73,6 +73,11 @@ Find a Vehicle
     <p class="p-8 text-center">No vehicles are available that meet your requirements. Please try changing your search
       terms.</p>
     {% endif %}
+    {% if unavailable_vehicles|length > 0 %}
+    {% for v in unavailable_vehicles %}
+    {% include "bookings/search/search_result_unavailable.html" with v=v %}
+    {% endfor %}
+    {% endif %}
   </ul>
 </div>
 {% endif %}

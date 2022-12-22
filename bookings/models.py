@@ -1,3 +1,5 @@
+import logging
+
 from abc import ABC
 
 from django.contrib.postgres.constraints import ExclusionConstraint
@@ -13,6 +15,9 @@ from psycopg2.extras import DateTimeTZRange
 
 from hardware.models import Vehicle
 from users.models import User
+
+
+log = logging.getLogger(__name__)
 
 
 class TsTzRange(Func, ABC):
@@ -124,6 +129,49 @@ def get_available_vehicles(start, end, van=True, car=True, combi=True):
             .distinct("vehicle_id")
         )
     )
+
+
+def get_unavailable_vehicles(start, end, van=True, car=True, combi=True):
+    vehicles = Vehicle.objects.filter(
+        id__in=Subquery(
+            Booking.objects.values("vehicle_id")
+            .filter(
+                ~Q(state=Booking.STATE_CANCELLED),
+                block_time__overlap=TsTzRange(start, end, RangeBoundary()),
+            )
+            .order_by("vehicle_id")
+            .distinct("vehicle_id")
+        )
+    )
+
+    results = []
+    for v in vehicles:
+        bookings = Booking.objects.filter(
+            ~Q(state=Booking.STATE_CANCELLED),
+            vehicle=v,
+            block_time__overlap=TsTzRange(start, end, RangeBoundary()),
+        ).order_by("block_time")
+
+        log.debug(f"Overlapping bookings for vehicle {v}: {bookings}")
+
+        if len(bookings) == 0:
+            log.warning(f"No overlapping bookings for vehicle {v} found.")
+            continue
+
+        bf = bookings.first()
+        # FIXME: Hardcoded block time window.
+        print(f"Available before {bf.block_time.lower-timezone.timedelta(minutes=15)}")
+
+        bl = bookings.last()
+        print(f"Available after {bl.block_time.upper}")
+
+        # FIXME: Hardcoded block time window.
+        v.available_before = bf.block_time.lower - timezone.timedelta(minutes=15)
+        v.available_after = bl.block_time.upper
+
+        results.append(v)
+
+    return results
 
 
 def get_current_booking_for_vehicle(vehicle):
