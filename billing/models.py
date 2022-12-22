@@ -87,6 +87,9 @@ class BillingAccount(models.Model):
         if not self.stripe_setup_intent_active:
             return False
 
+        if self.approved_at is None:
+            return False
+
         return True
 
 
