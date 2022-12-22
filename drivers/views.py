@@ -12,13 +12,13 @@ from .forms import (
     DriverProfilePart4Form,
     DriverProfilePart5Form,
 )
-from .models import DriverProfile
+from .models import FullDriverProfile
 
 
 @login_required
 def create_profile(request):
     # See if there's already a valid driver profile.
-    valid_driver_profiles = DriverProfile.objects.filter(
+    valid_driver_profiles = FullDriverProfile.objects.filter(
         user=request.user, expires_at__gte=timezone.now()
     ).order_by("-expires_at")
 
@@ -35,13 +35,13 @@ def create_profile(request):
             return redirect("bookings_home")
 
     # Find out if there is an incomplete driver profile.
-    incomplete_driver_profile = DriverProfile.get_incomplete_driver_profile(
+    incomplete_driver_profile = FullDriverProfile.get_incomplete_driver_profile(
         request.user
     )
 
     if incomplete_driver_profile is None:
         # User doesn't have any incomplete driver profiles. Create a fresh one.
-        driver_profile = DriverProfile.create(user=request.user)
+        driver_profile = FullDriverProfile.create(user=request.user)
         driver_profile.save()
         print("User has no valid or invalid driver profiles. Creating a fresh one.")
         stage = 1

@@ -69,46 +69,46 @@ Set up your account
     </div>
     {% endif %}
 
-    {% if not user.has_valid_driver_profile and not user.has_pending_driver_profile %}
+    {% if not user.is_own_personal_account_validated and not user.is_own_personal_account_pending_validation %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create your driver profile
+          Create my driving account
         </h3>
         <div class="mt-2 sm:flex sm:items-start sm:justify-between">
           <div class="max-w-xl text-sm text-gray-500">
             <p>
-              To use the GO-EV Car Share, you need to provide us with some details to allow us to verify your identify,
-              your driving license, and your eligibility to use the scheme.
+              If you are a resident of the Isles of Scilly, you can create your driving account
+              now to start hiring our vehicles.
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <a href="{% url 'drivers_create_profile' %}">
+            <a href="{% url 'billing_setup' 'personal' %}">
               <button type="button"
                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
-                Create Driver Profile
+                Create driving account
               </button>
             </a>
           </div>
         </div>
       </div>
     </div>
-    {% elif user.has_pending_driver_profile %}
+    {% elif user.is_own_personal_account_pending_validation %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create your driver profile
+          Create my driving account
         </h3>
         <div class="mt-2 sm:flex sm:items-start sm:justify-between">
           <div class="max-w-xl text-sm text-gray-500">
             <p>
-              Thank you, your driver profile has been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
+              Thank you, your details have been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
             <button type="button" disabled
                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create Driver Profile
+              Create driving account
             </button>
           </div>
         </div>
@@ -118,18 +118,18 @@ Set up your account
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create your driver profile
+          Create my driving account
         </h3>
         <div class="mt-2 sm:flex sm:items-start sm:justify-between">
           <div class="max-w-xl text-sm text-gray-500">
             <p>
-              Thank you, your driver profile has been submitted and approved.
+              Thank you, your details have been submitted and approved.
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
             <button type="button" disabled
                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create Driver Profile
+              Create driving account
             </button>
           </div>
         </div>
@@ -137,26 +137,46 @@ Set up your account
     </div>
     {% endif %}
 
-    {% if not user.has_valid_billing_account %}
+   {% if not user.has_valid_business_setup and not user.has_pending_business_setup %}
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Add billing details
+          Create business account
         </h3>
         <div class="mt-2 sm:flex sm:items-start sm:justify-between">
           <div class="max-w-xl text-sm text-gray-500">
             <p>
-              To charge you for your usage of the GO-EV Car Share scheme, we need to hold details of a valid credit or
-              debit card. Please add your billing details to provide this.
+              If you want to hire vehicles for a business, please sign up for a business account.
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <a href="{% url 'billing_setup' %}">
+            <a href="{% url 'drivers_create_profile' %}">
               <button type="button"
                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
-                Add Billing Details
+                Create business account
               </button>
             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% elif user.has_pending_personal_setup %}
+    <div class="bg-white shadow sm:rounded-lg mt-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Create business account
+        </h3>
+        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+          <div class="max-w-xl text-sm text-gray-500">
+            <p>
+              Thank you, your business details have been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
+            </p>
+          </div>
+          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button type="button" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+              Create business account
+            </button>
           </div>
         </div>
       </div>
@@ -165,18 +185,18 @@ Set up your account
     <div class="bg-white shadow sm:rounded-lg mt-8">
       <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Add billing details
+          Create business account
         </h3>
         <div class="mt-2 sm:flex sm:items-start sm:justify-between">
           <div class="max-w-xl text-sm text-gray-500">
             <p>
-              Thank you, your billing details have been validated.
+              Thank you, your business details have been submitted and approved.
             </p>
           </div>
           <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
             <button type="button" disabled
                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Add Billing Details
+              Create business account
             </button>
           </div>
         </div>

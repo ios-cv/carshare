@@ -1,15 +1,13 @@
-import stripe
-
 from django import forms
 
-from allauth.account.forms import SignupForm
+from allauth.account.forms import SignupForm as AllAuthSignupForm
 from allauth.account.forms import LoginForm as AllAuthLoginForm
 
 from crispy_forms.bootstrap import InlineField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 
-from .models import BillingAccount, User
+from .models import User
 
 
 class LoginForm(AllAuthLoginForm):
@@ -21,7 +19,7 @@ class LoginForm(AllAuthLoginForm):
         self.helper.layout = Layout("login", "password", InlineField("remember"))
 
 
-class PersonalSignupForm(SignupForm):
+class SignupForm(AllAuthSignupForm):
     first_name = forms.CharField(
         label="First name",
         max_length=100,
@@ -37,82 +35,20 @@ class PersonalSignupForm(SignupForm):
         "first_name",
         "last_name",
         "email",
-        "username",
         "password1",
         "password2",
     ]
 
     def save(self, request):
         # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
-        user = super(PersonalSignupForm, self).save(request)
+        user = super().save(request)
 
-        customer = stripe.Customer.create(
-            name=f"{user.first_name} {user.last_name}",
-            email=user.email,
-        )
+        # TODO: Move this to wherever we create the stripe account in future.
+        # customer = stripe.Customer.create(
+        #    name=f"{user.first_name} {user.last_name}",
+        #    email=user.email,
+        # )
 
-        # Create the Billing Account here.
-        billing_account = BillingAccount(
-            owner=user,
-            type=BillingAccount.PERSONAL,
-            stripe_customer_id=customer.id,
-        )
-        billing_account.save()
-
-        user.billing_account = billing_account
-        user.save()
-
-        # Return the originally created user object.
-        return user
-
-
-class BusinessSignupForm(SignupForm):
-    business_name = forms.CharField(
-        label="Business name",
-        max_length=100,
-        min_length=2,
-        widget=forms.TextInput(attrs={"placeholder": "Business name"}),
-    )
-    first_name = forms.CharField(
-        label="First name",
-        max_length=100,
-        widget=forms.TextInput(attrs={"placeholder": "First name"}),
-    )
-    last_name = forms.CharField(
-        label="Last name",
-        max_length=100,
-        widget=forms.TextInput(attrs={"placeholder": "Last name"}),
-    )
-
-    field_order = [
-        "business_name",
-        "first_name",
-        "last_name",
-        "email",
-        "username",
-        "password1",
-        "password2",
-    ]
-
-    def save(self, request):
-        # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
-        user = super(BusinessSignupForm, self).save(request)
-
-        customer = stripe.Customer.create(
-            name=self.cleaned_data["business_name"],
-            email=user.email,
-        )
-
-        # Create the Billing Account here.
-        billing_account = BillingAccount(
-            owner=user,
-            type=BillingAccount.BUSINESS,
-            account_name=self.cleaned_data["business_name"],
-            stripe_customer_id=customer.id,
-        )
-        billing_account.save()
-
-        user.billing_account = billing_account
         user.save()
 
         # Return the originally created user object.

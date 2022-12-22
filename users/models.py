@@ -1,3 +1,4 @@
+import logging
 import random
 
 from django.contrib.auth.models import AbstractUser
@@ -5,14 +6,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
+log = logging.getLogger(__name__)
+
 
 class User(AbstractUser):
     mobile = models.CharField(max_length=32, null=True)
     pending_mobile = models.CharField(max_length=32, null=True)
     mobile_verification_code = models.CharField(max_length=6, null=True)
-    billing_account = models.ForeignKey(
-        "BillingAccount", null=True, on_delete=models.SET_NULL
-    )
     is_operator = models.BooleanField(default=False)
 
     @staticmethod
@@ -46,71 +46,150 @@ class User(AbstractUser):
         return self.pending_mobile is not None
 
     def has_valid_driver_profile(self):
-        """Returns True if the user has a currently valid driver profile, otherwise False."""
+        """
+        Find out if a user has any kind of currently valid driver profile in place.
+        :return:
+        """
         for dp in self.driver_profiles.filter(
             approved_to_drive=True, expires_at__gt=timezone.now()
         ):
-            print(dp.expires_at)
-            print(dp)
+            log.debug(
+                f"User {self.id} has valid driver profile {dp} which expires at {dp.expires_at}"
+            )
             return True
 
+        log.debug(f"User {self.id} has no valid driver profiles")
         return False
 
-    def has_pending_driver_profile(self):
-        """Returns True if the user has a submitted driver profile pending review, otherwise False."""
+    def can_drive(self):
+        """
+        This method indicates whether the user has completed the minimum
+        necessary steps to be able to drive vehicles in any capacity.
+
+        :return: True if the user can drive, otherwise False.
+        """
+
+        # First, the user must have their mobile phone number validated.
+        log.debug(f"Checking if user: {self.id} is allowed to drive.")
+        if not self.has_validated_mobile():
+            log.debug(f"User: {self.id} does not have a validated mobile phone number.")
+            return False
+
+        # Next we must check if the user has any valid driver profile in place.
         for dp in self.driver_profiles.filter(
-            ~Q(approved_to_drive=True),
-            submitted_at__isnull=False,
+            approved_to_drive=True, expires_at__gt=timezone.now()
         ):
+            log.debug(
+                f"Found a valid driver profile: {dp.id} for user: {self.id}. User can drive."
+            )
             return True
 
+        log.debug(
+            f"Failed to find a valid driver profile for user: {self.id}. User cannot drive."
+        )
         return False
 
-    def has_valid_billing_account(self):
-        """Returns True if the user is associated with a valid billing account, otherwise False."""
+    def is_own_personal_account_validated(self):
+        """
+        This method indicates whether the user has got a personal driving account set
+        up and approved and valid to drive.
 
-        # FIXME: This may need to get a bit more complicated as we don't currently track whether
-        #        there is a working card or other type of payment authorisation on the account.
-        if self.billing_account is None:
+        :return: True if the user has a valid personal driving account, otherwise False
+        """
+        log.debug(f"Checking if own personal account is validated for user: {self.id}")
+
+        # First check for a personal billing account that's been approved.
+        personal_billing_account = self.owned_billing_accounts.filter(
+            account_type="p"
+        ).first()
+
+        if personal_billing_account is None:
+            log.debug(f"No own personal billing account found for user: {self.id}")
             return False
 
-        if self.billing_account.stripe_customer_id is None:
+        log.debug(
+            f"Own personal billing account {personal_billing_account.id} found for user: {self.id}"
+        )
+
+        if personal_billing_account.approved_at is None:
+            log.debug(
+                f"Own personal billing account {personal_billing_account.id} for user: {self.id} has not been approved."
+            )
             return False
 
-        if len(self.billing_account.stripe_customer_id) == 0:
+        # Then check for an approved driver profile of the appropriate type.
+        driver_profile_type = personal_billing_account.driver_profile_python_type
+        driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
+            approved_to_drive=True,
+            expires_at__gt=timezone.now(),
+        )
+
+        if driver_profile is None:
+            log.debug(
+                f"No valid driver profile found for user: {self.id} "
+                f"that is compatible with own billing account: {personal_billing_account.id}"
+            )
             return False
 
-        if self.billing_account.credit_account:
-            return True
-
-        if not self.billing_account.stripe_setup_intent_active:
-            return False
-
+        # If we made it this far then we're OK.
+        log.debug(f"Own personal account for user: {self.id} is fully validated")
         return True
 
+    def is_own_personal_account_pending_validation(self):
+        log.debug(f"Checking if own personal account is pending for user: {self.id}")
 
-class BillingAccount(models.Model):
-    BUSINESS = "b"
-    PERSONAL = "p"
-    ACCOUNT_TYPE_CHOICES = [
-        (BUSINESS, "Business"),
-        (PERSONAL, "personal"),
-    ]
+        # First check for a personal billing account that's been approved.
+        personal_billing_account = self.owned_billing_accounts.filter(
+            account_type="p"
+        ).first()
 
-    owner = models.ForeignKey(User, on_delete=models.PROTECT)
-    type = models.CharField(
-        max_length=1,
-        choices=ACCOUNT_TYPE_CHOICES,
-    )
-    account_name = models.CharField(max_length=100, null=True)
+        if personal_billing_account is None:
+            log.debug(f"No own personal billing account found for user: {self.id}")
+            return False
 
-    # FIXME: Change stripe id to mandatory field before release.
-    stripe_customer_id = models.CharField(max_length=100, null=True)
+        log.debug(
+            f"Own personal billing account {personal_billing_account.id} found for user: {self.id}"
+        )
 
-    # Indicates whether a setup-intent has been put in place for this billing account in stripe.
-    stripe_setup_intent_active = models.BooleanField(default=False)
+        # If there is a pending driver profile then return True.
+        driver_profile_type = personal_billing_account.driver_profile_python_type
+        driver_profiles = self.driver_profiles.instance_of(driver_profile_type).filter(
+            ~Q(approved_to_drive=True),
+            submitted_at__isnull=False,
+        )
+        for dp in driver_profiles:
+            log.debug(
+                f"Found appropriate pending driver profile for user {self.id} that is"
+                f"compatible with own billing account: {personal_billing_account.id}."
+            )
+            return True
 
-    # Credit account means that invoices will be raised against this customer in Stripe, but
-    # there is no payment method on file. This means a payment method does not have to be on file
-    # for their account to be treated as valid for billing.
-    credit_account = models.BooleanField(default=False)
+        # Check for approved driver profiles, and if there is one, then check if the
+        # associated billing account is approved too.
+        driver_profiles = self.driver_profiles.instance_of(driver_profile_type).filter(
+            approved_to_drive=True,
+            expires_at__gt=timezone.now(),
+        )
+
+        for dp in driver_profiles:
+            if personal_billing_account.approved_at is None:
+                return True
+
+        # If we made it this far then neither the driver profile nor billing accounts are pending approval.
+        log.debug(f"Own personal account for user: {self.id} is not pending")
+        return False
+
+    def can_make_bookings(self):
+        """
+        This method can be used to check whether this user has the rights to make
+        bookings under any of their associated accounts.
+
+        :return: True if the user can make bookings, otherwise False.
+        """
+        # TODO: Implement me properly with some check for a billing account that's valid and can make bookings!
+        return self.has_validated_mobile() and self.has_valid_billing_account()
+
+    def has_valid_billing_account(self):
+        for ba in self.owned_billing_accounts.all():
+            if ba.valid:
+                return True

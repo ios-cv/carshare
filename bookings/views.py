@@ -4,7 +4,7 @@ from django.utils.datastructures import MultiValueDict
 
 from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
-from users.decorators import require_complete_user
+from users.decorators import require_complete_user, require_user_can_make_bookings
 
 from .forms import BookingSearchForm, ConfirmBookingForm
 from .models import get_available_vehicles, Booking
@@ -12,10 +12,6 @@ from .models import get_available_vehicles, Booking
 
 @login_required
 def home(request):
-    # TODO: Proper logic to decide if the user is incomplete or not needs to go in a decorator.
-    if True:
-        return redirect("users_incomplete")
-
     return redirect("bookings_history")
 
 
@@ -32,7 +28,7 @@ def my_bookings(request):
 
 
 @login_required
-@require_complete_user
+@require_user_can_make_bookings
 def new_booking(request):
     context = {
         "menu": "new_booking",
@@ -41,7 +37,7 @@ def new_booking(request):
 
 
 @login_required
-@require_complete_user
+@require_user_can_make_bookings
 def search(request):
     context = {
         "menu": "new_booking",
@@ -90,7 +86,7 @@ def search(request):
 
 
 @login_required
-@require_complete_user
+@require_user_can_make_bookings
 def confirm_booking(request):
     # Must be a POST form.
     if request.method != "POST":

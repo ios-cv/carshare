@@ -5,18 +5,12 @@ from allauth.account import views
 
 from .decorators import require_incomplete_user
 from .forms import (
-    PersonalSignupForm,
-    BusinessSignupForm,
+    SignupForm,
     AddMobileForm,
     VerifyMobileForm,
     LoginForm,
 )
 from .sms import send_sms_verification_code
-
-
-def sign_up(request):
-    context = {}
-    return render(request, "users/signup.html", context)
 
 
 @login_required
@@ -29,14 +23,9 @@ def incomplete(request):
     return render(request, "users/incomplete.html", context)
 
 
-class PersonalSignUpView(views.SignupView):
-    template_name = "users/signup_personal.html"
-    form_class = PersonalSignupForm
-
-
-class BusinessSignUpView(views.SignupView):
-    template_name = "users/signup_business.html"
-    form_class = BusinessSignupForm
+class SignUpView(views.SignupView):
+    template_name = "users/signup.html"
+    form_class = SignupForm
 
 
 class LoginView(views.LoginView):

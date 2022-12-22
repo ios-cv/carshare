@@ -5,7 +5,7 @@ from django import forms
 from django.utils import timezone
 
 from .fields import CustomImageField
-from .models import DriverProfile
+from .models import FullDriverProfile
 
 
 class DriverProfilePart1Form(forms.ModelForm):
@@ -16,7 +16,7 @@ class DriverProfilePart1Form(forms.ModelForm):
         self.fields["address_line_4"].required = False
 
     class Meta:
-        model = DriverProfile
+        model = FullDriverProfile
         fields = [
             "full_name",
             "date_of_birth",
@@ -51,7 +51,7 @@ class DriverProfilePart1Form(forms.ModelForm):
 
 class DriverProfilePart2Form(forms.ModelForm):
     class Meta:
-        model = DriverProfile
+        model = FullDriverProfile
         fields = ["licence_number", "licence_issue_date", "licence_expiry_date"]
         labels = {
             "licence_number": "Driving licence number",
@@ -84,7 +84,7 @@ class DriverProfilePart2Form(forms.ModelForm):
 
 class DriverProfilePart3Form(forms.ModelForm):
     class Meta:
-        model = DriverProfile
+        model = FullDriverProfile
         fields = ["licence_front", "licence_back"]
         labels = {
             "licence_front": "Picture of the front of your driving licence",
@@ -113,7 +113,7 @@ class DriverProfilePart3Form(forms.ModelForm):
 
 class DriverProfilePart4Form(forms.ModelForm):
     class Meta:
-        model = DriverProfile
+        model = FullDriverProfile
         fields = ["licence_selfie"]
 
     def __init__(self, *args, **kwargs):
@@ -133,7 +133,7 @@ class DriverProfilePart4Form(forms.ModelForm):
 
 class DriverProfilePart5Form(forms.ModelForm):
     class Meta:
-        model = DriverProfile
+        model = FullDriverProfile
         fields = ["licence_check_code"]
         labels = {
             "licence_check_code": "DVLA check code",

@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-from .models import DriverProfile
+from .models import FullDriverProfile
 
 
 def incomplete_driver_profile_required(view_func=None):
@@ -10,7 +10,7 @@ def incomplete_driver_profile_required(view_func=None):
     """
 
     def wrapper_func(request, *args, **kwargs):
-        incomplete_driver_profile = DriverProfile.get_incomplete_driver_profile(
+        incomplete_driver_profile = FullDriverProfile.get_incomplete_driver_profile(
             request.user
         )
         if incomplete_driver_profile is None:

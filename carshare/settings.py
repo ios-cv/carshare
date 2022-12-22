@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "theme",
     "django_celery_results",
     "django_celery_beat",
+    "polymorphic",
 ]
 
 MIDDLEWARE = [
@@ -138,9 +139,11 @@ AUTHENTICATION_BACKENDS = [
 
 # AllAuth stuff
 ACCOUNT_ADAPTER = "users.adapter.AccountAdapter"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_USERNAME_MIN_LENGTH = 3
 LOGIN_REDIRECT_URL = "/bookings"
 LOGIN_URL = "/users/login"
 LOGOUT_REDIRECT_URL = "/"

@@ -1,5 +1,24 @@
 from django.contrib import admin
 
-from .models import DriverProfile
+from polymorphic.admin import (
+    PolymorphicParentModelAdmin,
+    PolymorphicChildModelAdmin,
+    PolymorphicChildModelFilter,
+)
 
-admin.site.register(DriverProfile)
+from .models import DriverProfile, FullDriverProfile
+
+
+class DriverProfileChildAdmin(PolymorphicChildModelAdmin):
+    base_model = DriverProfile
+
+
+@admin.register(FullDriverProfile)
+class FullDriverProfileAdmin(DriverProfileChildAdmin):
+    pass
+
+
+@admin.register(DriverProfile)
+class DriverProfileParentAdmin(PolymorphicParentModelAdmin):
+    child_models = (FullDriverProfile,)
+    list_filter = (PolymorphicChildModelFilter,)

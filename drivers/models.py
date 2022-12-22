@@ -1,83 +1,92 @@
 from django.db import models
 from django.utils import timezone
 
+from polymorphic.models import PolymorphicModel
+
 from users.models import User
 
 
-class DriverProfile(models.Model):
+class DriverProfile(PolymorphicModel):
     # Related User ID
     user = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name="driver_profiles"
     )
 
+    # -------------------- Timestamps ---------------------------- #
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    approved_to_drive = models.BooleanField(
+        null=True, blank=True
+    )  # Final approval to drive
+    approved_by = models.ForeignKey(
+        User, null=True, on_delete=models.PROTECT, related_name="+", blank=True
+    )
+
+
+class FullDriverProfile(DriverProfile):
     # Full Legal Name (as per driving license)
-    full_name = models.CharField(max_length=255, null=True)
+    full_name = models.CharField(max_length=255, null=True, blank=True)
 
     # Address
-    address_line_1 = models.CharField(max_length=255, null=True)
-    address_line_2 = models.CharField(max_length=255, null=True)
-    address_line_3 = models.CharField(max_length=255, null=True)
-    address_line_4 = models.CharField(max_length=255, null=True)
-    postcode = models.CharField(max_length=255, null=True)
-    country = models.CharField(max_length=255, null=True)
+    address_line_1 = models.CharField(max_length=255, null=True, blank=True)
+    address_line_2 = models.CharField(max_length=255, null=True, blank=True)
+    address_line_3 = models.CharField(max_length=255, null=True, blank=True)
+    address_line_4 = models.CharField(max_length=255, null=True, blank=True)
+    postcode = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
 
     # Date of Birth
     # FIXME: Do we need date of birth field?
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
 
     # Licence Details
-    licence_number = models.CharField(max_length=255, null=True)
+    licence_number = models.CharField(max_length=255, null=True, blank=True)
     # FIXME: Do we need this place of issue field?
-    licence_place_of_issue = models.CharField(max_length=255, null=True)
-    licence_issue_date = models.DateField(null=True)
-    licence_expiry_date = models.DateField(null=True)
+    licence_place_of_issue = models.CharField(max_length=255, null=True, blank=True)
+    licence_issue_date = models.DateField(null=True, blank=True)
+    licence_expiry_date = models.DateField(null=True, blank=True)
 
     # Licence pictures
-    licence_front = models.ImageField(null=True)
-    licence_back = models.ImageField(null=True)
-    licence_selfie = models.ImageField(null=True, upload_to="drivers/profiles/selfies")
+    licence_front = models.ImageField(null=True, blank=True)
+    licence_back = models.ImageField(null=True, blank=True)
+    licence_selfie = models.ImageField(
+        null=True, upload_to="drivers/profiles/selfies", blank=True
+    )
 
     # DVLA Check Code
-    licence_check_code = models.CharField(max_length=50, null=True)
+    licence_check_code = models.CharField(max_length=50, null=True, blank=True)
 
     # Additional proof of Address
     # FIXME: Do we really need this?
     # proof_of_address = models.ImageField()
 
-    # -------------------- Timestamps ---------------------------- #
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    submitted_at = models.DateTimeField(null=True)
-    approved_at = models.DateTimeField(null=True)
-    expires_at = models.DateTimeField(null=True)
-
     # --------------------- Field Approvals ---------------------- #
-    approved_full_name = models.BooleanField(null=True)
-    approved_address = models.BooleanField(null=True)
-    approved_date_of_birth = models.BooleanField(null=True)
+    approved_full_name = models.BooleanField(null=True, blank=True)
+    approved_address = models.BooleanField(null=True, blank=True)
+    approved_date_of_birth = models.BooleanField(null=True, blank=True)
 
-    approved_licence_number = models.BooleanField(null=True)
-    approved_licence_place_of_issue = models.BooleanField(null=True)
-    approved_licence_issue_date = models.BooleanField(null=True)
-    approved_licence_expiry_date = models.BooleanField(null=True)
-    approved_licence_front = models.BooleanField(null=True)
-    approved_licence_back = models.BooleanField(null=True)
-    approved_licence_selfie = models.BooleanField(null=True)
-    approved_driving_record = models.BooleanField(null=True)
+    approved_licence_number = models.BooleanField(null=True, blank=True)
+    approved_licence_place_of_issue = models.BooleanField(null=True, blank=True)
+    approved_licence_issue_date = models.BooleanField(null=True, blank=True)
+    approved_licence_expiry_date = models.BooleanField(null=True, blank=True)
+    approved_licence_front = models.BooleanField(null=True, blank=True)
+    approved_licence_back = models.BooleanField(null=True, blank=True)
+    approved_licence_selfie = models.BooleanField(null=True, blank=True)
+    approved_driving_record = models.BooleanField(null=True, blank=True)
 
     # ------------------- Final Approvals ---------------------- #
-    dvla_summary = models.FileField()  # Added by staff
-    approved_to_drive = models.BooleanField(null=True)  # Final approval to drive
-    approved_by = models.ForeignKey(
-        User, null=True, on_delete=models.PROTECT, related_name="+"
-    )
+    dvla_summary = models.FileField(null=True, blank=True)  # Added by staff
 
     def __str__(self):
         return "Driver Profile [{}] for User: {}".format(self.id, self.user)
 
     @staticmethod
     def create(user):
-        driver_profile = DriverProfile()
+        driver_profile = FullDriverProfile()
         driver_profile.user = user
         driver_profile.created_at = timezone.now()
         driver_profile.updated_at = timezone.now()
@@ -86,7 +95,7 @@ class DriverProfile(models.Model):
     @staticmethod
     def get_incomplete_driver_profile(user):
         try:
-            incomplete_driver_profiles = DriverProfile.objects.filter(
+            incomplete_driver_profiles = FullDriverProfile.objects.filter(
                 user=user, approved_at=None
             ).order_by("-created_at")
             return incomplete_driver_profiles[0]
