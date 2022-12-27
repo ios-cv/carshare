@@ -31,7 +31,7 @@ def bookings(request):
     bookings = Booking.objects.all().order_by("-reservation_time")
     paginator = Paginator(bookings, 50)
 
-    page_number = request.GET.get("page")
+    page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
     page_range = paginator.get_elided_page_range(
         number=page_number, on_each_side=1, on_ends=1
