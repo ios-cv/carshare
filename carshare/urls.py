@@ -26,5 +26,6 @@ urlpatterns = [
     path("drivers/", include("drivers.urls")),
     path("hardware/", include("hardware.urls")),
     path("billing/", include("billing.urls")),
+    path("backoffice/", include("backoffice.urls")),
     path("", include("public.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

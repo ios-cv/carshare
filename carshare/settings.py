@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "backoffice.apps.BackofficeConfig",
     "billing.apps.BillingConfig",
     "bookings.apps.BookingsConfig",
     "drivers.apps.DriversConfig",
