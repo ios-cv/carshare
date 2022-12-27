@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from polymorphic.models import PolymorphicModel
@@ -150,3 +151,8 @@ class FullDriverProfile(DriverProfile):
 
     def is_driving_record_approved(self):
         return self.approved_driving_record
+
+
+def get_all_pending_approval():
+    """Returns a QuerySet encapsulating all the driver profiles that currently need operator approval."""
+    return DriverProfile.objects.filter(~Q(submitted_at=None), approved_at=None)

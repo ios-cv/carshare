@@ -6,5 +6,104 @@
 {% endblock %}
 
 {% block main %}
+  <!-- Billing Accounts -->
+  <div class="p-4 sm:p-6 lg:p-8">
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">Pending Billing Accounts</h1>
+        <p class="mt-2 text-sm text-gray-700">New personal or business billing accounts that have been requested by
+          users.</p>
+        <p class="mt-2 text-sm text-purple-700">Check that personal users are resident on the islands, and that business
+          users have a legitimate reason to need vehicles on the islands.</p>
+      </div>
+    </div>
+    <div class="mt-8 flex flex-col">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Owner's
+                  Name
+                </th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Owner's Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Account Type</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Account Name</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
+              </tr>
+              </thead>
+              <tbody class="bg-white">
+              {% for ba in billing_accounts %}
+                <tr>
+                  <td
+                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ ba.owner.first_name }} {{ ba.owner.last_name }}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ba.owner.email }}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{% if ba.account_type == "p" %}Personal{% else %}Business{% endif %}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{% if ba.account_type == "p" %}n/a{% else %}ba.account_name{% endif %}</td>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Approve</a>
+                    <a href="#" class="pl-3 text-red-600 hover:text-red-900">Reject</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Of Billing Accounts -->
+
+  <!-- Driver Profiles -->
+  <div class="p-4 sm:p-6 lg:p-8">
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">Pending Driver Profiles</h1>
+        <p class="mt-2 text-sm text-gray-700">Driver profile information submitted by users.</p>
+        <p class="mt-2 text-sm text-purple-700">Check that the user meets all insurance and car-share scheme
+          requirements to be allowed to drive.</p>
+      </div>
+    </div>
+    <div class="mt-8 flex flex-col">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Driver's
+                  Name
+                </th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Driver's Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Driver Profile Type</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Submitted At</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+              </thead>
+              <tbody class="bg-white">
+              {% for dp in driver_profiles %}
+                <tr>
+                  <td
+                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ dp.user.first_name }} {{ dp.user.last_name }}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ dp.user.email }}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">???</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ dp.submitted_at }}</td>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Review</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Driver Profiles -->
 
 {% endblock %}

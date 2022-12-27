@@ -1,7 +1,13 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render
 
+from billing.models import (
+    get_all_pending_approval as get_all_billing_accounts_pending_approval,
+)
 from bookings.models import Booking
+from drivers.models import (
+    get_all_pending_approval as get_all_driver_profiles_pending_approval,
+)
 
 from .decorators import require_backoffice_access
 
@@ -61,6 +67,13 @@ def approvals(request):
         "menu": "approvals",
         "user": request.user,
     }
+
+    billing_accounts = get_all_billing_accounts_pending_approval()
+    driver_profiles = get_all_driver_profiles_pending_approval()
+
+    context["billing_accounts"] = billing_accounts
+    context["driver_profiles"] = driver_profiles
+
     return render(request, "backoffice/approvals.html", context)
 
 

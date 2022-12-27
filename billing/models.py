@@ -99,6 +99,13 @@ def get_personal_billing_account_for_user(user):
     ).first()
 
 
+def get_all_pending_approval():
+    """Returns a QuerySet encapsulating all billing accounts that are pending approval."""
+    return BillingAccount.objects.filter(
+        stripe_setup_intent_active=True, approved_at=None
+    )
+
+
 class BillingAccountMember(models.Model):
     class Meta:
         db_table = "billing_account_member"
