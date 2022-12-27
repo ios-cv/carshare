@@ -1,4 +1,7 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render
+
+from bookings.models import Booking
 
 from .decorators import require_backoffice_access
 
@@ -18,6 +21,19 @@ def bookings(request):
         "menu": "bookings",
         "user": request.user,
     }
+
+    bookings = Booking.objects.all().order_by("-reservation_time")
+    paginator = Paginator(bookings, 50)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    context["page"] = page_obj
+    context["page_range"] = page_range
+
     return render(request, "backoffice/bookings.html", context)
 
 
