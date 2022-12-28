@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from drivers.models import FullDriverProfile
 from users.models import User
@@ -91,6 +92,9 @@ class BillingAccount(models.Model):
             return False
 
         return True
+
+    def approve(self):
+        self.approved_at = timezone.now()
 
 
 def get_personal_billing_account_for_user(user):

@@ -8,6 +8,16 @@ from users.models import User
 
 
 class DriverProfile(PolymorphicModel):
+    APPROVED = True
+    REJECTED = False
+    UNCHECKED = ""
+
+    APPROVAL_CHOICES = [
+        (APPROVED, "Approve"),
+        (REJECTED, "Reject"),
+        (UNCHECKED, "Unchecked"),
+    ]
+
     # Related User ID
     user = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name="driver_profiles"
@@ -69,18 +79,74 @@ class FullDriverProfile(DriverProfile):
     # proof_of_address = models.ImageField()
 
     # --------------------- Field Approvals ---------------------- #
-    approved_full_name = models.BooleanField(null=True, blank=True)
-    approved_address = models.BooleanField(null=True, blank=True)
-    approved_date_of_birth = models.BooleanField(null=True, blank=True)
+    approved_full_name = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_address = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_date_of_birth = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
 
-    approved_licence_number = models.BooleanField(null=True, blank=True)
-    approved_licence_place_of_issue = models.BooleanField(null=True, blank=True)
-    approved_licence_issue_date = models.BooleanField(null=True, blank=True)
-    approved_licence_expiry_date = models.BooleanField(null=True, blank=True)
-    approved_licence_front = models.BooleanField(null=True, blank=True)
-    approved_licence_back = models.BooleanField(null=True, blank=True)
-    approved_licence_selfie = models.BooleanField(null=True, blank=True)
-    approved_driving_record = models.BooleanField(null=True, blank=True)
+    approved_licence_number = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    # FIXME: Decide whether to keep or remove this field.
+    approved_licence_place_of_issue = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_licence_issue_date = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_licence_expiry_date = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_licence_front = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_licence_back = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_licence_selfie = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
+    approved_driving_record = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
 
     # ------------------- Final Approvals ---------------------- #
     dvla_summary = models.FileField(null=True, blank=True)  # Added by staff
@@ -90,6 +156,21 @@ class FullDriverProfile(DriverProfile):
 
     def __str__(self):
         return "Driver Profile [{}] for User: {}".format(self.id, self.user)
+
+    @property
+    def approval_fields(self):
+        return [
+            self.approved_full_name,
+            self.approved_address,
+            self.approved_date_of_birth,
+            self.approved_licence_number,
+            self.approved_licence_issue_date,
+            self.approved_licence_expiry_date,
+            self.approved_licence_front,
+            self.approved_licence_back,
+            self.approved_licence_selfie,
+            self.approved_driving_record,
+        ]
 
     @staticmethod
     def create(user):
@@ -151,6 +232,27 @@ class FullDriverProfile(DriverProfile):
 
     def is_driving_record_approved(self):
         return self.approved_driving_record
+
+    def can_profile_be_approved(self):
+        """Returns True if the profile has everything approved in order to allow the operator
+        to set overall approval on the profile, otherwise returns False."""
+        return (
+            self.is_personal_details_approved()
+            and self.is_driving_licence_details_approved()
+            and self.is_driving_licenced_approved()
+            and self.is_identity_approved()
+            and self.is_driving_record_approved()
+        )
+
+    def is_anything_rejected(self):
+        """
+        Helper method for the Backoffice to determine if any of the data in the driver profile
+        has been rejected during the approval process.
+
+        :return: True if anything is rejected, else False
+        """
+        if DriverProfile.REJECTED in self.approval_fields:
+            return True
 
 
 def get_all_pending_approval():
