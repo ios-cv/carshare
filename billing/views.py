@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
+from .forms import BusinessBillingAccountForm
 from .models import BillingAccount, get_personal_billing_account_for_user
 
 log = logging.getLogger(__name__)
@@ -12,6 +13,10 @@ log = logging.getLogger(__name__)
 
 @login_required
 def create_billing_account(request, billing_account_type):
+    initial = False
+    if "initial" in request.GET:
+        initial = True
+
     billing_account_type = billing_account_type.lower()
 
     context = {
@@ -37,13 +42,23 @@ def create_billing_account(request, billing_account_type):
         return redirect("billing_set_payment", billing_account=billing_account.id)
 
     elif billing_account_type == "business":
-        # TODO: Always show the form to create a new business account.
+        # If the "initial" flag is set, only create a new one if there isn't one already.
+        bba = request.user.owned_billing_accounts.filter(
+            account_type=BillingAccount.BUSINESS
+        )
+        if bba.count() > 0 and initial:
+            return redirect("billing_set_payment", billing_account=bba.first().id)
 
-        # TODO: On form submitted, save the billing account and forward to stripe.
+        if request.method == "POST":
+            form = BusinessBillingAccountForm(request.user, request.POST)
+            if form.is_valid():
+                ba = form.save()
+                return redirect("billing_set_payment", billing_account=ba.id)
+        else:
+            form = BusinessBillingAccountForm(request.user)
 
-        # TODO: Then, redirect to the billing_set_account_card page.
-
-        pass
+        context["form"] = form
+        return render(request, "billing/create_billing_account.html", context)
 
     return redirect("users_incomplete")
 
@@ -105,7 +120,7 @@ def set_payment(request, billing_account):
     context["stripe_client_secret"] = intent.client_secret
     context["BASE_URL"] = settings.BASE_URL
 
-    return render(request, "billing/setup.html", context)
+    return render(request, "billing/set_payment.html", context)
 
 
 @login_required
@@ -121,7 +136,6 @@ def setup_complete(request):
         billing_account.stripe_setup_intent_active = True
         billing_account.save()
 
-        if billing_account.account_type == BillingAccount.PERSONAL:
-            return redirect("drivers_create_profile")
+        return redirect("drivers_create_profile")
 
     return render(request, "billing/setup_complete.html", context)

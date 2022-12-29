@@ -1,0 +1,21 @@
+{% extends "portal_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block portal_header_text %}
+  Create a business account
+{% endblock %}
+
+{% block portal_content %}
+  <div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <form action="#" method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+          {% include "components/submit-button.html" with label="Continue" %}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
