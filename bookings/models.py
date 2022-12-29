@@ -13,6 +13,8 @@ from django.db.models import Func, Q, Subquery, DateTimeField
 from django.utils import timezone
 from psycopg2.extras import DateTimeTZRange
 
+from billing.models import BillingAccount
+from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
 from users.models import User
 
@@ -68,6 +70,11 @@ class Booking(models.Model):
         on_delete=models.PROTECT,
         related_name="bookings",
     )
+    billing_account = models.ForeignKey(
+        BillingAccount,
+        on_delete=models.PROTECT,
+        related_name="bookings",
+    )
 
     state = models.CharField(
         max_length=16,
@@ -84,6 +91,8 @@ class Booking(models.Model):
     # Actual times - when the vehicle was first unlocked and last locked.
     actual_start_time = DateTimeField(null=True, blank=True)
     actual_end_time = DateTimeField(null=True, blank=True)
+
+    stripe_invoice_item_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = "booking"
@@ -124,6 +133,25 @@ class Booking(models.Model):
     @property
     def cancelled(self):
         return self.state == self.STATE_CANCELLED
+
+    @property
+    def duration(self):
+        """Returns the booked duration of the booking, as a tuple of days and hours."""
+        delta = self.reservation_time.upper - self.reservation_time.lower
+
+        days = delta.days
+        hours = delta.seconds / 3600
+
+        return days, hours
+
+    @property
+    def cost(self):
+        return calculate_booking_cost(
+            self.user,
+            self.vehicle,
+            self.reservation_time.lower,
+            self.reservation_time.upper,
+        )
 
 
 def get_available_vehicles(start, end, vehicle_types):
