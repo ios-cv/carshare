@@ -44,7 +44,7 @@ class BillingAccount(models.Model):
     )
 
     # The customer ID corresponding to this billing account in Stripe.
-    stripe_customer_id = models.CharField(max_length=100, null=False)
+    stripe_customer_id = models.CharField(max_length=100, null=True, blank=True)
 
     # Indicates whether a setup-intent has been put in place for this billing account in stripe.
     stripe_setup_intent_active = models.BooleanField(default=False)
@@ -61,6 +61,15 @@ class BillingAccount(models.Model):
 
     # When this billing account was approved.
     approved_at = models.DateTimeField(null=True, default=None, blank=True)
+
+    # Extra details for business accounts.
+    business_name = models.CharField(max_length=255, null=True, blank=True)
+    business_address_line_1 = models.CharField(max_length=100, null=True, blank=True)
+    business_address_line_2 = models.CharField(max_length=100, null=True, blank=True)
+    business_address_line_3 = models.CharField(max_length=100, null=True, blank=True)
+    business_address_line_4 = models.CharField(max_length=100, null=True, blank=True)
+    business_postcode = models.CharField(max_length=100, null=True, blank=True)
+    business_tax_id = models.CharField(max_length=30, null=True, blank=True)
 
     @classmethod
     def by_stripe_customer_id(cls, stripe_customer_id):
