@@ -1,210 +1,171 @@
 {% extends "portal_base.html" %}
 
 {% block portal_header_text %}
-Set up your account
+  Set up your account
 {% endblock %}
 
 {% block portal_content %}
 
-<header>
-  <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-    <div class="bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-5 sm:p-6">
-        <p>
-          Welcome to your new account with GO-EV Car Share. Before you can make your first booking, you need to complete
-          the
-          steps below to finish setting up your account.
-        </p>
+  <header>
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <p>
+            Welcome to GO-EV Car Share. Before you can start booking vehicles,
+            we need you to confirm your mobile number and create a personal or business driving account.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-</header>
-<main>
-  <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+  </header>
+  <main>
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-    {% if not user.has_validated_mobile %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Confirm your mobile number
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              We need to hold your confirmed mobile number in order to alert your to problems with your bookings or to
-              contact you in the event of emergencies or incidents.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <a href="{% url 'users_mobile_add' %}">
-              <button type="button"
-                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
-                Confirm Mobile Number
-              </button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Confirm your mobile number
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              Thank you, your mobile number has been confirmed.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button" disabled
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Confirm Mobile Number
-            </button>
+      <div class="bg-white shadow sm:rounded-lg mt-8">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Confirm your mobile number
+          </h3>
+          <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+            {% if not user.has_validated_mobile %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  We need to hold your confirmed mobile number in order to alert your to problems with your bookings or
+                  to
+                  contact you in the event of emergencies or incidents.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <a href="{% url 'users_mobile_add' %}">
+                  <button type="button"
+                          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
+                    Confirm Mobile Number
+                  </button>
+                </a>
+              </div>
+            {% else %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  Thank you, your mobile number has been confirmed.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button type="button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+                  Confirm Mobile Number
+                </button>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
-    </div>
-    {% endif %}
 
-    {% if not user.is_own_personal_account_validated and not user.is_own_personal_account_pending_validation %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create my driving account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              If you are a resident of the Isles of Scilly, you can create your driving account
-              now to start hiring our vehicles.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <a href="{% url 'billing_create_account' 'personal' %}">
-              <button type="button"
-                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
-                Create driving account
-              </button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% elif user.is_own_personal_account_pending_validation %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create my driving account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              Thank you, your details have been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button" disabled
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create driving account
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create my driving account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              Thank you, your details have been submitted and approved.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button" disabled
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create driving account
-            </button>
+      <div class="bg-white shadow sm:rounded-lg mt-8">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Create personal account
+          </h3>
+          <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+            {% if not user.is_own_personal_account_validated and not user.is_own_personal_account_pending_validation %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  If you are resident on the Isles of Scilly and wish to drive GO-EV vehicles,
+                  or are a visiting employee or contractor who will be paying individually for
+                  your vehicle hire, please create a "personal" account.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <a href="{% url 'billing_create_account' 'personal' %}">
+                  <button type="button"
+                          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
+                    Create personal account
+                  </button>
+                </a>
+              </div>
+            {% elif user.is_own_personal_account_pending_validation %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  Thank you, your details have been submitted and will soon be reviewed by a member of the GoEV team.
+                  This
+                  typically takes around 2 working days.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button type="button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+                  Create personal account
+                </button>
+              </div>
+            {% else %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  Thank you, your details have been submitted and approved.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button type="button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+                  Create driving account
+                </button>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
-    </div>
-    {% endif %}
 
-   {% if not user.has_valid_business_setup and not user.has_pending_business_setup %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create business account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              If you want to hire vehicles for a business, please sign up for a business account.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <a href="{% url 'billing_create_account' 'business' %}?initial">
-              <button type="button"
-                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
-                Create business account
-              </button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% elif user.has_pending_personal_setup %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create business account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              Thank you, your business details have been submitted and will soon be reviewed by a member of the GoEV team. This typically takes around 2 working days.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button" disabled
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create business account
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="bg-white shadow sm:rounded-lg mt-8">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Create business account
-        </h3>
-        <div class="mt-2 sm:flex sm:items-start sm:justify-between">
-          <div class="max-w-xl text-sm text-gray-500">
-            <p>
-              Thank you, your business details have been submitted and approved.
-            </p>
-          </div>
-          <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-            <button type="button" disabled
-                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-              Create business account
-            </button>
+      <div class="bg-white shadow sm:rounded-lg mt-8">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Create business account
+          </h3>
+          <div class="mt-2 sm:flex sm:items-start sm:justify-between">
+            {% if not user.is_own_business_account_validated and not user.is_own_business_account_pending_validation %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  If you run a business on or serving the Isles of Scilly and you or your staff
+                  would like to hire GO-EV vehicles on behalf of your business, please create a
+                  "business" account.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <a href="{% url 'billing_create_account' 'business' %}?initial">
+                  <button type="button"
+                          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:text-sm">
+                    Create business account
+                  </button>
+                </a>
+              </div>
+            {% elif user.is_own_business_account_pending_validation %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  Thank you, your business details have been submitted and will soon be reviewed
+                  by a member of the GoEV team. This typically takes around 2 working days.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button type="button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+                  Create business account
+                </button>
+              </div>
+            {% else %}
+              <div class="max-w-xl text-sm text-gray-500">
+                <p>
+                  Thank you, your business details have been submitted and approved.
+                </p>
+              </div>
+              <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button type="button" disabled
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
+                  Create business account
+                </button>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
-    </div>
-    {% endif %}
 
-  </div>
-</main>
+    </div>
+  </main>
 
 {% endblock %}

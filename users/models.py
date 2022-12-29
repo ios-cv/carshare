@@ -182,6 +182,96 @@ class User(AbstractUser):
         log.debug(f"Own personal account for user: {self.id} is not pending")
         return False
 
+    def is_own_business_account_validated(self):
+        """
+        This method indicates whether the user has got a business driving account set
+        up and approved and valid to drive which they personally own.
+
+        :return: True if the user has a valid business driving account, otherwise False
+        """
+        log.debug(f"Checking if own business account is validated for user: {self.id}")
+
+        # First check for a personal billing account that's been approved.
+        business_billing_account = self.owned_billing_accounts.filter(
+            account_type="b"
+        ).first()
+
+        if business_billing_account is None:
+            log.debug(f"No own business billing account found for user: {self.id}")
+            return False
+
+        log.debug(
+            f"Own business billing account {business_billing_account.id} found for user: {self.id}"
+        )
+
+        if business_billing_account.approved_at is None:
+            log.debug(
+                f"Own business billing account {business_billing_account.id} for user: {self.id} has not been approved."
+            )
+            return False
+
+        # Then check for an approved driver profile of the appropriate type.
+        driver_profile_type = business_billing_account.driver_profile_python_type
+        driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
+            approved_to_drive=True,
+            expires_at__gt=timezone.now(),
+        )
+
+        if driver_profile is None:
+            log.debug(
+                f"No valid driver profile found for user: {self.id} "
+                f"that is compatible with own billing account: {business_billing_account.id}"
+            )
+            return False
+
+        # If we made it this far then we're OK.
+        log.debug(f"Own business account for user: {self.id} is fully validated")
+        return True
+
+    def is_own_business_account_pending_validation(self):
+        log.debug(f"Checking if own business account is pending for user: {self.id}")
+
+        # First check for a personal billing account that's been approved.
+        business_billing_account = self.owned_billing_accounts.filter(
+            account_type="b"
+        ).first()
+
+        if business_billing_account is None:
+            log.debug(f"No own business billing account found for user: {self.id}")
+            return False
+
+        log.debug(
+            f"Own business billing account {business_billing_account.id} found for user: {self.id}"
+        )
+
+        # If there is a pending driver profile then return True.
+        driver_profile_type = business_billing_account.driver_profile_python_type
+        driver_profiles = self.driver_profiles.instance_of(driver_profile_type).filter(
+            ~Q(approved_to_drive=True),
+            submitted_at__isnull=False,
+        )
+        for dp in driver_profiles:
+            log.debug(
+                f"Found appropriate pending driver profile for user {self.id} that is"
+                f"compatible with own billing account: {business_billing_account.id}."
+            )
+            return True
+
+        # Check for approved driver profiles, and if there is one, then check if the
+        # associated billing account is approved too.
+        driver_profiles = self.driver_profiles.instance_of(driver_profile_type).filter(
+            approved_to_drive=True,
+            expires_at__gt=timezone.now(),
+        )
+
+        for dp in driver_profiles:
+            if business_billing_account.approved_at is None:
+                return True
+
+        # If we made it this far then neither the driver profile nor billing accounts are pending approval.
+        log.debug(f"Own business account for user: {self.id} is not pending")
+        return False
+
     def can_make_bookings(self):
         """
         This method can be used to check whether this user has the rights to make
