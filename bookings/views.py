@@ -8,7 +8,7 @@ from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
 from users.decorators import require_complete_user, require_user_can_make_bookings
 
-from .forms import BookingSearchForm, ConfirmBookingForm
+from .forms import BookingSearchForm, ConfirmBookingForm, BookingDetailsForm
 from .models import get_available_vehicles, get_unavailable_vehicles, Booking
 
 log = logging.getLogger(__name__)
@@ -104,42 +104,52 @@ def confirm_booking(request):
     if request.method != "POST":
         return redirect("bookings_search")
 
-    # Also data must be valid as no user entry.
-    form = ConfirmBookingForm(request.POST)
-    if not form.is_valid():
-        log.warning("Invalid form data submitted. This should not happen.")
-        # TODO: Proper error logging here.
-        return redirect("bookings_search")
-
-    if form.cleaned_data["confirmed"]:
-        Booking.create_booking(
-            user=request.user,
-            vehicle=Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
-            start=form.cleaned_data["start"],
-            end=form.cleaned_data["end"],
-        )
-        return redirect("bookings_history")
-
-    confirm_form = ConfirmBookingForm()
-    confirm_form.initial = {
-        "start": form.cleaned_data["start"],
-        "end": form.cleaned_data["end"],
-        "vehicle_id": form.cleaned_data["vehicle_id"],
-        "confirmed": True,
-    }
-
     context = {
         "menu": "new_booking",
-        "start": form.cleaned_data["start"],
-        "end": form.cleaned_data["end"],
-        "vehicle": Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
-        "form": confirm_form,
-        "cost": calculate_booking_cost(
-            request.user,
-            Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
-            form.cleaned_data["start"],
-            form.cleaned_data["end"],
-        ),
     }
+
+    if "confirmed" in request.POST:
+        form = ConfirmBookingForm(request.user, request.POST)
+
+        if form.is_valid():
+            Booking.create_booking(
+                user=request.user,
+                vehicle=Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
+                start=form.cleaned_data["start"],
+                end=form.cleaned_data["end"],
+                billing_account=form.cleaned_data["billing_account"],
+            )
+
+            return redirect("bookings_history")
+
+        context["form"] = form
+
+    else:
+        form = BookingDetailsForm(request.POST)
+        if not form.is_valid():
+            log.warning("Invalid form data submitted. This should not happen.")
+            # TODO: Proper error logging here.
+            return redirect("bookings_search")
+
+        confirm_form = ConfirmBookingForm(request.user)
+        confirm_form.initial = {
+            "start": form.cleaned_data["start"],
+            "end": form.cleaned_data["end"],
+            "vehicle_id": form.cleaned_data["vehicle_id"],
+            "confirmed": True,
+        }
+
+        context["form"] = confirm_form
+
+    context["start"] = form.cleaned_data["start"]
+    context["end"] = form.cleaned_data["end"]
+    context["vehicle"] = Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"])
+
+    context["cost"] = calculate_booking_cost(
+        request.user,
+        Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
+        form.cleaned_data["start"],
+        form.cleaned_data["end"],
+    )
 
     return render(request, "bookings/confirm_booking.html", context)

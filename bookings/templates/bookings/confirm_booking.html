@@ -25,7 +25,7 @@ Confirm Your Booking
     <p class="pt-2 pb-6 text-xl">£{{cost}}</p>
     <form action="#" method="POST">
       {% csrf_token %}
-      {{form}}
+      {{form|crispy}}
       {% include "components/submit-button.html" with label="Confirm Booking" %}
     </form>
 

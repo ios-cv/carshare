@@ -109,7 +109,7 @@ class Booking(models.Model):
         ]
 
     @staticmethod
-    def create_booking(user, vehicle, start, end):
+    def create_booking(user, vehicle, start, end, billing_account):
         reservation_time = DateTimeTZRange(lower=start, upper=end)
         block_time = DateTimeTZRange(
             lower=start, upper=end + timezone.timedelta(minutes=15)
@@ -119,6 +119,7 @@ class Booking(models.Model):
             vehicle=vehicle,
             reservation_time=reservation_time,
             block_time=block_time,
+            billing_account=billing_account,
         )
 
         b.save()

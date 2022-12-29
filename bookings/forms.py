@@ -1,3 +1,5 @@
+import logging
+
 from crispy_forms.bootstrap import InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
@@ -7,7 +9,10 @@ from django.core.exceptions import ValidationError
 from django.forms import widgets
 from django.utils import timezone
 
+from billing.models import BillingAccount
 from hardware.models import VehicleType
+
+log = logging.getLogger(__name__)
 
 
 def gen_start_time(now):
@@ -86,8 +91,38 @@ class BookingSearchForm(forms.Form):
             raise ValidationError("Your booking must be at least 1 hour long.")
 
 
+class BookingDetailsForm(forms.Form):
+    start = forms.DateTimeField(widget=widgets.HiddenInput)
+    end = forms.DateTimeField(widget=widgets.HiddenInput)
+    vehicle_id = forms.IntegerField(widget=widgets.HiddenInput)
+    confirmed = forms.BooleanField(required=False, widget=widgets.HiddenInput)
+
+
+class BillingAccountChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        if obj.account_type == BillingAccount.PERSONAL:
+            return f"{obj.owner.first_name} {obj.owner.last_name} (Personal)"
+        elif obj.account_type == BillingAccount.BUSINESS:
+            return f"{obj.account_name} (Business)"
+        else:
+            log.error("Encountered unknown billing account type: {obj.account_type}")
+            return "**unknown**"
+
+
 class ConfirmBookingForm(forms.Form):
     start = forms.DateTimeField(widget=widgets.HiddenInput)
     end = forms.DateTimeField(widget=widgets.HiddenInput)
     vehicle_id = forms.IntegerField(widget=widgets.HiddenInput)
     confirmed = forms.BooleanField(required=False, widget=widgets.HiddenInput)
+    billing_account = BillingAccountChoiceField(
+        required=True, widget=widgets.Select, queryset=None
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+        # FIXME: This query needs to get owned billing accounts, member billing accounts with rights
+        #        to book, but exclude those where driver profile is invalid, dates would proclude driver
+        #        profile from being valid, or where billing account is invalid.
+        self.fields["billing_account"].queryset = user.owned_billing_accounts
