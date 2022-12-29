@@ -8,8 +8,6 @@ from django.utils import timezone
 
 from bookings.models import Booking
 
-from .pricing import calculate_booking_cost
-
 log = logging.getLogger(__name__)
 
 # TODO: Use Django Settings for this.
