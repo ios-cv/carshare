@@ -3,10 +3,19 @@ import stripe
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils import timezone
 
-from .forms import BusinessBillingAccountForm
-from .models import BillingAccount, get_personal_billing_account_for_user
+from .forms import BusinessBillingAccountForm, InviteMemberForm
+from .models import (
+    BillingAccount,
+    get_personal_billing_account_for_user,
+    BillingAccountMemberInvitation,
+    BillingAccountMember,
+)
 
 log = logging.getLogger(__name__)
 
@@ -68,6 +77,10 @@ def set_payment(request, billing_account):
     billing_account = BillingAccount.objects.get(pk=billing_account)
     user = request.user
 
+    # Security - check this user actually owns the billing account.
+    if billing_account.owner != user:
+        return redirect("users_incomplete")
+
     context = {
         "menu": "billing",
         "billing_account": billing_account,
@@ -128,14 +141,149 @@ def setup_complete(request):
     context = {
         "menu": "billing",
     }
-    # TODO: Only allow the owner of the billing account to do this.
 
     intent = stripe.SetupIntent.retrieve(request.GET["setup_intent"])
     if intent.status == "succeeded":
         billing_account = BillingAccount.by_stripe_customer_id(intent.customer)
+        if billing_account.owner != request.user:
+            # Security - user must own billing account to modify it.
+            return redirect("users_incomplete")
         billing_account.stripe_setup_intent_active = True
         billing_account.save()
 
         return redirect("drivers_create_profile")
 
     return render(request, "billing/setup_complete.html", context)
+
+
+@login_required
+def profile_billing_accounts(request):
+    context = {
+        "menu": "profile",
+        "profile_menu": "billing_accounts",
+        "billing_accounts": request.user.owned_billing_accounts.all(),
+    }
+    return render(request, "billing/profile_billing_accounts.html", context)
+
+
+@login_required
+def profile_manage_members(request, billing_account):
+    context = {
+        "menu": "profile",
+        "profile_menu": "billing_accounts",
+    }
+
+    billing_account = BillingAccount.objects.get(pk=billing_account)
+
+    if billing_account.owner != request.user:
+        # Security, don't allow access to the billing account if the user doesn't own it.
+        return redirect("users_incomplete")
+
+    if request.method == "POST":
+        form = InviteMemberForm(billing_account, request.user, request.POST)
+        if form.is_valid():
+            # TODO: If form is submitted, generate the email to the invited member.
+            invite = form.save()
+
+            email_ctx = {
+                "user": request.user,
+                "billing_account": billing_account,
+                "invite_url": request.build_absolute_uri(
+                    reverse("billing_account_accept_invitation", args=(invite.secret,))
+                ),
+                "signup_url": request.build_absolute_uri(reverse("signup")),
+            }
+            send_mail(
+                "Invitation to join a billing account on GO-EV Car Share",
+                render_to_string(
+                    "billing/emails/billing_account_invite.txt", email_ctx
+                ),
+                "carshare@ioscv.co.uk",
+                [invite.email],
+                fail_silently=False,
+            )
+            form = InviteMemberForm(billing_account, request.user)
+
+    else:
+        form = InviteMemberForm(billing_account, request.user)
+
+    context["form"] = form
+    context["billing_account"] = billing_account
+
+    return render(request, "billing/profile_manage_members.html", context)
+
+
+@login_required
+def profile_revoke_invitation(request, billing_account, invitation):
+    billing_account = BillingAccount.objects.get(pk=billing_account)
+    invitation = BillingAccountMemberInvitation.objects.get(pk=invitation)
+
+    # Authorise user.
+    if not (
+        invitation.inviting_user == request.user
+        or (
+            billing_account.owner == request.user
+            and billing_account == invitation.billing_account
+        )
+    ):
+        # TODO: Redirect somewhere more appropriate
+        return redirect("users_incomplete")
+
+    # TODO: toast to tell user it is done.
+    invitation.delete()
+
+    return redirect("billing_account_members", billing_account=billing_account.id)
+
+
+@login_required
+def profile_remove_member(request, billing_account, member):
+    billing_account = BillingAccount.objects.get(pk=billing_account)
+    member = BillingAccountMember.objects.get(pk=member)
+
+    # Authorise user.
+    if not (
+        billing_account.owner == request.user
+        and billing_account == member.billing_account
+    ):
+        # TODO: Redirect somewhere more appropriate
+        return redirect("users_incomplete")
+
+    # TODO: toast to tell user it is done.
+    member.delete()
+
+    return redirect("billing_account_members", billing_account=billing_account.id)
+
+
+@login_required
+def accept_invitation(request, invitation):
+    try:
+        invitation = BillingAccountMemberInvitation.objects.get(secret=invitation)
+    except:
+        return redirect("users_incomplete")
+
+    if invitation.billing_account.owner == request.user:
+        # TODO: display message to user.
+        return redirect("users_incomplete")
+    else:
+        member = BillingAccountMember()
+
+        member.can_make_bookings = invitation.can_make_bookings
+        member.billing_account = invitation.billing_account
+        member.user = request.user
+        member.created_at = timezone.now()
+        member.updated_at = timezone.now()
+
+        member.save()
+        invitation.delete()
+
+    # TODO: Return to some page in the billing area instead.
+    return redirect("users_incomplete")
+
+
+@login_required
+def profile_other_account_memberships(request):
+    context = {
+        "menu": "profile",
+        "profile_menu": "memberships",
+    }
+    return render(request, "billing/profile_other_account_memberships.html", context)

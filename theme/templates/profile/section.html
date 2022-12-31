@@ -1,0 +1,12 @@
+<a href="{% url url %}"
+  class="{% if name == current %}bg-gray-50 text-teal-600 hover:bg-white{% else %}text-gray-900 hover:text-gray-900 hover:bg-gray-50{% endif %} group rounded-md px-3 py-2 flex items-center text-sm font-medium"
+>
+  <svg class="text-gray-400 group-hover:text-gray-500 flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+       xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+       stroke="currentColor"
+       aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="{{ iconPath }}"/>
+  </svg>
+  <span class="truncate">{{ title }}</span>
+</a>

@@ -31,7 +31,7 @@
               My Bookings
             </a>
 
-            <a href="#"
+            <a href="{% url 'users_profile_my_details' %}"
                class="{% if menu == 'profile' or menu == 'billing' %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                {% if menu == 'profile' or menu == 'billing' %}aria-current="page" {% endif %}
             >

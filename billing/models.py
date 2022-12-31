@@ -105,6 +105,27 @@ class BillingAccount(models.Model):
     def approve(self):
         self.approved_at = timezone.now()
 
+    @property
+    def approved(self):
+        return self.approved_at is not None
+
+    @property
+    def complete(self):
+        return self.stripe_customer_id and (
+            self.stripe_setup_intent_active or self.credit_account
+        )
+
+    @property
+    def display_name(self):
+        if self.account_type == BillingAccount.PERSONAL:
+            return "Personal Billing Account"
+        elif self.account_type == BillingAccount.BUSINESS:
+            return self.account_name
+
+    @property
+    def memberships(self):
+        return BillingAccountMember.objects.filter(billing_account=self.id)
+
 
 def get_personal_billing_account_for_user(user):
     return user.owned_billing_accounts.filter(
@@ -122,12 +143,27 @@ def get_all_pending_approval():
 class BillingAccountMember(models.Model):
     class Meta:
         db_table = "billing_account_member"
+        unique_together = [["billing_account", "user"]]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     billing_account = models.ForeignKey(BillingAccount, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    deleted_at = models.DateTimeField(default=0)
 
     can_make_bookings = models.BooleanField(default=False)
+
+
+class BillingAccountMemberInvitation(models.Model):
+    class Meta:
+        db_table = "billing_account_member_invitation"
+
+    inviting_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    billing_account = models.ForeignKey(
+        BillingAccount, on_delete=models.CASCADE, related_name="invitations"
+    )
+
+    can_make_bookings = models.BooleanField(default=False)
+    email = models.EmailField()
+    secret = models.UUIDField()
+    created_at = models.DateTimeField()

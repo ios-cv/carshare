@@ -72,3 +72,13 @@ def verify_mobile(request):
         "form": form,
     }
     return render(request, "users/verify_mobile.html", context)
+
+
+@login_required
+def profile_my_details(request):
+    context = {
+        "menu": "profile",
+        "profile_menu": "details",
+    }
+
+    return render(request, "users/profile_my_details.html", context)

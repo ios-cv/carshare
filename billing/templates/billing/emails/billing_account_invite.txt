@@ -1,0 +1,24 @@
+{% autoescape off %}
+Hello,
+
+{% if billing_account.account_type == "p" %}
+You have been invited to join {{user.first_name}} {{ user.last_name }}'s billing account on GO-EV car share.
+{% else %}
+You have been invited to join the {{ billing_account.account_name }} billing account on GO-EV Car Share by {{ user.first_name}} {{ user.last_name }}.
+{% endif %}
+
+If you accept this invitation, you will be able to access all vehicle bookings made on this billing account, no matter who booked them.
+
+If you are a member of GO-EV Car Share, you can accept this invitation, by clicking the link below.
+
+{{ invite_url }}
+
+If you are not yet a member, please sign up first at {{ signup_url }} and then use the link above to accept the invitation.
+
+If you are not expecting this email, please disregard it.
+
+Regards,
+
+The GO-EV Car Share Team
+Isles of Scilly Community Venture C.I.C.
+{% endautoescape %}

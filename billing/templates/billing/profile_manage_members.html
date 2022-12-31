@@ -1,0 +1,133 @@
+{% extends "profile_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block profile_content %}
+  <!-- Intro -->
+  <section>
+    <div class="shadow sm:overflow-hidden sm:rounded-md">
+      <div class="bg-white py-6 px-4 sm:p-6">
+        <h2 class="text-lg font-medium leading-6 text-gray-900">{{ billing_account.display_name }} members</h2>
+        <p class="mt-1 text-sm text-gray-500">This section shows a list of all the additional members of your
+          billing account, as well as those who have been invited but not yet joined.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pending Invites -->
+  <section>
+    <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
+      <div class="px-4 sm:px-6">
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Pending invitations</h2>
+      </div>
+      <div class="mt-6 flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div class="overflow-hidden border-t border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date Sent</th>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                {% for invite in billing_account.invitations.all %}
+                  <tr>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                      {{ invite.email }}
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {{ invite.created_at }}
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <a
+                        href="{% url 'billing_account_members_invitation_revoke' billing_account=billing_account.id invitation=invite.id %}"
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Revoke
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Members -->
+  <section>
+    <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
+      <div class="px-4 sm:px-6">
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Members</h2>
+      </div>
+      <div class="mt-6 flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div class="overflow-hidden border-t border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Can make bookings?
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                {% for member in billing_account.memberships %}
+                  <tr>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                      {{ member.user.first_name }} {{ member.user.last_name }}
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {% if member.can_make_bookings %}Yes{% else %}No{% endif %}
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <a
+                        href="{% url 'billing_account_members_remove' billing_account=billing_account.id member=member.id %}"
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Remove
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Invite a member -->
+  <section>
+    <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
+      <div class="px-4 sm:px-6">
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Invite a member</h2>
+      </div>
+      <div class="mt-6">
+        <div class="px-4 sm:px-6 py-4 border-t border-gray-200">
+          <form action="#" method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <p class="text-red-600">Important: as the owner of the billing account, you accept ultimate responsible for all usage of the scheme
+              by members of your billing account. You are responsible for all charges incurred by members of your
+              billing account while driving on bookings made through your billing account, including any surcharges,
+              fines or damage excesses. All members of a billing account can access all bookings that are part of the
+              billing account, no matter who made those bookings.</p>
+            <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+              {% include "components/submit-button.html" with label="Invite" %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

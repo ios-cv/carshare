@@ -1,6 +1,9 @@
-from django import forms
+import uuid
 
-from .models import BillingAccount
+from django import forms
+from django.utils import timezone
+
+from .models import BillingAccount, BillingAccountMemberInvitation
 
 
 class BusinessBillingAccountForm(forms.ModelForm):
@@ -39,6 +42,37 @@ class BusinessBillingAccountForm(forms.ModelForm):
         m.owner = self.owner
         m.account_type = BillingAccount.BUSINESS
         m.driver_profile_type = BillingAccount.FULL
+        if commit:
+            m.save()
+        return m
+
+
+class InviteMemberForm(forms.ModelForm):
+    def __init__(self, billing_account, inviting_user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.billing_account = billing_account
+        self.inviting_user = inviting_user
+
+    class Meta:
+        model = BillingAccountMemberInvitation
+        fields = [
+            "email",
+            "can_make_bookings",
+        ]
+        labels = {"can_make_bookings": "Allow the user to make bookings"}
+        help_texts = {
+            "email": "The email address of the person to invite to join this billing account.",
+            "can_make_bookings": "If selected, the invited user will be allowed to make bookings which"
+            " will be charged to this billing account and can be accessed by all"
+            " members of this billing account.",
+        }
+
+    def save(self, commit=True):
+        m = super().save(commit=False)
+        m.inviting_user = self.inviting_user
+        m.billing_account = self.billing_account
+        m.secret = uuid.uuid4()
+        m.created_at = timezone.now()
         if commit:
             m.save()
         return m

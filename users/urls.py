@@ -26,4 +26,9 @@ urlpatterns = [
         views.verify_mobile,
         name="users_mobile_verify",
     ),
+    path(
+        "/",
+        views.profile_my_details,
+        name="users_profile_my_details",
+    ),
 ]
