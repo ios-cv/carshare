@@ -36,6 +36,7 @@ def env_get_list(variable, default):
 
 
 ALLOWED_HOSTS = env_get_list("ALLOWED_HOSTS", ["localhost", "127.0.0.1"])
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
