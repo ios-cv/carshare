@@ -196,11 +196,11 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
 # Emails
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 2500
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = "carshare@ioscv.co.uk"
-EMAIL_HOST_PASSWORD = ""
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 2500))
+EMAIL_USE_TLS = bool(os.environ.get("EMAIL_USE_TLS", False))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 MEDIA_ROOT = "media/"
