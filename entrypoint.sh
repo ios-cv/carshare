@@ -13,6 +13,9 @@ if [[ "$1" = "app" ]]; then
   rm -rf /usr/src/app/static_root/*
   cp -rf static/* static_root/
 
+  # Run Django migrations
+  python manage.py migrate
+
   # Run the web server.
   echo Launching web app...
   gunicorn -w 3 -b 0.0.0.0:8000 carshare.wsgi --log-file -
