@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def redirect_uri(url):
-    return f"/{settings.MEDIA_PROTECTED_URL}url"
+    return f"/{settings.MEDIA_PROTECTED_URL}{url}"
 
 
 def media(request, url):
