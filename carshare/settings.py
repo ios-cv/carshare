@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "nothing")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", True))
 
 
 def env_get_list(variable, default):
@@ -205,8 +205,9 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "carshare@localhost")
 
-MEDIA_ROOT = "media/"
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "media/")
 MEDIA_URL = "media/"
+MEDIA_PROTECTED_URL = "media_protected/"
 
 # SMS Gateway
 SMS_API_KEY = os.environ.get("SMS_API_KEY", None)

@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -5,6 +8,27 @@ from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 
 from users.models import User
+
+
+def uuid_file_name(file):
+    ext = file.split(".")[-1]
+    return "{}.{}".format(uuid.uuid4(), ext)
+
+
+def licence_front_upload_to(instance, filename):
+    return os.path.join("drivers/profiles/licence_front", uuid_file_name(filename))
+
+
+def licence_back_upload_to(instance, filename):
+    return os.path.join("drivers/profiles/licence_back", uuid_file_name(filename))
+
+
+def licence_selfie_upload_to(instance, filename):
+    return os.path.join("drivers/profiles/licence_selfie", uuid_file_name(filename))
+
+
+def dvla_summary_upload_to(instance, filename):
+    return os.path.join("drivers/profiles/dvla_summary", uuid_file_name(filename))
 
 
 class DriverProfile(PolymorphicModel):
@@ -65,10 +89,14 @@ class FullDriverProfile(DriverProfile):
     licence_expiry_date = models.DateField(null=True, blank=True)
 
     # Licence pictures
-    licence_front = models.ImageField(null=True, blank=True)
-    licence_back = models.ImageField(null=True, blank=True)
+    licence_front = models.ImageField(
+        null=True, blank=True, upload_to=licence_front_upload_to
+    )
+    licence_back = models.ImageField(
+        null=True, blank=True, upload_to=licence_back_upload_to
+    )
     licence_selfie = models.ImageField(
-        null=True, upload_to="drivers/profiles/selfies", blank=True
+        null=True, upload_to=licence_selfie_upload_to, blank=True
     )
 
     # DVLA Check Code
@@ -149,7 +177,9 @@ class FullDriverProfile(DriverProfile):
     )
 
     # ------------------- Final Approvals ---------------------- #
-    dvla_summary = models.FileField(null=True, blank=True)  # Added by staff
+    dvla_summary = models.FileField(
+        null=True, blank=True, upload_to=dvla_summary_upload_to
+    )  # Added by staff
 
     class Meta:
         db_table = "full_driver_profile"

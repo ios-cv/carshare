@@ -31,7 +31,7 @@
   </div>
 
   <script lang="javascript">
-    const stripe = Stripe({{ stripe_public_key }});
+    const stripe = Stripe("{{ stripe_public_key }}");
     const options = {
       clientSecret: '{{ stripe_client_secret }}',
       // Fully customizable with appearance API.

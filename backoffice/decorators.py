@@ -10,7 +10,9 @@ def require_backoffice_access(view_func=None):
     def wrapper_func(request, *args, **kwargs):
         user = request.user
 
-        if user.is_operator:
+        if user.is_anonymous:
+            return redirect("login")
+        elif user.is_operator:
             return view_func(request, *args, **kwargs)
         else:
             return redirect("bookings_history")

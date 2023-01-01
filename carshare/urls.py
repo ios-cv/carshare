@@ -16,7 +16,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+
+from . import views
 
 urlpatterns = [
     path("users/", include("users.urls")),
@@ -29,3 +31,6 @@ urlpatterns = [
     path("backoffice/", include("backoffice.urls")),
     path("", include("public.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if not settings.DEBUG:
+    urlpatterns.append(re_path(rf"^(?P<url>{settings.MEDIA_URL[1:]}.*)/$", views.media))
