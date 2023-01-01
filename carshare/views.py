@@ -8,8 +8,14 @@ from drivers.models import FullDriverProfile
 log = logging.getLogger(__name__)
 
 
-def redirect_uri(url):
-    return f"/{settings.MEDIA_PROTECTED_URL}{url}"
+def nginx_redirect(url):
+    uri = f"/{settings.MEDIA_PROTECTED_URL}{url}"
+    log.debug(f"Telling nginx to serve:{uri}")
+
+    response = HttpResponse()
+    response["X-Accel-Redirect"] = uri
+    response["Content-Type"] = ""
+    return response
 
 
 def media(request, url):
@@ -24,10 +30,7 @@ def media(request, url):
     # Operator or Staff or Super User can see everything.
     if request.user.is_operator or request.user.is_staff or request.user.is_superuser:
         response = HttpResponse()
-        uri = redirect_uri(url)
-        log.debug(f"Telling nginx to serve:{uri}")
-        response["X-Accel-Redirect"] = uri
-        return response
+        return nginx_redirect(url)
 
     # Split the URL into parts.
     parts = url.split("/")
@@ -38,41 +41,27 @@ def media(request, url):
             print("Licence front")
             dp = FullDriverProfile.objects.filter(licence_front=url).first()
             if dp is not None and dp.user == request.user:
-                response = HttpResponse()
-                uri = redirect_uri(url)
-                log.debug(f"Telling nginx to serve:{uri}")
-                response["X-Accel-Redirect"] = uri
-                return response
+                return nginx_redirect(url)
             else:
                 raise Http404
+
         if parts[2] == "licence_back":
             dp = FullDriverProfile.objects.filter(licence_back=url).first()
             if dp is not None and dp.user == request.user:
-                response = HttpResponse()
-                uri = redirect_uri(url)
-                log.debug(f"Telling nginx to serve:{uri}")
-                response["X-Accel-Redirect"] = uri
-                return response
+                return nginx_redirect(url)
             else:
                 raise Http404
+
         if parts[2] == "licence_selfie":
             dp = FullDriverProfile.objects.filter(licence_selfie=url).first()
             if dp is not None and dp.user == request.user:
-                response = HttpResponse()
-                uri = redirect_uri(url)
-                log.debug(f"Telling nginx to serve:{uri}")
-                response["X-Accel-Redirect"] = uri
-                return response
+                return nginx_redirect(url)
             else:
                 raise Http404
 
     # Handle hardware files
     if parts[0] == "hardware":
         # All files within hardware are public.
-        response = HttpResponse()
-        uri = redirect_uri(url)
-        log.debug(f"Telling nginx to serve:{uri}")
-        response["X-Accel-Redirect"] = uri
-        return response
+        return nginx_redirect(url)
 
     raise Http404
