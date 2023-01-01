@@ -1,7 +1,15 @@
+import logging
+
 from django.conf import settings
 from django.http import HttpResponse, Http404
 
 from drivers.models import FullDriverProfile
+
+log = logging.getLogger(__name__)
+
+
+def redirect_uri(url):
+    return f"/{settings.MEDIA_PROTECTED_URL}url"
 
 
 def media(request, url):
@@ -11,12 +19,14 @@ def media(request, url):
     else:
         raise Http404
 
-    print(url)
+    log.debug(f"Media URL requested: {url}")
 
     # Operator or Staff or Super User can see everything.
     if request.user.is_operator or request.user.is_staff or request.user.is_superuser:
         response = HttpResponse()
-        response["X-Accel-Redirect"] = settings.MEDIA_PROTECTED_URL + url
+        uri = redirect_uri(url)
+        log.debug(f"Telling nginx to serve:{uri}")
+        response["X-Accel-Redirect"] = uri
         return response
 
     # Split the URL into parts.
@@ -29,7 +39,9 @@ def media(request, url):
             dp = FullDriverProfile.objects.filter(licence_front=url).first()
             if dp is not None and dp.user == request.user:
                 response = HttpResponse()
-                response["X-Accel-Redirect"] = settings.MEDIA_PROTECTED_URL + url
+                uri = redirect_uri(url)
+                log.debug(f"Telling nginx to serve:{uri}")
+                response["X-Accel-Redirect"] = uri
                 return response
             else:
                 raise Http404
@@ -37,15 +49,19 @@ def media(request, url):
             dp = FullDriverProfile.objects.filter(licence_back=url).first()
             if dp is not None and dp.user == request.user:
                 response = HttpResponse()
-                response["X-Accel-Redirect"] = settings.MEDIA_PROTECTED_URL + url
+                uri = redirect_uri(url)
+                log.debug(f"Telling nginx to serve:{uri}")
+                response["X-Accel-Redirect"] = uri
                 return response
             else:
                 raise Http404
         if parts[2] == "licence_selfie":
-            dp = FullDriverProfile.objects.filter(licence_back=url).first()
+            dp = FullDriverProfile.objects.filter(licence_selfie=url).first()
             if dp is not None and dp.user == request.user:
                 response = HttpResponse()
-                response["X-Accel-Redirect"] = settings.MEDIA_PROTECTED_URL + url
+                uri = redirect_uri(url)
+                log.debug(f"Telling nginx to serve:{uri}")
+                response["X-Accel-Redirect"] = uri
                 return response
             else:
                 raise Http404
@@ -54,7 +70,9 @@ def media(request, url):
     if parts[0] == "hardware":
         # All files within hardware are public.
         response = HttpResponse()
-        response["X-Accel-Redirect"] = settings.MEDIA_PROTECTED_URL + url
+        uri = redirect_uri(url)
+        log.debug(f"Telling nginx to serve:{uri}")
+        response["X-Accel-Redirect"] = uri
         return response
 
     raise Http404
