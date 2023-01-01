@@ -102,11 +102,11 @@ WSGI_APPLICATION = "carshare.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "PASSWORD": "mysecretpassword",
-        "USER": "postgres",
-        "PORT": "5433",
-        "HOST": "localhost",
+        "NAME": os.environ.get("POSTGRES_DB", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "mysecretpassword"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PORT": int(os.environ.get("POSTGRES_PORT", 5433)),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
     },
 }
 
@@ -175,6 +175,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

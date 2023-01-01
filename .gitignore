@@ -6,6 +6,8 @@ db.sqlite3
 crispy_tailwind*
 
 media/
+static/
+!static/.gitkeep
 
 # Symlinks in root
 package.json
