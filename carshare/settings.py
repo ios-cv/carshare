@@ -212,6 +212,7 @@ SMS_API_KEY = os.environ.get("SMS_API_KEY", None)
 
 # Stripe
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", None)
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", None)
 stripe.api_key = STRIPE_API_KEY
 
 # Base URL

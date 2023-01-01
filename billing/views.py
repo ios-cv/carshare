@@ -131,6 +131,7 @@ def set_payment(request, billing_account):
     )
 
     context["stripe_client_secret"] = intent.client_secret
+    context["stripe_public_key"] = settings.STRIPE_PUBLIC_KEY
     context["BASE_URL"] = settings.BASE_URL
 
     return render(request, "billing/set_payment.html", context)

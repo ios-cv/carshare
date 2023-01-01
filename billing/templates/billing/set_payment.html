@@ -31,7 +31,7 @@
   </div>
 
   <script lang="javascript">
-    const stripe = Stripe('pk_test_51Jw6mVKQxBWmKd4CLruzEP8OO4hl0k6FoK4hIPP8dJHxV9DCac1h1Yc4VZEFG0fAhuSYTUbHIay9aRfOTRUepLEL00yX2XUf21');
+    const stripe = Stripe({{ stripe_public_key }});
     const options = {
       clientSecret: '{{ stripe_client_secret }}',
       // Fully customizable with appearance API.
