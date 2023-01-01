@@ -30,7 +30,9 @@ urlpatterns = [
     path("billing/", include("billing.urls")),
     path("backoffice/", include("backoffice.urls")),
     path("", include("public.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
-if not settings.DEBUG:
+if settings.PROTECT_MEDIA:
     urlpatterns.append(re_path(rf"^(?P<url>{settings.MEDIA_URL[1:]}.*)/$", views.media))
+else:
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

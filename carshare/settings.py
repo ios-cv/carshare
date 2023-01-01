@@ -208,6 +208,7 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "carshare@localhost")
 MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "media/")
 MEDIA_URL = "media/"
 MEDIA_PROTECTED_URL = "media_protected/"
+PROTECT_MEDIA = bool(os.environ.get("PROTECT_MEDIA", False))
 
 # SMS Gateway
 SMS_API_KEY = os.environ.get("SMS_API_KEY", None)
