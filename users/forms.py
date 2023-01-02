@@ -70,21 +70,6 @@ class SignupForm(AllAuthSignupForm):
             InlineField("accept"),
         )
 
-    def save(self, request):
-        # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
-        user = super().save(request)
-
-        # TODO: Move this to wherever we create the stripe account in future.
-        # customer = stripe.Customer.create(
-        #    name=f"{user.first_name} {user.last_name}",
-        #    email=user.email,
-        # )
-
-        user.save()
-
-        # Return the originally created user object.
-        return user
-
 
 class AddMobileForm(forms.ModelForm):
     class Meta:
