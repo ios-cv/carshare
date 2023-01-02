@@ -38,7 +38,6 @@ def media(request, url):
     # Handle driver profile files
     if parts[0] == "drivers" and parts[1] == "profiles":
         if parts[2] == "licence_front":
-            print("Licence front")
             dp = FullDriverProfile.objects.filter(licence_front=url).first()
             if dp is not None and dp.user == request.user:
                 return nginx_redirect(url)

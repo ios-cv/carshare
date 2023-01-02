@@ -20,3 +20,13 @@ if [[ "$1" = "app" ]]; then
   echo Launching web app...
   gunicorn -w 3 -b 0.0.0.0:8000 carshare.wsgi --log-file -
 fi
+
+if [[ "$1" = "celery-beat" ]]; then
+  # Run the celery beat
+  python -m celery -A carshare beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+fi
+
+if [[ "$1" = "celery-worker" ]]; then
+  # Run the celery worker
+  python -m celery -A carshare worker -l INFO
+fi

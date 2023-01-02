@@ -226,6 +226,15 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//"
+)
+
+# Some tasks are not truly idempotent or transactional, so if you have the beat running and not
+# the worker, if worker concurrency is greater than one, when the worker starts up again it'll
+# execute the same periodic task simultaneously in multiple workers and things will get a bit
+# weird (duplicate invoices for example...)
+CELERY_WORKER_CONCURRENCY = os.environ.get("CELERY_WORKER_CONCURRENCY", 1)
 
 # Logging
 LOGGING = {
