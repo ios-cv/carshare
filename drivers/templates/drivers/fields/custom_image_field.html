@@ -2,15 +2,15 @@
 
 <div class="pb-6">
   {% if field.label and form_show_labels %}
-  <label for="{{ field.id_for_label }}"
-         class="{% if label_class %}{{ label_class }}{% else %}block text-gray-700 text-sm font-bold mb-2{% endif %}">
-    {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
-  </label>
+    <label for="{{ field.id_for_label }}"
+           class="{% if label_class %}{{ label_class }}{% else %}block text-gray-700 text-sm font-bold mb-2{% endif %}">
+      {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+    </label>
   {% endif %}
 
   <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
        x-data="{
-                preview: '{{field.value}}'.length > 0 ? '/media/{{ field.value }}' : undefined,
+                preview: '{{ field.value }}'.length > 0 ? '/media/{{ field.value }}' : undefined,
                 setPreview(input) {
                     const [file] = input.files;
                     if (file) {
@@ -35,7 +35,7 @@
                  accept=".png,.jpg,.jpeg"
                  x-on:change.debounce="setPreview($el)"/>
         </label>
-        <p class="pl-1"> or drag and drop</p>
+        <!--<p class="pl-1"> or drag and drop</p>-->
       </div>
       <p class="text-xs text-gray-500">PNG or JPG up to 10MB</p>
     </div>
