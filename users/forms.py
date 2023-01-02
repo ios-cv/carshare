@@ -1,4 +1,5 @@
 from django import forms
+from django.urls import reverse
 
 from allauth.account.forms import SignupForm as AllAuthSignupForm
 from allauth.account.forms import LoginForm as AllAuthLoginForm
@@ -10,16 +11,26 @@ from crispy_forms.layout import Layout
 from .models import User
 
 
-class LoginForm(AllAuthLoginForm):
-    accept = forms.BooleanField(
-        label='I accept the <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
+def get_tandc_text():
+    return (
+        'I accept the <a href="'
+        + reverse("public_terms")
+        + '" class="text-blue-600 hover:text-blue-500" target="_blank">'
         "GO-EV Terms and Conditions</a>"
-        ' and <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
-        "Privacy Policy</a>.",
+        ' and <a href="'
+        + reverse("public_privacy")
+        + '" class="text-blue-600 hover:text-blue-500" target="_blank">'
+        "Privacy Policy</a>."
     )
+
+
+class LoginForm(AllAuthLoginForm):
+    accept = forms.BooleanField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields["accept"].label = get_tandc_text()
 
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -40,12 +51,7 @@ class SignupForm(AllAuthSignupForm):
         widget=forms.TextInput(attrs={"placeholder": "Last name"}),
     )
 
-    accept = forms.BooleanField(
-        label='I accept the <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
-        "GO-EV Terms and Conditions</a>"
-        ' and <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
-        "Privacy Policy</a>.",
-    )
+    accept = forms.BooleanField()
 
     field_order = [
         "first_name",
@@ -58,6 +64,8 @@ class SignupForm(AllAuthSignupForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields["accept"].label = get_tandc_text()
 
         self.helper = FormHelper()
         self.helper.form_tag = False

@@ -1,17 +1,23 @@
 <footer class="">
   <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
     <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
+
       <div class="px-5 py-2">
-        <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Privacy Policy </a>
+        <a href="{% url "public_help" %}" target="_blank" class="text-base text-gray-500 hover:text-gray-900"> Help </a>
       </div>
 
       <div class="px-5 py-2">
-        <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Car Share Terms & Conditions </a>
+        <a href="{% url "public_privacy" %}" class="text-base text-gray-500 hover:text-gray-900"> Privacy Policy </a>
       </div>
 
       <div class="px-5 py-2">
-        <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Isles of Scilly Community Venture</a>
+        <a href="{% url "public_terms" %}" class="text-base text-gray-500 hover:text-gray-900"> Car Share Terms & Conditions </a>
       </div>
+
+      <div class="px-5 py-2">
+        <a href="https://www.ioscv.co.uk" target="_blank" class="text-base text-gray-500 hover:text-gray-900"> Isles of Scilly Community Venture</a>
+      </div>
+
     </nav>
 
     <!--

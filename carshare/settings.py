@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "drivers.apps.DriversConfig",
     "hardware.apps.HardwareConfig",
     "public.apps.PublicConfig",
+    "securemedia.apps.SecuremediaConfig",
     "users.apps.UsersConfig",
     "django.contrib.admin",
     "django.contrib.auth",

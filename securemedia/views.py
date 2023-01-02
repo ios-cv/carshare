@@ -29,7 +29,6 @@ def media(request, url):
 
     # Operator or Staff or Super User can see everything.
     if request.user.is_operator or request.user.is_staff or request.user.is_superuser:
-        response = HttpResponse()
         return nginx_redirect(url)
 
     # Split the URL into parts.
