@@ -11,12 +11,21 @@ from .models import User
 
 
 class LoginForm(AllAuthLoginForm):
+    accept = forms.BooleanField(
+        label='I accept the <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
+        "GO-EV Terms and Conditions</a>"
+        ' and <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
+        "Privacy Policy</a>.",
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_tag = False
-        self.helper.layout = Layout("login", "password", InlineField("remember"))
+        self.helper.layout = Layout(
+            "login", "password", InlineField("accept"), InlineField("remember")
+        )
 
 
 class SignupForm(AllAuthSignupForm):
@@ -31,13 +40,35 @@ class SignupForm(AllAuthSignupForm):
         widget=forms.TextInput(attrs={"placeholder": "Last name"}),
     )
 
+    accept = forms.BooleanField(
+        label='I accept the <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
+        "GO-EV Terms and Conditions</a>"
+        ' and <a href="#" class="text-blue-600 hover:text-blue-500" target="_blank">'
+        "Privacy Policy</a>.",
+    )
+
     field_order = [
         "first_name",
         "last_name",
         "email",
         "password1",
         "password2",
+        "accept",
     ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "first_name",
+            "last_name",
+            "email",
+            "password1",
+            "password2",
+            InlineField("accept"),
+        )
 
     def save(self, request):
         # FIXME: Proper error handling / rollback if one part of the chain of actions here fails.
