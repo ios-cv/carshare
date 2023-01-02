@@ -30,7 +30,7 @@ class DriverProfilePart1Form(forms.ModelForm):
             "full_name": "Full legal name",
         }
         help_texts = {
-            "full_name": "Your full legal name as it appears on your driving licence.",
+            "full_name": "Your full legal name.",
             "date_of_birth": "Your date of birth must match that shown on your driving licence.",
             "address_line_1": "Your address and postcode must match that shown on your driving licence.",
         }
