@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from django.db import models
 
 from users.models import User
@@ -94,6 +97,15 @@ class VehicleType(models.Model):
         return f"{self.name} [{self.id}]"
 
 
+def uuid_file_name(file):
+    ext = file.split(".")[-1]
+    return "{}.{}".format(uuid.uuid4(), ext)
+
+
+def vehicle_picture_upload_to(instance, filename):
+    return os.path.join("hardware/vehicles/picture", uuid_file_name(filename))
+
+
 class Vehicle(models.Model):
     """represents an individual vehicle (car, van, etc.) in the fleet"""
 
@@ -127,6 +139,13 @@ class Vehicle(models.Model):
 
     # ETag for the operator_cards list of this vehicle (incremented whenever this is changed)
     operator_cards_etag = models.IntegerField(null=False, default=0)
+
+    # Picture of the vehicle
+    picture = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=vehicle_picture_upload_to,
+    )
 
     class Meta:
         db_table = "vehicle"
