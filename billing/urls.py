@@ -38,7 +38,7 @@ urlpatterns = [
         name="billing_account_accept_invitation",
     ),
     path(
-        "/memberships",
+        "memberships",
         views.profile_other_account_memberships,
         name="billing_accounts_other_memberships",
     ),
