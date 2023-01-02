@@ -33,15 +33,6 @@ def my_bookings(request):
 
 @login_required
 @require_user_can_make_bookings
-def new_booking(request):
-    context = {
-        "menu": "new_booking",
-    }
-    return render(request, "bookings/create.html", context)
-
-
-@login_required
-@require_user_can_make_bookings
 def search(request):
     context = {
         "menu": "new_booking",
