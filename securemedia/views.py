@@ -28,7 +28,11 @@ def media(request, url):
     log.debug(f"Media URL requested: {url}")
 
     # Operator or Staff or Super User can see everything.
-    if request.user.is_operator or request.user.is_staff or request.user.is_superuser:
+    if (
+        (hasattr(request.user, "is_operator") and request.user.is_operator)
+        or request.user.is_staff
+        or request.user.is_superuser
+    ):
         return nginx_redirect(url)
 
     # Split the URL into parts.
@@ -56,6 +60,15 @@ def media(request, url):
                 return nginx_redirect(url)
             else:
                 raise Http404
+
+        if parts[2] == "proof_of_address":
+            dp = FullDriverProfile.objects.filter(proof_of_address=url).first()
+            if dp is not None and dp.user == request.user:
+                return nginx_redirect(url)
+            else:
+                raise Http404
+
+        raise Http404
 
     # Handle hardware files
     if parts[0] == "hardware":

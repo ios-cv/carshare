@@ -31,6 +31,10 @@ def dvla_summary_upload_to(instance, filename):
     return os.path.join("drivers/profiles/dvla_summary", uuid_file_name(filename))
 
 
+def proof_of_address_upload_to(instance, filename):
+    return os.path.join("drivers/profiles/proof_of_address", uuid_file_name(filename))
+
+
 class DriverProfile(PolymorphicModel):
     APPROVED = True
     REJECTED = False
@@ -78,13 +82,10 @@ class FullDriverProfile(DriverProfile):
     country = models.CharField(max_length=255, null=True, blank=True)
 
     # Date of Birth
-    # FIXME: Do we need date of birth field?
     date_of_birth = models.DateField(null=True, blank=True)
 
     # Licence Details
     licence_number = models.CharField(max_length=255, null=True, blank=True)
-    # FIXME: Do we need this place of issue field?
-    licence_place_of_issue = models.CharField(max_length=255, null=True, blank=True)
     licence_issue_date = models.DateField(null=True, blank=True)
     licence_expiry_date = models.DateField(null=True, blank=True)
 
@@ -103,8 +104,9 @@ class FullDriverProfile(DriverProfile):
     licence_check_code = models.CharField(max_length=50, null=True, blank=True)
 
     # Additional proof of Address
-    # FIXME: Do we really need this?
-    # proof_of_address = models.ImageField()
+    proof_of_address = models.ImageField(
+        null=True, upload_to=proof_of_address_upload_to, blank=True
+    )
 
     # --------------------- Field Approvals ---------------------- #
     approved_full_name = models.BooleanField(
@@ -127,13 +129,6 @@ class FullDriverProfile(DriverProfile):
     )
 
     approved_licence_number = models.BooleanField(
-        null=True,
-        blank=True,
-        choices=DriverProfile.APPROVAL_CHOICES,
-        default=DriverProfile.UNCHECKED,
-    )
-    # FIXME: Decide whether to keep or remove this field.
-    approved_licence_place_of_issue = models.BooleanField(
         null=True,
         blank=True,
         choices=DriverProfile.APPROVAL_CHOICES,
@@ -169,6 +164,12 @@ class FullDriverProfile(DriverProfile):
         choices=DriverProfile.APPROVAL_CHOICES,
         default=DriverProfile.UNCHECKED,
     )
+    approved_proof_of_address = models.BooleanField(
+        null=True,
+        blank=True,
+        choices=DriverProfile.APPROVAL_CHOICES,
+        default=DriverProfile.UNCHECKED,
+    )
     approved_driving_record = models.BooleanField(
         null=True,
         blank=True,
@@ -199,6 +200,7 @@ class FullDriverProfile(DriverProfile):
             self.approved_licence_front,
             self.approved_licence_back,
             self.approved_licence_selfie,
+            self.approved_proof_of_address,
             self.approved_driving_record,
         ]
 
@@ -236,6 +238,7 @@ class FullDriverProfile(DriverProfile):
 
     def reset_identity_approvals(self):
         self.approved_licence_selfie = None
+        self.approved_proof_of_address = None
 
     def reset_driving_record_approvals(self):
         self.approved_driving_record = None
@@ -258,7 +261,7 @@ class FullDriverProfile(DriverProfile):
         return self.approved_licence_front and self.approved_licence_back
 
     def is_identity_approved(self):
-        return self.approved_licence_selfie
+        return self.approved_licence_selfie and self.approved_proof_of_address
 
     def is_driving_record_approved(self):
         return self.approved_driving_record

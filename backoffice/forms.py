@@ -59,6 +59,7 @@ class DriverProfileReviewForm(forms.ModelForm):
             CustomImageField("licence_front"),
             CustomImageField("licence_back"),
             CustomImageField("licence_selfie"),
+            CustomImageField("proof_of_address"),
         )
 
         self.helper_documents_approvals = FormHelper()
@@ -67,6 +68,7 @@ class DriverProfileReviewForm(forms.ModelForm):
             InlineRadios("approved_licence_front"),
             InlineRadios("approved_licence_back"),
             InlineRadios("approved_licence_selfie"),
+            InlineRadios("approved_proof_of_address"),
         )
 
         self.helper_driving_record = FormHelper()
@@ -98,6 +100,7 @@ class DriverProfileReviewForm(forms.ModelForm):
             "licence_front",
             "licence_back",
             "licence_selfie",
+            "proof_of_address",
             "licence_check_code",
             "approved_full_name",
             "approved_address",
@@ -108,6 +111,7 @@ class DriverProfileReviewForm(forms.ModelForm):
             "approved_licence_front",
             "approved_licence_back",
             "approved_licence_selfie",
+            "approved_proof_of_address",
             "dvla_summary",
             "approved_driving_record",
         ]

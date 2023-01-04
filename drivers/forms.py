@@ -114,13 +114,22 @@ class DriverProfilePart3Form(forms.ModelForm):
 class DriverProfilePart4Form(forms.ModelForm):
     class Meta:
         model = FullDriverProfile
-        fields = ["licence_selfie"]
+        fields = ["licence_selfie", "proof_of_address"]
+        labels = {
+            "licence_selfie": "Selfie showing you holding your driving licence",
+            "proof_of_address": "Proof of address",
+        }
+        help_texts = {
+            "licence_selfie": "Please provide a selfie holding your driving license, so that we can clearly see your face and the photo on your driving license side by side.",
+            "proof_of_address": "Please upload a picture of an official document that proves your address, such as a bank statement, utility bill or council tax letter.",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             CustomImageField("licence_selfie"),
+            CustomImageField("proof_of_address"),
         )
 
     def save(self, commit=True):

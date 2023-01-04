@@ -13,6 +13,7 @@ class AccountAdapter(DefaultAccountAdapter):
     def get_email_confirmation_url(self, request, emailconfirmation):
         url = reverse("confirm_email", args=[emailconfirmation.key])
         ret = build_absolute_uri(request, url)
+        return ret
 
     def render_mail(self, template_prefix, email, context, headers=None):
         # Fix non-configurable URLs in email templates to go to correct custom URLs.
