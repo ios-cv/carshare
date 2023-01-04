@@ -3,6 +3,8 @@ from django.urls import reverse
 
 from allauth.account.forms import SignupForm as AllAuthSignupForm
 from allauth.account.forms import LoginForm as AllAuthLoginForm
+from allauth.account.forms import ResetPasswordForm as AllAuthResetPasswordForm
+from allauth.account.forms import ResetPasswordKeyForm as AllAuthResetPasswordKeyForm
 
 from crispy_forms.bootstrap import InlineField
 from crispy_forms.helper import FormHelper
@@ -76,6 +78,29 @@ class SignupForm(AllAuthSignupForm):
             "password1",
             "password2",
             InlineField("accept"),
+        )
+
+
+class ResetPasswordForm(AllAuthResetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "email",
+        )
+
+
+class ResetPasswordKeyForm(AllAuthResetPasswordKeyForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "password1",
+            "password2",
         )
 
 

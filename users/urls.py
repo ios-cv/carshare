@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -30,5 +30,23 @@ urlpatterns = [
         "",
         views.profile_my_details,
         name="users_profile_my_details",
+    ),
+    path(
+        "password/reset", views.PasswordResetView.as_view(), name="users_password_reset"
+    ),
+    path(
+        "password/reset/done",
+        views.PasswordResetDoneView.as_view(),
+        name="users_password_reset_done",
+    ),
+    re_path(
+        r"^password/reset/key/(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$",
+        views.PasswordResetFromKeyView.as_view(),
+        name="users_password_reset_key",
+    ),
+    path(
+        r"^password/reset/key/done",
+        views.PasswordResetFromKeyDoneView.as_view(),
+        name="users_password_reset_key_done",
     ),
 ]
