@@ -129,6 +129,7 @@ def confirm_booking(request):
             "vehicle_id": form.cleaned_data["vehicle_id"],
             "confirmed": True,
         }
+        confirm_form.set_billing_accounts(form.cleaned_data["end"])
 
         context["form"] = confirm_form
 

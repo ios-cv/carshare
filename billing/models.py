@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from drivers.models import FullDriverProfile
@@ -167,3 +168,34 @@ class BillingAccountMemberInvitation(models.Model):
     email = models.EmailField()
     secret = models.UUIDField()
     created_at = models.DateTimeField()
+
+
+def get_billing_accounts_suitable_for_booking(user, booking_end):
+    """
+    This function
+    :param user: the user object making the booking
+    :param booking_end: localised datetime representing the booking end.
+    :return: a queryset containing the Billing Accounts that are valid for the user to be
+             allowed to use for this booking.
+    """
+
+    # This query gets all valid billing accounts, across ownership and membership,
+    # that can be used to make a booking by this user, *without* awareness of authority
+    # to drive.
+    # TODO: Make this accessible from the User object somehow.
+    q = BillingAccount.objects.filter(
+        Q(owner=user) | Q(members=user, billingaccountmember__can_make_bookings=True),
+        ~Q(approved_at=None),
+    )
+
+    # Filter the billing account list python side for those where the user has a valid driver
+    # profile of the appropriate type.
+    r = []
+    for ba in q:
+        d = user.has_valid_driver_profile(
+            profile_type=ba.driver_profile_python_type, at=booking_end
+        )
+        if d:
+            r.append(ba)
+
+    return r

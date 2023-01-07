@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.forms import widgets
 from django.utils import timezone
 
-from billing.models import BillingAccount
+from billing.models import BillingAccount, get_billing_accounts_suitable_for_booking
 from hardware.models import VehicleType
 
 log = logging.getLogger(__name__)
@@ -98,31 +98,77 @@ class BookingDetailsForm(forms.Form):
     confirmed = forms.BooleanField(required=False, widget=widgets.HiddenInput)
 
 
-class BillingAccountChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        if obj.account_type == BillingAccount.PERSONAL:
-            return f"{obj.owner.first_name} {obj.owner.last_name} (Personal)"
-        elif obj.account_type == BillingAccount.BUSINESS:
-            return f"{obj.account_name} (Business)"
-        else:
-            log.error("Encountered unknown billing account type: {obj.account_type}")
-            return "**unknown**"
-
-
 class ConfirmBookingForm(forms.Form):
     start = forms.DateTimeField(widget=widgets.HiddenInput)
     end = forms.DateTimeField(widget=widgets.HiddenInput)
     vehicle_id = forms.IntegerField(widget=widgets.HiddenInput)
     confirmed = forms.BooleanField(required=False, widget=widgets.HiddenInput)
-    billing_account = BillingAccountChoiceField(
-        required=True, widget=widgets.Select, queryset=None
-    )
+    billing_account = forms.ChoiceField(required=True, widget=widgets.Select)
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
 
-        # FIXME: This query needs to get owned billing accounts, member billing accounts with rights
-        #        to book, but exclude those where driver profile is invalid, dates would proclude driver
-        #        profile from being valid, or where billing account is invalid.
-        self.fields["billing_account"].queryset = user.owned_billing_accounts
+        if len(args) > 0:
+            self.set_billing_accounts(args[0]["end"])
+
+    def set_billing_accounts(self, end_time):
+        bas = get_billing_accounts_suitable_for_booking(self.user, end_time)
+
+        choice_list = [("", "--------")]
+        for ba in bas:
+            if ba.account_type == BillingAccount.PERSONAL:
+                label = f"{ba.owner.first_name} {ba.owner.last_name} (Personal)"
+            elif ba.account_type == BillingAccount.BUSINESS:
+                label = f"{ba.account_name} (Business)"
+            else:
+                log.error(
+                    "Encountered unknown billing account type: {obj.account_type}"
+                )
+                label = "**unknown**"
+
+            choice_list.append((ba.id, label))
+
+        self.fields["billing_account"].choices = choice_list
+
+    def clean_billing_account(self):
+        ba_id = self.cleaned_data["billing_account"]
+
+        if ba_id == "":
+            raise ValidationError("Please select a billing account for this booking.")
+
+        try:
+            ba = BillingAccount.objects.get(pk=ba_id)
+        except:
+            raise ValidationError(
+                "Please select a billing account you are allowed to make bookings for."
+            )
+
+        return ba
+
+    def clean_start(self):
+        start = self.cleaned_data["start"]
+
+        if start + timezone.timedelta(minutes=5) < timezone.now():
+            raise ValidationError("Your booking must not start in the past.")
+
+        return start
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get("start")
+        end = cleaned_data.get("end")
+        ba = cleaned_data.get("billing_account")
+
+        if start and end and start >= end:
+            raise ValidationError("You must choose an end time after your start time.")
+
+        if start and end and start + timezone.timedelta(hours=1) > end:
+            raise ValidationError("Your booking must be at least 1 hour long.")
+
+        if ba is not None:
+            valid_bas = get_billing_accounts_suitable_for_booking(self.user, end)
+            if ba not in valid_bas:
+                raise ValidationError(
+                    "You must choose a billing account you are allowed to make bookings with."
+                )

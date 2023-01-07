@@ -48,20 +48,31 @@ class User(AbstractUser):
         """
         return self.pending_mobile is not None
 
-    def has_valid_driver_profile(self):
+    def has_valid_driver_profile(self, profile_type=None, at=None):
         """
-        Find out if a user has any kind of currently valid driver profile in place.
-        :return:
+        Find out if a user has a valid driver profile in place, with the optional
+        profile_type and "at" time constraints.
         """
-        for dp in self.driver_profiles.filter(
-            approved_to_drive=True, expires_at__gt=timezone.now()
-        ):
+        log.debug(
+            f"has_valid_driver_profile() called for user: {self.id} with profile_type={profile_type} and at={at}."
+        )
+
+        if at is None:
+            at = timezone.now()
+
+        base = self.driver_profiles
+        if profile_type is not None:
+            base = self.driver_profiles.instance_of(profile_type)
+
+        for dp in base.filter(~Q(approved_at=None), expires_at__gt=at):
             log.debug(
                 f"User {self.id} has valid driver profile {dp} which expires at {dp.expires_at}"
             )
             return True
 
-        log.debug(f"User {self.id} has no valid driver profiles")
+        log.debug(
+            f"User {self.id} has no valid driver profiles matching the specified criteria"
+        )
         return False
 
     def can_drive(self):
