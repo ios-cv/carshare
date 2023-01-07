@@ -11,8 +11,9 @@ db.sqlite3
 
 # Symlinks in root
 /package.json
+/package-lock.json
 /tailwind.config.js
-/node_modules/
+/node_modules
 
 # Build artifacts
 bundle.tar.gz
