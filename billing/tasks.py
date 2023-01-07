@@ -30,6 +30,14 @@ def run_billing():
 
         # TODO: Handle "credit account" billing accounts differently here.
 
+        # Don't bother doing anything on Stripe if the booking has zero cost.
+        # Just mark as billed and return early.
+        if booking.cost == 0:
+            booking.state = Booking.STATE_BILLED
+            booking.stripe_invoice_item_id = item.id
+            booking.save()
+            return
+
         invoice = stripe.Invoice.create(
             customer=booking.billing_account.stripe_customer_id,
             collection_method="charge_automatically",
