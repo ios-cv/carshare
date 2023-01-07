@@ -6,7 +6,11 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from bookings.models import Booking, get_current_booking_for_vehicle
+from bookings.models import (
+    Booking,
+    get_current_booking_for_vehicle,
+    user_can_access_booking,
+)
 
 from .decorators import require_authenticated_box, json_payload
 from .models import Card
@@ -143,7 +147,8 @@ def api_v1_touch(request, box, data):
         if booking is None:
             return JsonResponse({"action": "reject"})
 
-        if card.user != booking.user:
+        # Verify that the user has the right to unlock the booking.
+        if not user_can_access_booking(card.user, booking):
             return JsonResponse({"action": "reject"})
 
         if booking.state in Booking.ALLOW_USER_UNLOCK_STATES:
@@ -164,7 +169,7 @@ def api_v1_touch(request, box, data):
     # Handle the "lock" case for a non-operator.
     else:
         # First up, try and close out the booking that's set as currently active if it belongs to this user.
-        if box.current_booking and card.user == box.current_booking.user:
+        if box.current_booking and user_can_access_booking(card.user, booking):
             box.current_booking.state = Booking.STATE_INACTIVE
             box.current_booking.actual_end_time = timezone.now()
             box.current_booking.save()
@@ -176,7 +181,7 @@ def api_v1_touch(request, box, data):
 
         # Failing that, see if the booking that's supposed to be now can trigger a lock.
         elif booking:
-            if card.user != booking.user:
+            if not user_can_access_booking(card.user, booking):
                 return JsonResponse({"action": "reject"})
             box.locked = True
             box.current_booking = None

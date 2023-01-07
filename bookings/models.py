@@ -221,3 +221,28 @@ def get_current_booking_for_vehicle(vehicle):
         reservation_time__contains=timezone.now(),
         vehicle=vehicle,
     ).first()
+
+
+def user_can_access_booking(user, booking):
+    if not (
+        booking.billing_account.owner == user
+        or booking.billing_account.memembers.contains(user)
+    ):
+        log.debug(
+            f"User {user} does not have access to drive"
+            f"for billing account {booking.billing_account}"
+            f"used by booking {booking}"
+        )
+        return False
+
+    if user.has_valid_driver_profile(
+        profile_type=booking.billing_account.driver_profile_python_type,
+        at=booking.reservation_time.upper,
+    ):
+        return True
+
+    log.debug(
+        f"User {user} does not have access a valid driver profile"
+        f"of type {booking.billing_account.driver_profile_type}"
+        f"to cover until the end of booking {booking}"
+    )
