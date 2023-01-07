@@ -11,7 +11,8 @@ from bookings.models import Booking
 log = logging.getLogger(__name__)
 
 # TODO: Use Django Settings for this.
-TAX_RATE_ID = os.environ.get("STRIPE_VAT_TAX_ID")
+TAX_RATE_ID = os.environ.get("STRIPE_VAT_TAX_RATE_ID")
+TAX_NUMBER_ID = os.environ.get("STRIPE_VAT_NUMBER_ID")
 
 
 @shared_task(name="run_billing")
@@ -38,12 +39,15 @@ def run_billing():
             booking.save()
             return
 
-        invoice = stripe.Invoice.create(
-            customer=booking.billing_account.stripe_customer_id,
-            collection_method="charge_automatically",
-            auto_advance=False,
-            pending_invoice_items_behavior="exclude",
-        )
+        invoice_kwargs = {
+            "customer": booking.billing_account.stripe_customer_id,
+            "collection_method": "charge_automatically",
+            "auto_advance": False,
+            "pending_invoice_items_behavior": "exclude",
+            "account_tax_ids": [TAX_NUMBER_ID],
+        }
+
+        invoice = stripe.Invoice.create(**invoice_kwargs)
 
         (days, hours) = booking.duration
         description = f"GO-EV Car Share: Rental #{booking.id:06d}. ({days} days, {hours:.2f} hours)"

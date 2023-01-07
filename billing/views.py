@@ -102,17 +102,26 @@ def set_payment(request, billing_account):
     elif billing_account.account_type == BillingAccount.BUSINESS:
         # Check if the stripe customer ID is set, and if not, set it.
         if billing_account.stripe_customer_id is None:
-            customer = stripe.Customer.create(
-                name=f"{billing_account.business_name}",
-                email=user.email,
-                address={
+            customer_kwargs = {
+                "name": f"{billing_account.business_name}",
+                "email": user.email,
+                "address": {
                     "line1": billing_account.business_address_line_1,
                     "line2": billing_account.business_address_line_2,
                     "city": billing_account.business_address_line_3,
                     "state": billing_account.business_address_line_4,
                     "postal_code": billing_account.business_postcode,
                 },
-            )
+            }
+
+            if billing_account.business_tax_id is not None:
+                customer_kwargs["tax_id_data"] = [
+                    {
+                        "type": "gb_vat",
+                        "value": billing_account.business_tax_id,
+                    },
+                ]
+            customer = stripe.Customer.create(**customer_kwargs)
 
             billing_account.stripe_customer_id = customer.id
             billing_account.save()
