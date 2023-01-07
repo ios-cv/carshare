@@ -11,23 +11,42 @@
       </div>
 
       <div class="px-5 py-2">
-        <a href="{% url "public_terms" %}" class="text-base text-gray-500 hover:text-gray-900"> Car Share Terms & Conditions </a>
+        <a href="{% url "public_terms" %}" class="text-base text-gray-500 hover:text-gray-900"> Car Share Terms &
+          Conditions </a>
       </div>
 
       <div class="px-5 py-2">
-        <a href="https://www.ioscv.co.uk" target="_blank" class="text-base text-gray-500 hover:text-gray-900"> Isles of Scilly Community Venture</a>
+        <a href="https://www.ioscv.co.uk" target="_blank" class="text-base text-gray-500 hover:text-gray-900"> Isles of
+          Scilly Community Venture</a>
       </div>
 
     </nav>
 
-    <div class="my-8 flex flex-wrap justify-center space-x-6">
-      <img src="/static/erdf-logo.png" class="my-2 h-12"/>
-      <img src="/static/hmg-logo.png" class="my-2 h-12"/>
-      <img src="/static/lep-logo.png" class="my-2 h-12"/>
-    </div>
+    {% if user.is_authenticated %}
+      <div class="max-w-7xl mx-auto pt-8 px-4 overflow-hidden sm:px-6 lg:px-8 font-medium">
+        <div class="-mx-5 -my-2 flex flex-wrap justify-center">
+        <div class="px-5 py-2">
+          <a href="mailto:carshare@ioscv.co.uk" target="_blank" class="text-base text-gray-500 hover:text-gray-900">carshare@ioscv.co.uk</a>
+        </div>
+        <div class="px-5 py-2">
+          <a href="tel:+447340558351" target="_blank" class="text-base text-gray-500 hover:text-gray-900">07340 558
+            351</a>
+        </div>
+      </div>
+      </div>
+    {% endif %}
 
-    <p class="text-xs sm:text-sm text-center text-gray-400">&copy; 2022 Isles of Scilly Community Venture C.I.C. All rights reserved.</p>
-    <p class="text-xs sm:text-sm mt-4 text-center text-gray-400">Isles of Scilly Community Venture C.I.C. is a Community Interest Company registered in England and Wales.</p>
-    <p class="text-xs sm:text-sm text-center text-gray-400">Registered number: 10836250. Registered office: Porthmellon Enterprise Centre, Porthmellon, St Mary's, Isles of Scilly, TR21 0JY.</p>
+  <div class="my-8 flex flex-wrap justify-center space-x-6">
+    <img src="/static/erdf-logo.png" class="my-2 h-12"/>
+    <img src="/static/hmg-logo.png" class="my-2 h-12"/>
+    <img src="/static/lep-logo.png" class="my-2 h-12"/>
+  </div>
+
+  <p class="text-xs sm:text-sm text-center text-gray-400">&copy; 2022 Isles of Scilly Community Venture C.I.C. All
+    rights reserved.</p>
+  <p class="text-xs sm:text-sm mt-4 text-center text-gray-400">Isles of Scilly Community Venture C.I.C. is a Community
+    Interest Company registered in England and Wales.</p>
+  <p class="text-xs sm:text-sm text-center text-gray-400">Registered number: 10836250. Registered office: Porthmellon
+    Enterprise Centre, Porthmellon, St Mary's, Isles of Scilly, TR21 0JY.</p>
   </div>
 </footer>
