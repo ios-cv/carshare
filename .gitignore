@@ -3,16 +3,16 @@
 __pycache__
 .idea/
 db.sqlite3
-crispy_tailwind*
+/crispy_tailwind*
 
-media/
-static/
-!static/.gitkeep
+/media/
+/static/
+/!static/.gitkeep
 
 # Symlinks in root
-package.json
-tailwind.config.js
-node_modules/
+/package.json
+/tailwind.config.js
+/node_modules/
 
 # Build artifacts
 bundle.tar.gz
