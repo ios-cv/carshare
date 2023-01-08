@@ -14,6 +14,8 @@ from hardware.models import VehicleType
 
 log = logging.getLogger(__name__)
 
+MIN_BOOKING_LENGTH_MINS = 30
+
 
 def gen_start_time(now):
     minutes = now.minute - (now.minute % 5)
@@ -87,8 +89,12 @@ class BookingSearchForm(forms.Form):
         if start and end and start >= end:
             raise ValidationError("You must choose an end time after your start time.")
 
-        if start and end and start + timezone.timedelta(hours=1) > end:
-            raise ValidationError("Your booking must be at least 1 hour long.")
+        if (
+            start
+            and end
+            and start + timezone.timedelta(minutes=MIN_BOOKING_LENGTH_MINS) > end
+        ):
+            raise ValidationError("Your booking must be at least 30 minutes long.")
 
 
 class BookingDetailsForm(forms.Form):
@@ -163,8 +169,12 @@ class ConfirmBookingForm(forms.Form):
         if start and end and start >= end:
             raise ValidationError("You must choose an end time after your start time.")
 
-        if start and end and start + timezone.timedelta(hours=1) > end:
-            raise ValidationError("Your booking must be at least 1 hour long.")
+        if (
+            start
+            and end
+            and start + timezone.timedelta(minutes=MIN_BOOKING_LENGTH_MINS) > end
+        ):
+            raise ValidationError("Your booking must be at least 30 minutes long.")
 
         if ba is not None:
             valid_bas = get_billing_accounts_suitable_for_booking(self.user, end)
