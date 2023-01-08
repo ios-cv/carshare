@@ -208,7 +208,7 @@ def profile_manage_members(request, billing_account):
                 render_to_string(
                     "billing/emails/billing_account_invite.txt", email_ctx
                 ),
-                "carshare@ioscv.co.uk",
+                None,
                 [invite.email],
                 fail_silently=False,
             )
