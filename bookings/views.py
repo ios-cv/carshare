@@ -9,7 +9,12 @@ from hardware.models import Vehicle
 from users.decorators import require_complete_user, require_user_can_make_bookings
 
 from .forms import BookingSearchForm, ConfirmBookingForm, BookingDetailsForm
-from .models import get_available_vehicles, get_unavailable_vehicles, Booking
+from .models import (
+    get_available_vehicles,
+    get_unavailable_vehicles,
+    Booking,
+    POLICY_CANCELLATION_CUTOFF_HOURS,
+)
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +32,7 @@ def my_bookings(request):
             "-reservation_time"
         ),
         "menu": "my_bookings",
+        "cancel_cutoff": POLICY_CANCELLATION_CUTOFF_HOURS,
     }
     return render(request, "bookings/history.html", context)
 
@@ -145,3 +151,19 @@ def confirm_booking(request):
     )
 
     return render(request, "bookings/confirm_booking.html", context)
+
+
+@login_required
+@require_user_can_make_bookings
+def cancel(request, booking):
+    booking = Booking.objects.get(pk=booking)
+
+    if not booking.can_be_modified_by_user(request.user):
+        # Tell user they don't have permission.
+        return redirect("bookings_history")
+
+    # Actually cancel the booking.
+    booking.state = Booking.STATE_CANCELLED
+    booking.save()
+
+    return redirect("bookings_history")

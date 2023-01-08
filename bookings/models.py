@@ -20,6 +20,8 @@ from users.models import User
 
 log = logging.getLogger(__name__)
 
+POLICY_CANCELLATION_CUTOFF_HOURS = 3
+
 
 class TsTzRange(Func, ABC):
     function = "TSTZRANGE"
@@ -154,6 +156,25 @@ class Booking(models.Model):
             self.reservation_time.upper,
         )
 
+    def can_be_modified_by_user(self, user):
+        """Returns whether the provided user is allowed to modify (edit/cancel/etc) this booking."""
+
+        # User made the booking.
+        if self.user == user:
+            return True
+
+        # User owns the billing account that made the booking.
+        if user == self.billing_account.owner:
+            return True
+
+        # User is a member with "can_make_bookings" permission on the billing account.
+        if user not in self.billing_account.members.all():
+            return False
+
+        for member in self.billing_account.billingaccountmember_set.all():
+            if member.user == user:
+                return member.can_make_bookings
+
 
 def get_available_vehicles(start, end, vehicle_types):
     return Vehicle.objects.exclude(
@@ -224,6 +245,7 @@ def get_current_booking_for_vehicle(vehicle):
 
 
 def user_can_access_booking(user, booking):
+    """Returns whether the user should be allowed to access the vehicle for this booking."""
     if not (
         booking.billing_account.owner == user
         or booking.billing_account.memembers.contains(user)

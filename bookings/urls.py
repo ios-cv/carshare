@@ -7,4 +7,5 @@ urlpatterns = [
     path("history/", views.my_bookings, name="bookings_history"),
     path("search/", views.search, name="bookings_search"),
     path("confirm_booking/", views.confirm_booking, name="bookings_confirm"),
+    path("cancel/<int:booking>", views.cancel, name="bookings_cancel"),
 ]

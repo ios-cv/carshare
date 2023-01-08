@@ -175,7 +175,7 @@ def get_billing_accounts_suitable_for_booking(user, booking_end):
     This function
     :param user: the user object making the booking
     :param booking_end: localised datetime representing the booking end.
-    :return: a queryset containing the Billing Accounts that are valid for the user to be
+    :return: a **list** containing the Billing Accounts that are valid for the user to be
              allowed to use for this booking.
     """
 
