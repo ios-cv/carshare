@@ -1,4 +1,6 @@
+import binascii
 import logging
+import struct
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
@@ -16,6 +18,10 @@ from .decorators import require_authenticated_box, json_payload
 from .models import Card
 
 log = logging.getLogger(__name__)
+
+
+def parse_card_id(card_id):
+    return struct.unpack("<i", binascii.unhexlify(card_id))[0]
 
 
 @csrf_exempt
@@ -73,7 +79,7 @@ def api_v1_touch(request, box, data):
 
     # Parse the card_id
     try:
-        card_id = int(card_id, base=16)
+        card_id = parse_card_id(card_id)
     except ValueError:
         log.info("unable to parse card_id as hex encoded integer")
         return JsonResponse(
