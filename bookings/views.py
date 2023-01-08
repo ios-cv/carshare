@@ -1,5 +1,6 @@
 import logging
 
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.datastructures import MultiValueDict
@@ -8,7 +9,12 @@ from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
 from users.decorators import require_complete_user, require_user_can_make_bookings
 
-from .forms import BookingSearchForm, ConfirmBookingForm, BookingDetailsForm
+from .forms import (
+    BookingSearchForm,
+    ConfirmBookingForm,
+    BookingDetailsForm,
+    EditBookingForm,
+)
 from .models import (
     get_available_vehicles,
     get_unavailable_vehicles,
@@ -159,11 +165,52 @@ def cancel(request, booking):
     booking = Booking.objects.get(pk=booking)
 
     if not booking.can_be_modified_by_user(request.user):
-        # Tell user they don't have permission.
+        # TODO: Tell user they don't have permission.
         return redirect("bookings_history")
+
+    # TODO: Record a charge to the user if cancellation is within policy window.
 
     # Actually cancel the booking.
     booking.state = Booking.STATE_CANCELLED
     booking.save()
 
     return redirect("bookings_history")
+
+
+@login_required
+@require_user_can_make_bookings
+def edit(request, booking):
+    booking = Booking.objects.get(pk=booking)
+
+    if not booking.can_be_modified_by_user(request.user):
+        # TODO: Tell user they don't have permission.
+        return redirect("bookings_history")
+
+    if request.method == "POST":
+        form = EditBookingForm(booking, request.POST)
+
+        if form.is_valid():
+            # TODO: If edit is within policy window, record a charge to user.
+
+            booking.update_times(form.cleaned_data["start"], form.cleaned_data["end"])
+            try:
+                booking.save()
+                # TODO: Tell the user the booking was changed.
+                return redirect("bookings_history")
+            except IntegrityError:
+                form.add_error(
+                    None,
+                    "Your booking could not be changed because the vehicle is not available then.",
+                )
+
+    else:
+        form = EditBookingForm(booking)
+
+    context = {
+        "menu": "my_bookings",
+        "booking": booking,
+        "cancel_cutoff": POLICY_CANCELLATION_CUTOFF_HOURS,
+        "form": form,
+    }
+
+    return render(request, "bookings/edit.html", context)

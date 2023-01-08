@@ -12,6 +12,8 @@ from django.utils import timezone
 from billing.models import BillingAccount, get_billing_accounts_suitable_for_booking
 from hardware.models import VehicleType
 
+from .models import Booking
+
 log = logging.getLogger(__name__)
 
 MIN_BOOKING_LENGTH_MINS = 30
@@ -186,3 +188,66 @@ class ConfirmBookingForm(forms.Form):
                 raise ValidationError(
                     "You must choose a billing account you are allowed to make bookings with."
                 )
+
+
+class EditBookingForm(forms.Form):
+    start = forms.SplitDateTimeField(
+        label="Start time",
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+    end = forms.SplitDateTimeField(
+        label="End time",
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+
+    def __init__(self, booking, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.booking = booking
+        self.fields["start"].initial = booking.reservation_time.lower
+        self.fields["end"].initial = booking.reservation_time.upper
+
+    def clean_start(self):
+        start = self.cleaned_data["start"]
+
+        now = timezone.now()
+
+        if (
+            now >= self.booking.reservation_time.lower
+            and start != self.booking.reservation_time.lower
+        ):
+            raise ValidationError(
+                "You can't change the start time of a booking that has already started."
+            )
+
+        if (
+            start + timezone.timedelta(minutes=5) < timezone.now()
+            and start != self.booking.reservation_time.lower
+        ):
+            raise ValidationError("Your booking must not start in the past.")
+
+        return start
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get("start")
+        end = cleaned_data.get("end")
+
+        if start and end and start >= end:
+            raise ValidationError("You must choose an end time after your start time.")
+
+        if (
+            start
+            and end
+            and start + timezone.timedelta(minutes=MIN_BOOKING_LENGTH_MINS) > end
+        ):
+            raise ValidationError("Your booking must be at least 30 minutes long.")

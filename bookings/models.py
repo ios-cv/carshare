@@ -21,6 +21,7 @@ from users.models import User
 log = logging.getLogger(__name__)
 
 POLICY_CANCELLATION_CUTOFF_HOURS = 3
+POLICY_BUFFER_TIME = 30
 
 
 class TsTzRange(Func, ABC):
@@ -114,7 +115,7 @@ class Booking(models.Model):
     def create_booking(user, vehicle, start, end, billing_account):
         reservation_time = DateTimeTZRange(lower=start, upper=end)
         block_time = DateTimeTZRange(
-            lower=start, upper=end + timezone.timedelta(minutes=15)
+            lower=start, upper=end + timezone.timedelta(minutes=POLICY_BUFFER_TIME)
         )
         b = Booking(
             user=user,
@@ -125,6 +126,12 @@ class Booking(models.Model):
         )
 
         b.save()
+
+    def update_times(self, start, end):
+        self.reservation_time = DateTimeTZRange(lower=start, upper=end)
+        self.block_time = DateTimeTZRange(
+            lower=start, upper=end + timezone.timedelta(minutes=POLICY_BUFFER_TIME)
+        )
 
     def reservation_ended(self):
         return timezone.now() > self.reservation_time.upper
@@ -221,14 +228,16 @@ def get_unavailable_vehicles(start, end, vehicle_types):
         bf = bookings.first()
         # FIXME: Hardcoded block time window.
         print(
-            f"Available before {bf.block_time.lower - timezone.timedelta(minutes=15)}"
+            f"Available before {bf.block_time.lower - timezone.timedelta(minutes=POLICY_BUFFER_TIME)}"
         )
 
         bl = bookings.last()
         print(f"Available after {bl.block_time.upper}")
 
         # FIXME: Hardcoded block time window.
-        v.available_before = bf.block_time.lower - timezone.timedelta(minutes=15)
+        v.available_before = bf.block_time.lower - timezone.timedelta(
+            minutes=POLICY_BUFFER_TIME
+        )
         v.available_after = bl.block_time.upper
 
         results.append(v)

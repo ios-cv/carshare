@@ -1,0 +1,53 @@
+{% extends "portal_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block portal_header_text %}
+  Edit booking
+{% endblock %}
+
+{% block portal_content %}
+  <div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+
+      <div class="flex items-center space-x-3">
+        <p class="text-2xl font-bold">{{ booking.vehicle.name }}</p>
+        <p class="text-lg text-gray-900 font-extrabold">
+          <span class="bg-yellow-300 rounded px-4">{{ booking.vehicle.registration }}</span>
+        </p>
+      </div>
+      <p class="text-md">{{ booking.vehicle.description }}</p>
+      <div class="py-2">
+        <p><span class="font-bold">Start:</span> {{ booking.reservation_time.lower|date:"H:i - l j N Y" }}</p>
+        <p><span class="font-bold">End:</span> {{ booking.reservation_time.upper|date:"H:i - l j N Y" }}</p>
+        <p class="py-2  flex items-center"><span class="font-bold">Location:</span>
+          {% if booking.vehicle.bay.station.location %}
+            <a href="{{ booking.vehicle.bay.station.location }}" target="_blank"
+               class="hover:underline  flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clip-rule="evenodd"/>
+              </svg>
+              {{ booking.vehicle.bay.station.name }}
+            </a>
+          {% else %}
+            {{ booking.vehicle.bay.station.name }}
+          {% endif %}
+        </p>
+      </div>
+      <p class="pb-6 text-md border-b border-gray-200"><span class="font-bold">Original rental cost:</span>
+        £{{ booking.cost }}</p>
+
+      <p class="font-bold pt-6">Make Changes</p>
+      <form action="#" method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <p class="text-sm text-red-500 pb-4">If you are shortening or postponing a booking that starts within the
+          next {{ cancel_cutoff }} hours, you may still be charged.</p>
+        {% include "components/submit-button.html" with label="Edit Booking" %}
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
