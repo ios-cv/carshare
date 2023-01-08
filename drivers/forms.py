@@ -29,11 +29,6 @@ class DriverProfilePart1Form(forms.ModelForm):
         labels = {
             "full_name": "Full legal name",
         }
-        help_texts = {
-            "full_name": "Your full legal name.",
-            "date_of_birth": "Your date of birth must match that shown on your driving licence.",
-            "address_line_1": "Your address and postcode must match that shown on your driving licence.",
-        }
         widgets = {
             "date_of_birth": forms.widgets.DateInput(
                 attrs={"type": "date"},
@@ -59,7 +54,7 @@ class DriverProfilePart2Form(forms.ModelForm):
             "licence_expiry_date": "Driving licence date of expiry",
         }
         help_texts = {
-            "licence_number": "This is a mixture of letters and numbers, 18 characters in length and shown on the front of your driving license. Please enter it without any spaces.",
+            "licence_number": "This is a mixture of letters and numbers, 18 characters in length and shown on the front of your driving licence. Please enter it without any spaces.",
             "licence_issue_date": "This is shown on the front of your driving licence.",
             "licence_expiry_date": "This is shown on the front of your driving licence.",
         }
@@ -120,7 +115,7 @@ class DriverProfilePart4Form(forms.ModelForm):
             "proof_of_address": "Proof of address",
         }
         help_texts = {
-            "licence_selfie": "Please provide a selfie holding your driving license, so that we can clearly see your face and the photo on your driving license side by side.",
+            "licence_selfie": "Please provide a selfie holding your driving licence, so that we can clearly see your face and the photo on your driving licence side by side.",
             "proof_of_address": "Please upload a picture of an official document that proves your address, such as a bank statement, utility bill or council tax letter.",
         }
 

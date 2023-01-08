@@ -12,7 +12,7 @@
         <div class="px-4 py-5 sm:p-6">
           <p>
             Welcome to GO-EV Car Share. Before you can start booking vehicles,
-            we need you to confirm your mobile number and create a personal or business driving account.
+            we need you to confirm your mobile number and create a personal and/or business account.
           </p>
         </div>
       </div>
@@ -30,9 +30,8 @@
             {% if not user.has_validated_mobile %}
               <div class="max-w-xl text-sm text-gray-500">
                 <p>
-                  We need to hold your confirmed mobile number in order to alert your to problems with your bookings or
-                  to
-                  contact you in the event of emergencies or incidents.
+                  We need to hold your confirmed mobile number in order to alert you to problems
+                  with your bookings or to contact you in the event of emergencies or incidents.
                 </p>
               </div>
               <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
@@ -69,9 +68,8 @@
             {% if not user.is_own_personal_account_validated and not user.is_own_personal_account_pending_validation %}
               <div class="max-w-xl text-sm text-gray-500">
                 <p>
-                  If you are resident on the Isles of Scilly and wish to drive GO-EV vehicles,
-                  or are a visiting employee or contractor who will be paying individually for
-                  your vehicle hire, please create a "personal" account.
+                  If you are resident on the Isles of Scilly and wish to drive GO-EV vehicles
+                  for your own use please create a "personal" account.
                 </p>
               </div>
               <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
@@ -105,7 +103,7 @@
               <div class="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button type="button" disabled
                         class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-300 sm:text-sm">
-                  Create driving account
+                  Create personal account
                 </button>
               </div>
             {% endif %}
@@ -122,7 +120,7 @@
             {% if not user.is_own_business_account_validated and not user.is_own_business_account_pending_validation %}
               <div class="max-w-xl text-sm text-gray-500">
                 <p>
-                  If you run a business on or serving the Isles of Scilly and you or your staff
+                  If you run a business on (or serving) the Isles of Scilly and you (or your staff)
                   would like to hire GO-EV vehicles on behalf of your business, please create a
                   "business" account.
                 </p>
