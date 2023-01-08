@@ -2,6 +2,8 @@ import re
 
 from allauth.utils import build_absolute_uri
 from allauth.account.adapter import DefaultAccountAdapter
+
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
@@ -32,5 +34,11 @@ class AccountAdapter(DefaultAccountAdapter):
                     "users_password_reset_key", kwargs={"key": key, "uidb36": uidb36}
                 ),
             )
+
+        # Set the REPLY-TO header on all emails.
+        if settings.DEFAULT_REPLY_TO_EMAIL is not None:
+            if headers is None:
+                headers = {}
+            headers["Reply-To"] = settings.DEFAULT_REPLY_TO_EMAIL
 
         return super().render_mail(template_prefix, email, context, headers)

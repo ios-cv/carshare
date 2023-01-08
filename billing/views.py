@@ -3,7 +3,7 @@ import stripe
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -203,15 +203,18 @@ def profile_manage_members(request, billing_account):
                 ),
                 "signup_url": request.build_absolute_uri(reverse("signup")),
             }
-            send_mail(
+            email = EmailMessage(
                 "Invitation to join a billing account on GO-EV Car Share",
                 render_to_string(
                     "billing/emails/billing_account_invite.txt", email_ctx
                 ),
                 None,
                 [invite.email],
-                fail_silently=False,
+                reply_to=None
+                if settings.DEFAULT_REPLY_TO_EMAIL is None
+                else [settings.DEFAULT_REPLY_TO_EMAIL],
             )
+            email.send(fail_silently=False)
             form = InviteMemberForm(billing_account, request.user)
 
     else:
