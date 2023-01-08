@@ -24,10 +24,14 @@
         <p class="text-lg text-gray-900 font-extrabold">
           <span class="bg-yellow-300 rounded px-4">{{ booking.vehicle.registration }}</span>
         </p>
-        <span
-          class="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">{{ booking.vehicle.vehicle_type.name }}</span>
+        {% if not booking.cancelled and not booking.reservation_ended %}
+          <span
+            class="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-md font-medium bg-green-100 rounded-full">&pound;{{ booking.cost }}
+        </span>
+        {% endif %}
       </div>
-      <p class="mt-1 text-gray-500 text-sm truncate"><strong>Location:</strong> {{ booking.vehicle.bay.station.name }}</p>
+      <p class="mt-1 text-gray-500 text-sm truncate"><strong>Location:</strong> {{ booking.vehicle.bay.station.name }}
+      </p>
       <p class="mt-1 text-gray-500 text-sm truncate">
         <strong>Start:</strong> {{ booking.reservation_time.lower|date:"H:i - l j N Y" }}</p>
       <p class="mt-1 text-gray-500 text-sm truncate">

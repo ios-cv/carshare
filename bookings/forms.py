@@ -109,7 +109,11 @@ class ConfirmBookingForm(forms.Form):
     end = forms.DateTimeField(widget=widgets.HiddenInput)
     vehicle_id = forms.IntegerField(widget=widgets.HiddenInput)
     confirmed = forms.BooleanField(required=False, widget=widgets.HiddenInput)
-    billing_account = forms.ChoiceField(required=True, widget=widgets.Select)
+    billing_account = forms.ChoiceField(
+        required=True,
+        widget=widgets.Select,
+        label="Select which billing account to charge this booking to:",
+    )
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)

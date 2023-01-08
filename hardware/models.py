@@ -63,6 +63,7 @@ class Box(models.Model):
 class Station(models.Model):
     # The name of the station.
     name = models.CharField(max_length=100)
+    location = models.URLField(null=True, blank=True)
 
     class Meta:
         db_table = "station"
@@ -89,6 +90,7 @@ class VehicleType(models.Model):
     """represents the different types of vehicle"""
 
     name = models.CharField(max_length=36)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = "vehicle_type"
@@ -146,6 +148,9 @@ class Vehicle(models.Model):
         blank=True,
         upload_to=vehicle_picture_upload_to,
     )
+
+    # A brief description of the vehicle
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = "vehicle"
