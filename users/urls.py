@@ -45,7 +45,7 @@ urlpatterns = [
         name="users_password_reset_key",
     ),
     path(
-        r"^password/reset/key/done",
+        "password/reset/key/done",
         views.PasswordResetFromKeyDoneView.as_view(),
         name="users_password_reset_key_done",
     ),
