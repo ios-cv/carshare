@@ -287,6 +287,22 @@ class FullDriverProfile(DriverProfile):
         if DriverProfile.REJECTED in self.approval_fields:
             return True
 
+    def get_max_permitted_expiry_date(self):
+        """
+        Applies policy to the driver profile details to calculate the latest permitted expiry date of this profile
+        if it is being approved for driving now.
+        :return: the max permitted expiry date.
+        """
+        # TODO: look at date of birth and enforce a maximum age.
+        return min(
+            timezone.datetime.combine(
+                self.licence_expiry_date,
+                timezone.datetime.max.time(),
+                timezone.utc,
+            ),
+            timezone.now() + timezone.timedelta(days=365),
+        )
+
 
 def get_all_pending_approval():
     """Returns a QuerySet encapsulating all the driver profiles that currently need operator approval."""

@@ -1,3 +1,5 @@
+import logging
+
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
@@ -14,6 +16,8 @@ from .forms import (
 )
 from .models import FullDriverProfile
 
+log = logging.getLogger(__name__)
+
 
 @login_required
 def create_profile(request):
@@ -25,14 +29,20 @@ def create_profile(request):
     if len(valid_driver_profiles) > 0:
         # We have a valid driver profile.
         valid_driver_profile = valid_driver_profiles[0]
+        log.debug(
+            f"Found a valid driver profile {valid_driver_profile} for user {request.user}"
+            f"expiring at {valid_driver_profile.expires_at}"
+        )
 
-        if valid_driver_profile.expires_at < timezone.now() + timedelta(days=90):
+        if valid_driver_profile.expires_at > timezone.now() + timedelta(days=60):
             # Expires in more than 90 days. The user isn't allowed to access this area.
             # TODO: Maybe explain to them rather than just a blind redirect???
             print(
                 "User already has a driver profile that's valid for plenty of time. Redirecting."
             )
             return redirect("bookings_home")
+        else:
+            log.debug("Driver profile expires soon, so allow user to create a new one.")
 
     # Find out if there is an incomplete driver profile.
     incomplete_driver_profile = FullDriverProfile.get_incomplete_driver_profile(

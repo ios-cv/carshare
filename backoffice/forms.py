@@ -159,16 +159,10 @@ class DriverProfileApprovalForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.driver_profile = driver_profile
 
-        self.fields["expiry"].initial = min(
-            timezone.datetime.combine(
-                driver_profile.licence_expiry_date,
-                timezone.datetime.max.time(),
-                timezone.utc,
-            ),
-            timezone.now() + timezone.timedelta(days=365),
-        )
+        self.fields["expiry"].initial = driver_profile.get_max_permitted_expiry_date()
 
     def clean_expiry(self):
+        # TODO: incorporate this validation with the function above that's been moved to the driver profile for reuse.
         expiry = self.cleaned_data["expiry"]
 
         if expiry > self.driver_profile.licence_expiry_date:

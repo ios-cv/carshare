@@ -10,7 +10,7 @@ def require_incomplete_user(view_func=None):
     def wrapper_func(request, *args, **kwargs):
         user = request.user
 
-        if user.can_drive() or user.can_make_bookings():
+        if user.can_drive() and user.can_make_bookings():
             return redirect("bookings_history")
         else:
             return view_func(request, *args, **kwargs)
