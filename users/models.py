@@ -296,11 +296,35 @@ class User(AbstractUser):
         #       actually unlock the cars, which would be extremely weird and confusing.
         return (
             self.has_validated_mobile()
-            and self.has_valid_billing_account()
+            and self.has_booking_permission_on_a_valid_billing_account()
+            and self.can_drive()
+        )
+
+    def can_access_bookings(self):
+        # As above, but can access bookings, not necessarily make them.
+        return (
+            self.has_validated_mobile()
+            and self.has_access_to_valid_billing_account()
             and self.can_drive()
         )
 
     def has_valid_billing_account(self):
         for ba in self.owned_billing_accounts.all():
             if ba.valid:
+                return True
+
+    def has_booking_permission_on_a_valid_billing_account(self):
+        if self.has_valid_billing_account():
+            return True
+
+        for bam in self.billingaccountmember_set.all():
+            if bam.can_make_bookings and bam.billing_account.valid():
+                return True
+
+    def has_access_to_valid_billing_account(self):
+        if self.has_valid_billing_account():
+            return True
+
+        for bam in self.billingaccountmember_set.all():
+            if bam.billing_account.valid:
                 return True

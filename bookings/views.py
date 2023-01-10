@@ -7,7 +7,10 @@ from django.utils.datastructures import MultiValueDict
 
 from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle
-from users.decorators import require_complete_user, require_user_can_make_bookings
+from users.decorators import (
+    require_user_can_make_bookings,
+    require_user_can_access_bookings,
+)
 
 from .forms import (
     BookingSearchForm,
@@ -31,7 +34,7 @@ def home(request):
 
 
 @login_required
-@require_user_can_make_bookings
+@require_user_can_access_bookings
 def my_bookings(request):
     context = {
         "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
