@@ -5,7 +5,7 @@ from django.conf import settings
 
 def send_sms_verification_code(code, number):
     payload = {
-        "sender": "GO-EV Car Share",
+        "sender": "GO-EV",
         "destination": number,
         "content": "Your GO-EV Car Share verification code is {}".format(code),
         "tag": "validation",
