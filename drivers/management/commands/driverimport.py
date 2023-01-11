@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
             for l in r:
                 # Generate a username and password
-                un = f"{l['first_name'].lower()}{l['last_name'].lower()}{random.randint(1, 1000)}"
+                un = f"{l['first_name'].lower().replace(' ', '')}{l['last_name'].lower().replace(' ', '')}{random.randint(1, 1000)}"
                 pw = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
                 # Create the user
