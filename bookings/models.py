@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 POLICY_CANCELLATION_CUTOFF_HOURS = 3
 POLICY_BUFFER_TIME = 30
+MAX_BOOKING_END_DAYS = 120
 
 
 class TsTzRange(Func, ABC):
@@ -189,7 +190,11 @@ def get_available_vehicles(start, end, vehicle_types):
             Booking.objects.values("vehicle_id")
             .filter(
                 ~Q(state=Booking.STATE_CANCELLED),
-                block_time__overlap=TsTzRange(start, end, RangeBoundary()),
+                block_time__overlap=TsTzRange(
+                    start,
+                    end + timezone.timedelta(minutes=POLICY_BUFFER_TIME),
+                    RangeBoundary(),
+                ),
             )
             .order_by("vehicle_id")
             .distinct("vehicle_id")
@@ -203,7 +208,11 @@ def get_unavailable_vehicles(start, end, vehicle_types):
             Booking.objects.values("vehicle_id")
             .filter(
                 ~Q(state=Booking.STATE_CANCELLED),
-                block_time__overlap=TsTzRange(start, end, RangeBoundary()),
+                block_time__overlap=TsTzRange(
+                    start,
+                    end + timezone.timedelta(minutes=POLICY_BUFFER_TIME),
+                    RangeBoundary(),
+                ),
             )
             .order_by("vehicle_id")
             .distinct("vehicle_id")
@@ -216,7 +225,11 @@ def get_unavailable_vehicles(start, end, vehicle_types):
         bookings = Booking.objects.filter(
             ~Q(state=Booking.STATE_CANCELLED),
             vehicle=v,
-            block_time__overlap=TsTzRange(start, end, RangeBoundary()),
+            block_time__overlap=TsTzRange(
+                start,
+                end + timezone.timedelta(minutes=POLICY_BUFFER_TIME),
+                RangeBoundary(),
+            ),
         ).order_by("block_time")
 
         log.debug(f"Overlapping bookings for vehicle {v}: {bookings}")
@@ -226,21 +239,31 @@ def get_unavailable_vehicles(start, end, vehicle_types):
             continue
 
         bf = bookings.first()
-        # FIXME: Hardcoded block time window.
-        print(
-            f"Available before {bf.block_time.lower - timezone.timedelta(minutes=POLICY_BUFFER_TIME)}"
-        )
+        if bf.block_time.lower >= timezone.now() - timezone.timedelta(
+            minutes=POLICY_BUFFER_TIME
+        ):
+            log.debug(
+                f"Available until {bf.block_time.lower - timezone.timedelta(minutes=POLICY_BUFFER_TIME)}"
+            )
+
+            v.available_before = bf.block_time.lower - timezone.timedelta(
+                minutes=POLICY_BUFFER_TIME
+            )
+        else:
+            v.available_before = None
 
         bl = bookings.last()
-        print(f"Available after {bl.block_time.upper}")
+        if bl.block_time.upper < timezone.now() + timezone.timedelta(
+            days=MAX_BOOKING_END_DAYS
+        ):
+            log.debug(f"Available from {bl.block_time.upper}")
 
-        # FIXME: Hardcoded block time window.
-        v.available_before = bf.block_time.lower - timezone.timedelta(
-            minutes=POLICY_BUFFER_TIME
-        )
-        v.available_after = bl.block_time.upper
+            v.available_after = bl.block_time.upper
+        else:
+            v.available_after = None
 
-        results.append(v)
+        if v.available_before or v.available_after:
+            results.append(v)
 
     return results
 

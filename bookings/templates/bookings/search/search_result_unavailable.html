@@ -27,8 +27,14 @@
             <p class="text-sm pt-2 text-gray-600">{{ v.description }}</p>
 
             <p class="mt-2 flex items-center text-sm text-red-500">
+              {% if v.available_before and v.available_after %}
               Available until {{ v.available_before|date:"H:i - l j N Y" }}
-              <br/>or from {{ v.available_after|date:"H:i - l j N Y" }}
+              <br/>or from {{ v.available_after|date:"H:i - l j N Y" }}.
+              {% elif v.available_before %}
+              Available until {{ v.available_before|date:"H:i - l j N Y" }}.
+              {% elif v.available_after %}
+              Available from {{ v.available_after|date:"H:i - l j N Y" }}.
+              {% endif %}
             </p>
 
           </div>

@@ -12,12 +12,11 @@ from django.utils import timezone
 from billing.models import BillingAccount, get_billing_accounts_suitable_for_booking
 from hardware.models import VehicleType
 
-from .models import Booking
+from .models import MAX_BOOKING_END_DAYS
 
 log = logging.getLogger(__name__)
 
 MIN_BOOKING_LENGTH_MINS = 30
-MAX_BOOKING_END_DAYS = 120
 
 
 def gen_start_time(now):

@@ -23,6 +23,7 @@ from .models import (
     get_unavailable_vehicles,
     Booking,
     POLICY_CANCELLATION_CUTOFF_HOURS,
+    MAX_BOOKING_END_DAYS,
 )
 
 log = logging.getLogger(__name__)
