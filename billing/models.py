@@ -127,6 +127,14 @@ class BillingAccount(models.Model):
     def memberships(self):
         return BillingAccountMember.objects.filter(billing_account=self.id)
 
+    def __str__(self):
+        if self.account_type == self.PERSONAL:
+            return (
+                f"Personal ({self.owner.first_name} {self.owner.last_name}) [{self.id}]"
+            )
+        else:
+            return f"{self.account_name} ({self.owner.first_name} {self.owner.last_name}) [{self.id}]"
+
 
 def get_personal_billing_account_for_user(user):
     return user.owned_billing_accounts.filter(
