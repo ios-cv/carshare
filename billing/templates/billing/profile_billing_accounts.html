@@ -60,20 +60,20 @@
         {% endif %}
 
         <div class="border-t px-4 py-5 sm:px-6 space-x-2">
-          <a href="#"
+          <!--<a href="#"
              class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Change Payment Card
-          </a>
+          </a>-->
           <a href="{% url 'billing_account_members' billing_account=ba.id %}"
              class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
             Manage Members
           </a>
-          {% if ba.account_type == "b" %}
+          <!--{% if ba.account_type == "b" %}
             <a href="#"
                class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
               Change Business Details
             </a>
-          {% endif %}
+          {% endif %}-->
         </div>
       </div>
     </section>
