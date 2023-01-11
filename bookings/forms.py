@@ -17,6 +17,7 @@ from .models import Booking
 log = logging.getLogger(__name__)
 
 MIN_BOOKING_LENGTH_MINS = 30
+MAX_BOOKING_END_DAYS = 120
 
 
 def gen_start_time(now):
@@ -81,7 +82,22 @@ class BookingSearchForm(forms.Form):
         if start + timezone.timedelta(minutes=5) < timezone.now():
             raise ValidationError("Your booking must not start in the past.")
 
+        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, timezone.utc):
+            raise ValidationError(
+                "Your booking must start after 10am on Sunday 15th January. Bookings before this date must be made in the old app."
+            )
+
         return start
+
+    def clean_end(self):
+        end = self.cleaned_data["end"]
+
+        if end > timezone.now() + timezone.timedelta(days=MAX_BOOKING_END_DAYS):
+            raise ValidationError(
+                f"Your can only make bookings up to {MAX_BOOKING_END_DAYS} days in the future."
+            )
+
+        return end
 
     def clean(self):
         cleaned_data = super().clean()
