@@ -1,0 +1,14 @@
+{% autoescape off %}
+Dear {{ user.first_name }} {{ user.last_name }},
+
+{% if billing_account.account_type == "p" %}Good news, your personal account for GO-EV Car Share has been approved.{% else %}Good news, your business account ({{ billing_account.account_name }}) for GO-EV Car Share has been approved.{% endif %}
+
+You can now start making bookings and driving vehicles.
+
+You can make a booking by clicking here: {{ link }}
+
+Regards,
+
+The GO-EV Car Share Team
+Isles of Scilly Community Venture C.I.C.
+{% endautoescape %}

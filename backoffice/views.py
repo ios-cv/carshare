@@ -1,5 +1,9 @@
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
 
 from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
@@ -153,6 +157,27 @@ def approve_billing_account(request, id):
     ba = BillingAccount.objects.get(pk=id)
     ba.approve()
     ba.save()
+
+    if ba.owner.has_valid_driver_profile(profile_type=ba.driver_profile_python_type):
+        email_ctx = {
+            "user": ba.owner,
+            "billing_account": ba,
+            "link": request.build_absolute_uri(reverse("bookings_search")),
+        }
+
+        email = EmailMessage(
+            "Your GO-EV account has been approved",
+            render_to_string(
+                "backoffice/emails/billing_account_approved.txt", email_ctx
+            ),
+            None,
+            [ba.owner.email],
+            reply_to=None
+            if settings.DEFAULT_REPLY_TO_EMAIL is None
+            else [settings.DEFAULT_REPLY_TO_EMAIL],
+        )
+        email.send(fail_silently=False)
+
     # TODO: Notification before redirecting reporting on the success/failure of this action.
     return redirect("backoffice_approvals")
 
