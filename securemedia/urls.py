@@ -7,6 +7,11 @@ from . import views
 urlpatterns = []
 
 if settings.PROTECT_MEDIA:
+    urlpatterns.append(
+        re_path(
+            rf"^(?P<url>{settings.MEDIA_URL[1:]}hardware/firmware/.*)/$", views.firmware
+        )
+    )
     urlpatterns.append(re_path(rf"^(?P<url>{settings.MEDIA_URL[1:]}.*)/$", views.media))
 else:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

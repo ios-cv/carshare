@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 
 from drivers.models import FullDriverProfile
+from hardware.decorators import require_authenticated_box
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +73,12 @@ def media(request, url):
 
     # Handle hardware files
     if parts[0] == "hardware":
-        # All files within hardware are public.
+        # All files within hardware are public, except firmware which is handled by a separate view.
         return nginx_redirect(url)
 
     raise Http404
+
+
+@require_authenticated_box
+def firmware(request, url):
+    return nginx_redirect(url)

@@ -52,11 +52,35 @@ def api_v1_telemetry(request, box, data):
         log.info(f"Operator Cards ETAG has changed for box {box.id}")
         response["operator_card_list"] = {
             "cards": [
-                f"{bytes.hex(struct.pack('<i', int(card.key))):x}"
+                bytes.hex(struct.pack("<i", int(card.key)))
                 for card in box.vehicle.operator_cards.all()
             ],
             "etag": server_etag,
         }
+
+    # Handle the box's version header.
+    firmware_version_header = int(
+        request.headers.get("X-Carshare-Firmware-Version", "0")
+    )
+    if firmware_version_header == 0:
+        log.warning(
+            "Received a request from a box with firmware version 0 which should not happen."
+        )
+
+    else:
+        # Update the actual box firmware version if it's changed.
+        if firmware_version_header != box.firmware_version:
+            box.firmware_version = firmware_version_header
+            box.save()
+
+        # See if we should tell the box to update it's firmware.
+        if (
+            firmware_version_header != box.desired_firmware_version.version
+            and box.desired_firmware_version.version != 0
+        ):
+            response["firmware_update_url"] = request.build_absolute_uri(
+                box.desired_firmware_version.bin_file.url
+            )
 
     # If there's any telemetry, process it and record it.
     if "telemetry" in data:

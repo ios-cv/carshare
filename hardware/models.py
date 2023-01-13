@@ -30,6 +30,30 @@ class Card(models.Model):
         return f"{self.key} [{self.id}]"
 
 
+def firmware_upload_to(instance, filename):
+    return os.path.join("hardware/firmware", uuid_file_name(filename))
+
+
+class Firmware(models.Model):
+    # The firmware version, represented by a single, unique integer.
+    version = models.IntegerField(unique=True)
+
+    # Uploaded at
+    created_at = models.DateTimeField()
+
+    # The firmware bin file.
+    bin_file = models.FileField(upload_to=firmware_upload_to)
+
+    # Notes for the admin / for reference
+    notes = models.TextField()
+
+    class Meta:
+        db_table = "firmware"
+
+    def __str__(self):
+        return f"Firmware v{self.version} [{self.id}]"
+
+
 class Box(models.Model):
     """represents an individual in-vehicle car share control box"""
 
@@ -51,6 +75,12 @@ class Box(models.Model):
     unlocked_by = models.ForeignKey(
         Card, on_delete=models.PROTECT, null=True, blank=True
     )
+
+    # The firmware version as reported by the box.
+    firmware_version = models.IntegerField(default=0)
+
+    # The desired firmware version, as specified by the admin.
+    desired_firmware_version = models.ForeignKey(Firmware, on_delete=models.PROTECT)
 
     class Meta:
         db_table = "box"
