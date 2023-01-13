@@ -78,6 +78,9 @@ def api_v1_telemetry(request, box, data):
             firmware_version_header != box.desired_firmware_version.version
             and box.desired_firmware_version.version != 0
         ):
+            log.info(
+                f"Telling box {box.serial} [{box.id}] to update to firmware version {box.desired_firmware_version.version}"
+            )
             response["firmware_update_url"] = request.build_absolute_uri(
                 box.desired_firmware_version.bin_file.url
             )
