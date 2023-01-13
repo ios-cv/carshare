@@ -80,6 +80,6 @@ def media(request, url):
 
 
 @require_authenticated_box
-def firmware(request, url):
+def firmware(request, url, box):
     log.debug(f"Received firmware file request: {url}")
     return nginx_redirect(url)
