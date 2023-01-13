@@ -52,7 +52,8 @@ def api_v1_telemetry(request, box, data):
         log.info(f"Operator Cards ETAG has changed for box {box.id}")
         response["operator_card_list"] = {
             "cards": [
-                f"{int(card.key):x}" for card in box.vehicle.operator_cards.all()
+                f"{bytes.hex(struct.pack('<i', int(card.key))):x}"
+                for card in box.vehicle.operator_cards.all()
             ],
             "etag": server_etag,
         }
