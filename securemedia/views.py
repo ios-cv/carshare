@@ -81,5 +81,11 @@ def media(request, url):
 
 @require_authenticated_box
 def firmware(request, url, box):
+    # URL must begin with MEDIA_URL, so strip that out.
+    if url.startswith(settings.MEDIA_URL[1:]):
+        url = url[len(settings.MEDIA_URL[1:]) :]
+    else:
+        raise Http404
+
     log.debug(f"Received firmware file request: {url}")
     return nginx_redirect(url)
