@@ -89,6 +89,7 @@ class Command(BaseCommand):
 
         # Actually save the bookings.
         delta = end_date - start_date
+        # FIXME: This needs to be made timezone aware - as at the moment it goes in as UTC.
         dates = [start_date + timezone.timedelta(days=i) for i in range(delta.days + 1)]
 
         for date in dates:
