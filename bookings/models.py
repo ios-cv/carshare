@@ -20,7 +20,7 @@ from users.models import User
 
 log = logging.getLogger(__name__)
 
-POLICY_CANCELLATION_CUTOFF_HOURS = 3
+POLICY_CANCELLATION_CUTOFF_HOURS = 2
 POLICY_BUFFER_TIME = 30
 MAX_BOOKING_END_DAYS = 120
 
