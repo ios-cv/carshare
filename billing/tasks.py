@@ -22,8 +22,10 @@ def run_billing():
     log.info(f"Running run_billing job at {current_time}")
 
     # Fetch all bookings in the "ended" state.
+    # FIXME: Temporarily exclude bookings on "credit accounts" from billing process.
     bookings = Booking.objects.filter(
         state=Booking.STATE_ENDED,
+        billing_account__credit_account=False,
     )
 
     for booking in bookings:

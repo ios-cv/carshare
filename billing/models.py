@@ -92,13 +92,13 @@ class BillingAccount(models.Model):
         if len(self.stripe_customer_id) == 0:
             return False
 
+        if self.approved_at is None:
+            return False
+
         if self.credit_account:
             return True
 
         if not self.stripe_setup_intent_active:
-            return False
-
-        if self.approved_at is None:
             return False
 
         return True
