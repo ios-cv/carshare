@@ -37,7 +37,7 @@ def require_authenticated_box(view_func=None):
             return JsonResponse({"error": "unauthorized"}, status=401)
         else:
             # Update that we've seen the box.
-            Box.last_seen_at = timezone.now()
+            box.last_seen_at = timezone.now()
             box.save()
             return view_func(request, *args, box=box, **kwargs)
 
