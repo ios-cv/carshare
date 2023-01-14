@@ -2,6 +2,7 @@ import json
 import logging
 
 from django.http import JsonResponse
+from django.utils import timezone
 
 from .models import Box
 
@@ -35,6 +36,9 @@ def require_authenticated_box(view_func=None):
             log.debug(f"box ID: {box_id}, box secret: {box_secret}")
             return JsonResponse({"error": "unauthorized"}, status=401)
         else:
+            # Update that we've seen the box.
+            Box.last_seen_at = timezone.now()
+            box.save()
             return view_func(request, *args, box=box, **kwargs)
 
     return wrapper_func

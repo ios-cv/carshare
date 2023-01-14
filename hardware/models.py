@@ -82,6 +82,9 @@ class Box(models.Model):
     # The desired firmware version, as specified by the admin.
     desired_firmware_version = models.ForeignKey(Firmware, on_delete=models.PROTECT)
 
+    # The last time this box contacted us.
+    last_seen_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         db_table = "box"
         verbose_name_plural = "boxes"

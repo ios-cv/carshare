@@ -9,6 +9,7 @@ class BoxAdmin(admin.ModelAdmin):
         "serial",
         "firmware_version",
         "desired_firmware_version",
+        "last_seen_at",
         "locked",
         "current_booking",
         "unlocked_by",
