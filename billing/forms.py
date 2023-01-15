@@ -1,5 +1,7 @@
+import re
 import uuid
 
+from django.core.exceptions import ValidationError
 from django import forms
 from django.utils import timezone
 
@@ -36,6 +38,18 @@ class BusinessBillingAccountForm(forms.ModelForm):
             "business_address_line_1": "The address and post code provided here will appear on your VAT invoices.",
             "business_tax_id": "If you would like your VAT number shown on your invoices, please enter it here.",
         }
+
+    def clean_business_tax_id(self):
+        tax_id = self.cleaned_data["business_tax_id"]
+
+        tax_id = tax_id.replace(" ", "")
+
+        if not re.match(r"^[A-Z]{2}[0-9]{9}$", tax_id):
+            raise ValidationError(
+                "Your VAT number must be provided in the form 'GB123456789'"
+            )
+
+        return tax_id
 
     def save(self, commit=True):
         m = super().save(commit=False)
