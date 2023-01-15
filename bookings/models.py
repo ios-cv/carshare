@@ -280,7 +280,7 @@ def user_can_access_booking(user, booking):
     """Returns whether the user should be allowed to access the vehicle for this booking."""
     if not (
         booking.billing_account.owner == user
-        or booking.billing_account.memembers.contains(user)
+        or booking.billing_account.members.contains(user)
     ):
         log.debug(
             f"User {user} does not have access to drive"
