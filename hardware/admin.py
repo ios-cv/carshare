@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Bay, Station, Box, Card, Vehicle, VehicleType, Firmware
+from .models import Bay, Station, Box, Card, Vehicle, VehicleType, Firmware, BoxAction
 
 
 class BoxAdmin(admin.ModelAdmin):
@@ -27,3 +27,4 @@ admin.site.register(Card)
 admin.site.register(Vehicle, VehicleAdmin)
 admin.site.register(VehicleType)
 admin.site.register(Firmware)
+admin.site.register(BoxAction)

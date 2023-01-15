@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from users.models import User
@@ -190,3 +191,31 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.registration} [{self.id}]"
+
+
+class BoxAction(models.Model):
+    """Represents an action that should be sent to the box."""
+
+    LOCK = "lock"
+    UNLOCK = "unlock"
+
+    ACTION_CHOICES = [
+        (LOCK, "lock"),
+        (UNLOCK, "unlock"),
+    ]
+
+    box = models.ForeignKey(Box, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+
+    action = models.CharField(
+        max_length=32,
+        choices=ACTION_CHOICES,
+    )
+
+    payload = models.JSONField(
+        encoder=DjangoJSONEncoder, default=lambda: {}, blank=True
+    )

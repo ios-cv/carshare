@@ -3,6 +3,7 @@ import logging
 import struct
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -15,7 +16,7 @@ from bookings.models import (
 )
 
 from .decorators import require_authenticated_box, json_payload
-from .models import Card
+from .models import Card, BoxAction
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +33,22 @@ def api_v1_telemetry(request, box, data):
     """View that is called by the box to share telemetry/do general keep-alive stuff."""
 
     response = {}
+
+    # Handle box actions
+    box_actions = BoxAction.objects.filter(
+        Q(action=BoxAction.LOCK) | Q(action=BoxAction.UNLOCK),
+        box=box,
+        expires_at__gt=timezone.now(),
+    ).order_by("created_at")
+
+    if box_actions.count > 0:
+        box_action = box_actions.first()
+        if box_action.action == BoxAction.LOCK:
+            box_action.delete()
+            response["action"] = "lock"
+        elif box_action.action == BoxAction.UNLOCK:
+            box_action.delete()
+            response["action"] = "unlock"
 
     # Get the Supervisor Key List ETag from the headers.
     try:
@@ -100,6 +117,23 @@ def api_v1_telemetry(request, box, data):
 @json_payload
 def api_v1_touch(request, box, data):
     """View that is called by the box when a card is touched on it."""
+
+    # Check if we should short circuit this function because a box-action
+    # is pending for this box.
+    box_actions = BoxAction.objects.filter(
+        Q(action=BoxAction.LOCK) | Q(action=BoxAction.UNLOCK),
+        box=box,
+        expires_at__gt=timezone.now(),
+    ).order_by("created_at")
+
+    if box_actions.count > 0:
+        box_action = box_actions.first()
+        if box_action.action == BoxAction.LOCK:
+            box_action.delete()
+            return JsonResponse({"action": "lock"})
+        elif box_action.action == BoxAction.UNLOCK:
+            box_action.delete()
+            return JsonResponse({"action": "unlock"})
 
     # Check a card ID has been provided.
     card_id = data.get("card_id", None)
