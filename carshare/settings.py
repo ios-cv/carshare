@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "nothing")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", True))
+DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
 
 def env_get_list(variable, default):
