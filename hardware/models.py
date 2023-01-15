@@ -216,6 +216,7 @@ class BoxAction(models.Model):
         choices=ACTION_CHOICES,
     )
 
-    payload = models.JSONField(
-        encoder=DjangoJSONEncoder, default=lambda: {}, blank=True
-    )
+    payload = models.JSONField(encoder=DjangoJSONEncoder, default=dict, blank=True)
+
+    class Meta:
+        db_table = "box_action"
