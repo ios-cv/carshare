@@ -41,7 +41,7 @@ def api_v1_telemetry(request, box, data):
         expires_at__gt=timezone.now(),
     ).order_by("created_at")
 
-    if box_actions.count > 0:
+    if box_actions.count() > 0:
         box_action = box_actions.first()
         if box_action.action == BoxAction.LOCK:
             box_action.delete()
@@ -126,7 +126,7 @@ def api_v1_touch(request, box, data):
         expires_at__gt=timezone.now(),
     ).order_by("created_at")
 
-    if box_actions.count > 0:
+    if box_actions.count() > 0:
         box_action = box_actions.first()
         if box_action.action == BoxAction.LOCK:
             box_action.delete()
