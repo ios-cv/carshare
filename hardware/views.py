@@ -155,8 +155,8 @@ def api_v1_touch(request, box, data):
     try:
         card = Card.objects.get(key=card_id)
     except ObjectDoesNotExist:
-        log.info(f"No card with ID {card_id} found in the database")
-        return JsonResponse({"error": "card ID not found"}, status=401)
+        log.debug(f"No card with ID {card_id} found in the database")
+        return JsonResponse({"action": "reject"})
 
     # Fetch the vehicle
     vehicle = box.vehicle
