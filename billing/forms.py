@@ -36,7 +36,7 @@ class BusinessBillingAccountForm(forms.ModelForm):
             "account_name": "A memorable name to identify this billing account. You will use this name whenever you make a booking to select which billing account it will be charged to.",
             "business_name": "The legal name of your business. This will be shown on your VAT invoices.",
             "business_address_line_1": "The address and post code provided here will appear on your VAT invoices.",
-            "business_tax_id": "If you would like your VAT number shown on your invoices, please enter it here.",
+            "business_tax_id": "If you would like your VAT number shown on your invoices, please enter it here in the format GB123456789",
         }
 
     def clean_business_tax_id(self):
