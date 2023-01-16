@@ -38,7 +38,7 @@ def run_billing():
         if booking.cost == 0:
             booking.state = Booking.STATE_BILLED
             booking.save()
-            return
+            continue
 
         invoice_kwargs = {
             "customer": booking.billing_account.stripe_customer_id,
