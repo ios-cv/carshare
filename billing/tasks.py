@@ -37,7 +37,6 @@ def run_billing():
         # Just mark as billed and return early.
         if booking.cost == 0:
             booking.state = Booking.STATE_BILLED
-            booking.stripe_invoice_item_id = item.id
             booking.save()
             return
 
