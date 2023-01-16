@@ -68,6 +68,8 @@
               <span class="ml-3">Edit</span>
             </a>
           </div>
+          {% include "bookings/booking_list/unlock-button.html" %}
+          {% include "bookings/booking_list/lock-button.html" %}
         {% elif booking.reservation_ended %}
         {% else %}
           <div class="w-0 flex-1 flex">

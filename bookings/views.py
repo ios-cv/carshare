@@ -3,10 +3,11 @@ import logging
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.datastructures import MultiValueDict
 
 from billing.pricing import calculate_booking_cost
-from hardware.models import Vehicle
+from hardware.models import Vehicle, BoxAction
 from users.decorators import (
     require_user_can_make_bookings,
     require_user_can_access_bookings,
@@ -24,6 +25,7 @@ from .models import (
     Booking,
     POLICY_CANCELLATION_CUTOFF_HOURS,
     MAX_BOOKING_END_DAYS,
+    user_can_access_booking,
 )
 
 log = logging.getLogger(__name__)
@@ -218,3 +220,98 @@ def edit(request, booking):
     }
 
     return render(request, "bookings/edit.html", context)
+
+
+@login_required
+@require_user_can_access_bookings
+def lock(request, booking):
+    # TODO: Handle operator doing this differently.
+    booking = Booking.objects.get(pk=booking)
+
+    if booking is None:
+        log.debug("No booking with that ID could be found")
+        # TODO: error feedback
+        return redirect("bookings_history")
+
+    if not user_can_access_booking(request.user, booking):
+        log.debug("User does not have rights to booking.")
+        # TODO: error feedback
+        return redirect("bookings_history")
+
+    # FIXME: Logic duplicated from hardware views. Need to unify.
+    box = booking.vehicle.box
+
+    # See if it's legit for this booking to be closed now.
+    if (box.current_booking and booking == box.current_booking) or (
+        booking.reservation_time.lower
+        <= timezone.now()
+        <= booking.reservation_time.upper
+    ):
+        # Queue the lock action.
+        ba = BoxAction(
+            user=request.user,
+            box=box,
+            created_at=timezone.now(),
+            expires_at=timezone.now() + timezone.timedelta(minutes=5),
+            action=BoxAction.LOCK,
+        )
+        ba.save()
+
+        booking.state = Booking.STATE_INACTIVE
+        booking.actual_end_time = timezone.now()
+        booking.save()
+        box.locked = True
+        box.current_booking = None
+        box.unlocked_by = None
+        box.save()
+        # TODO: success feedback, else error feedback.
+
+    return redirect("bookings_history")
+
+
+@login_required
+@require_user_can_access_bookings
+def unlock(request, booking):
+    # TODO: Handle operator doing this differently.
+    booking = Booking.objects.get(pk=booking)
+
+    if booking is None:
+        log.debug("No booking with that ID could be found")
+        # TODO: error feedback
+        return redirect("bookings_history")
+
+    if not user_can_access_booking(request.user, booking):
+        log.debug("User does not have rights to booking.")
+        # TODO: error feedback
+        return redirect("bookings_history")
+
+    # FIXME: Logic duplicated from hardware views. Need to unify.
+    box = booking.vehicle.box
+
+    # See if it's legit for this booking to be closed now.
+    if (
+        booking.reservation_time.lower
+        <= timezone.now()
+        <= booking.reservation_time.upper
+    ):
+        ba = BoxAction(
+            user=request.user,
+            box=box,
+            created_at=timezone.now(),
+            expires_at=timezone.now() + timezone.timedelta(minutes=5),
+            action=BoxAction.UNLOCK,
+        )
+        ba.save()
+
+        box.locked = False
+        box.current_booking = booking
+        box.unlocked_by = None
+        box.save()
+        booking.state = Booking.STATE_ACTIVE
+        if booking.actual_start_time is None:
+            booking.actual_start_time = timezone.now()
+        booking.actual_end_time = None
+        booking.save()
+        # TODO: success feedback, else error feedback.
+
+    return redirect("bookings_history")
