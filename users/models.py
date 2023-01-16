@@ -154,7 +154,8 @@ class User(AbstractUser):
 
         # First check for a personal billing account that's been approved.
         personal_billing_account = self.owned_billing_accounts.filter(
-            account_type="p"
+            ~Q(approved_at=None),
+            account_type="p",
         ).first()
 
         if personal_billing_account is None:
