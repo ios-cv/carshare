@@ -158,8 +158,20 @@ class User(AbstractUser):
             account_type="p",
         ).first()
 
-        if personal_billing_account is None:
-            log.debug(f"No own personal billing account found for user: {self.id}")
+        if personal_billing_account is not None:
+            log.debug(
+                f"Approved own personal billing account found for user: {self.id}"
+            )
+            return False
+
+        # Search for a personal billing account that's not been approved.
+        personal_billing_account = self.owned_billing_accounts.filter(
+            approved_at=None,
+            account_type="p",
+        ).first()
+
+        if personal_billing_account is None or not personal_billing_account.complete:
+            log.debug("No pending personal billing account.")
             return False
 
         log.debug(
@@ -203,9 +215,10 @@ class User(AbstractUser):
         """
         log.debug(f"Checking if own business account is validated for user: {self.id}")
 
-        # First check for a personal billing account that's been approved.
+        # First check for a business billing account that's been approved.
         business_billing_account = self.owned_billing_accounts.filter(
-            account_type="b"
+            ~Q(approved_at=None),
+            account_type="b",
         ).first()
 
         if business_billing_account is None:
@@ -215,12 +228,6 @@ class User(AbstractUser):
         log.debug(
             f"Own business billing account {business_billing_account.id} found for user: {self.id}"
         )
-
-        if business_billing_account.approved_at is None:
-            log.debug(
-                f"Own business billing account {business_billing_account.id} for user: {self.id} has not been approved."
-            )
-            return False
 
         # Then check for an approved driver profile of the appropriate type.
         driver_profile_type = business_billing_account.driver_profile_python_type
@@ -243,13 +250,32 @@ class User(AbstractUser):
     def is_own_business_account_pending_validation(self):
         log.debug(f"Checking if own business account is pending for user: {self.id}")
 
-        # First check for a personal billing account that's been approved.
+        # First check for a business billing account that's been approved.
         business_billing_account = self.owned_billing_accounts.filter(
-            account_type="b"
+            ~Q(approved_at=None),
+            account_type="b",
         ).first()
 
-        if business_billing_account is None:
-            log.debug(f"No own business billing account found for user: {self.id}")
+        if business_billing_account is not None:
+            log.debug("There's an already approved business billing account")
+            return False
+
+        # Next check if there's an unapproved one that's complete
+        business_billing_account = None
+        business_billing_accounts = self.owned_billing_accounts.filter(
+            approved_at=None,
+            account_type="b",
+        )
+
+        for b in business_billing_accounts:
+            if b.complete:
+                business_billing_account = b
+                break
+
+        if business_billing_account is not None:
+            log.debug("There's a business billing account that's pending.")
+        else:
+            log.debug("No complete/pending business billing accounts.")
             return False
 
         log.debug(

@@ -42,6 +42,9 @@ class BusinessBillingAccountForm(forms.ModelForm):
     def clean_business_tax_id(self):
         tax_id = self.cleaned_data["business_tax_id"]
 
+        if tax_id is None:
+            return None
+
         tax_id = tax_id.replace(" ", "")
 
         if not re.match(r"^[A-Z]{2}[0-9]{9}$", tax_id):
