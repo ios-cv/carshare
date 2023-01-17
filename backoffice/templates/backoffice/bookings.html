@@ -12,63 +12,7 @@
 
   <div class="mt-8 hidden sm:block">
     <div class="inline-block min-w-full border-b border-gray-200 align-middle">
-      <table class="min-w-full">
-        <thead>
-        <tr class="border-t border-gray-200">
-          <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
-              scope="col">
-            <span class="lg:pl-8">ID</span>
-          </th>
-          <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
-              scope="col">
-            User
-          </th>
-          <th
-            class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
-            scope="col">
-            Start
-          </th>
-          <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-              scope="col">
-            End
-          </th>
-          <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-              scope="col">
-            Vehicle
-          </th>
-        </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100 bg-white">
-
-        {% for b in page %}
-          <tr>
-            <td class="h-6 w-6 max-w-none whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900">
-              <div class="flex items-center space-x-3 lg:pl-2">
-                {% include "backoffice/bookings/status.html" with status=b.state %}
-                <a href="#" class="truncate hover:text-gray-600">
-                      <span>
-                        #{{ b.id|stringformat:"06d" }}
-                      </span>
-                </a>
-              </div>
-            </td>
-            <td class="px-6 py-3 text-sm font-medium text-gray-500">
-              {{ b.user.first_name }} {{ b.user.last_name }}
-            </td>
-            <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
-              {{ b.reservation_time.lower }}
-            </td>
-            <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
-              {{ b.reservation_time.upper }}
-            </td>
-            <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
-              {{ b.vehicle.registration }}
-            </td>
-          </tr>
-        {% endfor %}
-
-        </tbody>
-      </table>
+      {% include "backoffice/bookings/bookings_list.html" with bookings=page %}
     </div>
 
     {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}

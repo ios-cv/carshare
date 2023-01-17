@@ -1,9 +1,13 @@
 from django.conf import settings
+from django.contrib.postgres.fields import RangeBoundary
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
+
+from bookings.models import TsTzRange
 
 from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
@@ -21,9 +25,18 @@ from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
 
 @require_backoffice_access
 def home(request):
+    start_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_tomorrow = start_today + timezone.timedelta(days=2)
     context = {
         "menu": "dashboard",
         "user": request.user,
+        "bookings": Booking.objects.filter(
+            reservation_time__overlap=TsTzRange(
+                start_today,
+                end_tomorrow,
+                RangeBoundary(),
+            ),
+        ).order_by("-reservation_time"),
     }
     return render(request, "backoffice/home.html", context)
 

@@ -1,0 +1,24 @@
+<tr>
+  <td class="h-6 w-6 max-w-none whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900">
+    <div class="flex items-center space-x-3 lg:pl-2">
+      {% include "backoffice/bookings/status.html" with status=b.state %}
+      <a href="#" class="truncate hover:text-gray-600">
+        <span>
+          #{{ b.id|stringformat:"06d" }}
+        </span>
+      </a>
+    </div>
+  </td>
+  <td class="px-6 py-3 text-sm font-medium text-gray-500">
+    {{ b.user.first_name }} {{ b.user.last_name }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ b.reservation_time.lower }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ b.reservation_time.upper }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ b.vehicle.registration }}
+  </td>
+</tr>
