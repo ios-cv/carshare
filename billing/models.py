@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
-from drivers.models import FullDriverProfile
+from drivers.models import FullDriverProfile, ExternalDriverProfile
 from users.models import User
 
 
@@ -18,10 +18,10 @@ class BillingAccount(models.Model):
     ]
 
     FULL = "f"
-    COUNCIL = "c"
+    EXTERNAL = "e"
     DRIVER_PROFILE_TYPE_CHOICES = [
         (FULL, "full"),
-        (COUNCIL, "council"),
+        (EXTERNAL, "external"),
     ]
 
     # Owner of the billing account - there must always be exactly 1 owner of any billing account.
@@ -80,8 +80,8 @@ class BillingAccount(models.Model):
     def driver_profile_python_type(self):
         if self.driver_profile_type == BillingAccount.FULL:
             return FullDriverProfile
-        if self.driver_profile_type == BillingAccount.COUNCIL:
-            raise Exception("Not implemented!")
+        if self.driver_profile_type == BillingAccount.EXTERNAL:
+            return ExternalDriverProfile
         raise Exception("Not implemented!")
 
     @property

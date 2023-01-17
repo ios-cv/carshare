@@ -69,6 +69,13 @@ class DriverProfile(PolymorphicModel):
         db_table = "driver_profile"
 
 
+class ExternalDriverProfile(DriverProfile):
+    commentary = models.TextField(blank=True)
+
+    class Meta:
+        db_table = "external_driver_profile"
+
+
 class FullDriverProfile(DriverProfile):
     # Full Legal Name (as per driving license)
     full_name = models.CharField(max_length=255, null=True, blank=True)
