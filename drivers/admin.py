@@ -27,3 +27,11 @@ class ExternalDriverProfileAdmin(DriverProfileChildAdmin):
 class DriverProfileParentAdmin(PolymorphicParentModelAdmin):
     child_models = (FullDriverProfile, ExternalDriverProfile)
     list_filter = (PolymorphicChildModelFilter,)
+    list_display = (
+        "id",
+        "user",
+        "polymorphic_ctype",
+        "admin__is_submitted",
+        "admin__is_approved",
+        "expires_at",
+    )

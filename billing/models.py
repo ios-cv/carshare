@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -103,6 +104,13 @@ class BillingAccount(models.Model):
 
         return True
 
+    @admin.display(
+        boolean=True,
+        description="Valid",
+    )
+    def admin__is_valid(self):
+        return self.valid
+
     def approve(self):
         self.approved_at = timezone.now()
 
@@ -115,6 +123,10 @@ class BillingAccount(models.Model):
         return self.stripe_customer_id and (
             self.stripe_setup_intent_active or self.credit_account
         )
+
+    @admin.display(boolean=True, description="Complete")
+    def admin__is_complete(self):
+        return self.complete
 
     @property
     def display_name(self):

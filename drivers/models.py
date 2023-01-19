@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -67,6 +68,20 @@ class DriverProfile(PolymorphicModel):
 
     class Meta:
         db_table = "driver_profile"
+
+    @admin.display(
+        boolean=True,
+        description="Submitted",
+    )
+    def admin__is_submitted(self):
+        return self.submitted_at is not None
+
+    @admin.display(
+        boolean=True,
+        description="Approved",
+    )
+    def admin__is_approved(self):
+        return self.approved_to_drive
 
 
 class ExternalDriverProfile(DriverProfile):

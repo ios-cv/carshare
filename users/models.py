@@ -18,6 +18,9 @@ class User(AbstractUser):
     class Meta:
         db_table = "user"
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} [{self.id}]"
+
     @staticmethod
     def generate_verification_code():
         digits = [
