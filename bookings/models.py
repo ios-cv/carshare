@@ -112,6 +112,15 @@ class Booking(models.Model):
             ),
         ]
 
+    def validate_constraints(self, exclude=None):
+        # FIXME: Work around an apparent bug in Django that causes model updates to always
+        #        violate this constraint.
+        if exclude is None:
+            exclude = set()
+        exclude.add("block_time")
+
+        return super().validate_constraints(exclude=exclude)
+
     @staticmethod
     def create_booking(user, vehicle, start, end, billing_account):
         reservation_time = DateTimeTZRange(lower=start, upper=end)
