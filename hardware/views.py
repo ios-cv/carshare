@@ -239,7 +239,9 @@ def api_v1_touch(request, box, data):
     # Handle the "lock" case for a non-operator.
     else:
         # First up, try and close out the booking that's set as currently active if it belongs to this user.
-        if box.current_booking and user_can_access_booking(card.user, booking):
+        if box.current_booking and user_can_access_booking(
+            card.user, box.current_booking
+        ):
             box.current_booking.state = Booking.STATE_INACTIVE
             box.current_booking.actual_end_time = timezone.now()
             box.current_booking.save()
