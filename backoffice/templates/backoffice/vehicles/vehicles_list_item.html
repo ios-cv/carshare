@@ -1,0 +1,47 @@
+<tr>
+  <td class="h-6 w-6 max-w-none whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900">
+    <div class="flex items-center space-x-3 lg:pl-2">
+      {% include "backoffice/vehicles/status.html" with locked=v.box.locked %}
+      <a href="#" class="truncate hover:text-gray-600">
+        <span>
+          #{{ v.id|stringformat:"02d" }}
+        </span>
+      </a>
+    </div>
+  </td>
+  <td class="px-6 py-3 text-sm font-medium text-gray-500">
+    {{ v.registration }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ v.vehicle_type.name }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ v.bay.name }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ v.box.serial_as_hex_string }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ v.box.last_seen_at }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {% if v.box.current_booking %}
+      #{{ v.box.current_booking.id|stringformat:"06d" }}
+    {% else %}
+      -
+    {% endif %}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {% if v.box.unlocked_by %}
+      {{ v.box.unlocked_by }}
+    {% else %}
+      -
+    {% endif %}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    v{{ v.box.desired_firmware_version.version }}
+  </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    v{{ v.box.firmware_version }}
+  </td>
+</tr>

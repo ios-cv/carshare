@@ -93,6 +93,11 @@ class Box(models.Model):
     def __str__(self):
         return f"{self.serial} [{self.id}]"
 
+    @property
+    def serial_as_hex_string(self):
+        hexstr = f"{self.serial:0x}"
+        return ":".join([hexstr[i : i + 2] for i in range(0, len(hexstr), 2)])
+
 
 class Station(models.Model):
     # The name of the station.

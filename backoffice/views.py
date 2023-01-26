@@ -18,6 +18,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
+from hardware.models import Vehicle
 
 from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
@@ -211,4 +212,17 @@ def vehicles(request):
         "menu": "vehicles",
         "user": request.user,
     }
+
+    vehicles = Vehicle.objects.all().order_by("-id")
+    paginator = Paginator(vehicles, 50)
+
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    context["page"] = page_obj
+    context["page_range"] = page_range
+
     return render(request, "backoffice/vehicles.html", context)
