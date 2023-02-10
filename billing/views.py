@@ -111,6 +111,7 @@ def set_payment(request, billing_account):
                     "city": billing_account.business_address_line_3,
                     "state": billing_account.business_address_line_4,
                     "postal_code": billing_account.business_postcode,
+                    "country": "GB",
                 },
             }
 

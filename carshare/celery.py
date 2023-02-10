@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "carshare.settings")
@@ -26,6 +27,10 @@ app.conf.beat_schedule = {
     "run-billing-periodically": {
         "task": "run_billing",
         "schedule": 300.0,
+    },
+    "run-monthly-credit-account-billing-cycle": {
+        "task": "monthly_billing",
+        "schedule": crontab(hour=2, minute=0, day_of_month="1"),
     },
     "manage-booking-state-updates-periodically": {
         "task": "manage_booking_states",
