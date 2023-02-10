@@ -5,7 +5,6 @@ import drivers.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("drivers", "0002_initial"),
     ]

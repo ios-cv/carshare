@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hardware", "0005_firmware_box_firmware_version_and_more"),
     ]

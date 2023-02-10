@@ -5,7 +5,6 @@ import hardware.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hardware", "0002_initial"),
     ]

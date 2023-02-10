@@ -5,7 +5,6 @@ import drivers.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("drivers", "0003_alter_fulldriverprofile_dvla_summary_and_more"),
     ]
