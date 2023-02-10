@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 FROM base as build
 
-ENV POETRY_VERSION=1.1.6
+ENV POETRY_VERSION=1.3.2
 
 RUN apt-get update \
     && apt-get upgrade -y \
