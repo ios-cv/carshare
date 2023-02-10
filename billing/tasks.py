@@ -46,7 +46,7 @@ def run_billing():
     bookings = Booking.objects.filter(
         state=Booking.STATE_ENDED,
         billing_account__credit_account=False,
-    )
+    ).order_by("reservation_time")
 
     for booking in bookings:
         log.info(f"Starting billing process for booking: {booking.id}")
