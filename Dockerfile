@@ -18,13 +18,13 @@ RUN pip install "poetry==$POETRY_VERSION"
 
 RUN python -m venv /usr/src/app/venv
 
-WORKDIR /usr/src/app
-
 COPY . .
 
 RUN poetry export --without-hashes -f requirements.txt | /usr/src/app/venv/bin/pip install -r /dev/stdin
 
 RUN git clone https://github.com/grundleborg/crispy-tailwind.git && cd crispy-tailwind && git checkout carshare && mv crispy_tailwind ../crispy_tailwind && cd .. && rm -rf crispy-tailwind
+
+RUN sed -i "s/CSS_CACHE_BUSTER_VERSION/$(git rev-parse HEAD)/g" /usr/src/app/theme/templates/base.html
 
 RUN SECRET_KEY=nothing /usr/src/app/venv/bin/python manage.py tailwind install --no-input;
 RUN SECRET_KEY=nothing /usr/src/app/venv/bin/python manage.py tailwind build --no-input;
