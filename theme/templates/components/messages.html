@@ -1,0 +1,92 @@
+{% if messages %}
+  <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    {% for message in messages %}
+      {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+        <div class="rounded-md bg-red-100 p-4 mt-4 border-red-300 border">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <div class="text-sm text-red-800">
+                <p>{{ message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+        <div class="rounded-md bg-yellow-100 p-4 mt-4 border-yellow-400 border">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <div class="text-sm text-yellow-800">
+                <p>{{ message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+        <div class="rounded-md bg-green-100 p-4 mt-4 border-green-300 border">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <div class="text-sm text-green-800">
+                <p>{{ message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+        <div class="rounded-md bg-cyan-100 p-4 mt-4 border-cyan-300 border">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-cyan-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <div class="text-sm text-cyan-800">
+                <p>{{ message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="rounded-md bg-gray-100 p-4 mt-4 border-gray-200 border">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <div class="text-sm text-gray-800">
+                <p>{{ message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
