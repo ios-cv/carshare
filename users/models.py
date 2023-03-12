@@ -10,9 +10,9 @@ log = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
-    mobile = models.CharField(max_length=32, null=True)
-    pending_mobile = models.CharField(max_length=32, null=True)
-    mobile_verification_code = models.CharField(max_length=6, null=True)
+    mobile = models.CharField(max_length=32, null=True, blank=True)
+    pending_mobile = models.CharField(max_length=32, null=True, blank=True)
+    mobile_verification_code = models.CharField(max_length=6, null=True, blank=True)
     is_operator = models.BooleanField(default=False)
 
     class Meta:
