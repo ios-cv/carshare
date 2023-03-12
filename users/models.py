@@ -348,7 +348,7 @@ class User(AbstractUser):
             return True
 
         for bam in self.billingaccountmember_set.all():
-            if bam.can_make_bookings and bam.billing_account.valid():
+            if bam.can_make_bookings and bam.billing_account.valid:
                 return True
 
     def has_access_to_valid_billing_account(self):
