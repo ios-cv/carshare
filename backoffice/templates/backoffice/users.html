@@ -1,10 +1,45 @@
 {% extends "backoffice_base.html" %}
 
 {% block heading %}Users{% endblock %}
-{% block buttons %}
 
+{% block buttons %}
+  <form class="flex gap-x-4" action="" method="GET">
+    <div>
+      <label for="search" class="sr-only">Search</label>
+      <div class="mt-2 flex rounded-md shadow-sm">
+        <div class="relative flex flex-grow items-stretch focus-within:z-10">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                    clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <input type="search" name="q" id="search"
+                 class="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                 placeholder="John Smith" value="{{ q }}">
+        </div>
+        <button type="submit"
+                class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          <svg class="-ml-0.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                    clip-rule="evenodd"/>
+          </svg>
+          Search
+        </button>
+      </div>
+    </div>
+  </form>
 {% endblock %}
 
 {% block main %}
+  <div class="mt-8 hidden sm:block">
+    <div class="inline-block min-w-full border-b border-gray-200 align-middle">
+      {% include "backoffice/users/users_list.html" with users=page %}
+    </div>
 
+    {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}
+
+  </div>
 {% endblock %}

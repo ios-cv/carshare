@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -19,6 +20,7 @@ from drivers.models import (
     DriverProfile,
 )
 from hardware.models import Vehicle
+from users.models import User
 
 from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
@@ -70,6 +72,35 @@ def users(request):
         "menu": "users",
         "user": request.user,
     }
+
+    query = request.GET.get("q")
+
+    if query:
+        context["q"] = query
+
+    if query:
+        users_partial = User.objects.filter(
+            Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(email__icontains=query)
+            | Q(mobile__icontains=query)
+        ).distinct()
+    else:
+        users_partial = User.objects.all()
+
+    users = users_partial.order_by("first_name", "last_name")
+
+    paginator = Paginator(users, 100)
+
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    context["page"] = page_obj
+    context["page_range"] = page_range
+
     return render(request, "backoffice/users.html", context)
 
 

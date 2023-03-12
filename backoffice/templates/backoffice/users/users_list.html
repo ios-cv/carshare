@@ -1,0 +1,26 @@
+<table class="min-w-full">
+  <thead>
+  <tr class="border-t border-gray-200">
+    <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
+        scope="col">
+      Name
+    </th>
+    <th
+      class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-sm font-semibold text-gray-900 text-left"
+      scope="col">
+      Email
+    </th>
+    <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-sm font-semibold text-gray-900 text-left"
+        scope="col">
+      Mobile
+    </th>
+  </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-100 bg-white">
+
+  {% for u in users %}
+    {% include "backoffice/users/users_list_item.html" with u=u %}
+  {% endfor %}
+
+  </tbody>
+</table>
