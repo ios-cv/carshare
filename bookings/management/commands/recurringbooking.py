@@ -1,6 +1,7 @@
 import time
 
 from dateutil.parser import parse
+from zoneinfo import ZoneInfo
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -89,7 +90,7 @@ class Command(BaseCommand):
 
         # Actually save the bookings.
         delta = end_date - start_date
-        # FIXME: This needs to be made timezone aware - as at the moment it goes in as UTC.
+        tz = ZoneInfo("Europe/London")
         dates = [start_date + timezone.timedelta(days=i) for i in range(delta.days + 1)]
 
         for date in dates:
@@ -98,8 +99,8 @@ class Command(BaseCommand):
                     self.style.NOTICE(f"Writing booking for date: {date}")
                 )
 
-                start = timezone.datetime.combine(date, start_time)
-                end = timezone.datetime.combine(date, end_time)
+                start = timezone.datetime.combine(date, start_time, tzinfo=tz)
+                end = timezone.datetime.combine(date, end_time, tzinfo=tz)
 
                 try:
                     b = Booking.create_booking(
