@@ -1,5 +1,7 @@
 {% extends "backoffice_base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block heading %}Bookings{% endblock %}
 {% block buttons %}
   <button type="button"
@@ -11,6 +13,16 @@
 {% block main %}
 
   <div class="mt-8 hidden sm:block">
+
+    <form class="px-4" action="" method="GET">
+      <div class="flex flex-row justify-end gap-x-4 mb-4">
+        {% crispy filter.form %}
+        <div class="flex justify-center items-center">
+          {% include "components/submit-button.html" with label="Filter" %}
+        </div>
+      </div>
+    </form>
+
     <div class="inline-block min-w-full border-b border-gray-200 align-middle">
       {% include "backoffice/bookings/bookings_list.html" with bookings=page %}
     </div>

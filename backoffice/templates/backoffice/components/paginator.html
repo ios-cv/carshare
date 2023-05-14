@@ -48,21 +48,21 @@
 
         {% for i in page_range|default_if_none:page.paginator.get_elided_page_range %}
           {% if page.number == i %}
-            <a href="?page={{ i }}" aria-current="page"
+            <a href="?page={{ i }}&{{ parameters }}" aria-current="page"
                class="relative z-10 inline-flex items-center border border-indigo-500 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 focus:z-20">{{ i }}</a>
           {% else %}
             {% if i == page.paginator.ELLIPSIS %}
               <span
                 class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">...</span>
             {% else %}
-              <a href="?page={{ i }}"
+              <a href="?page={{ i }}&{{ parameters }}"
                  class="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20">{{ i }}</a>
             {% endif %}
           {% endif %}
         {% endfor %}
 
         {% if page.has_next %}
-          <a href="?page={{ page.next_page_number }}"
+          <a href="?page={{ page.next_page_number }}&{{ parameters }}"
              class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20">
             <span class="sr-only">Next</span>
             <!-- Heroicon name: mini/chevron-right -->

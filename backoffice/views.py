@@ -1,12 +1,19 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from crispy_forms.bootstrap import InlineField
+
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.forms import ModelChoiceField
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+
+from django_filters import FilterSet, ModelChoiceFilter
 
 from bookings.models import TsTzRange
 
@@ -44,6 +51,36 @@ def home(request):
     return render(request, "backoffice/home.html", context)
 
 
+class VehicleModelChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.registration
+
+
+class VehicleChoiceFilter(ModelChoiceFilter):
+    field_class = VehicleModelChoiceField
+
+
+class BookingsFilter(FilterSet):
+    vehicle = VehicleChoiceFilter(
+        queryset=Vehicle.objects.all().order_by("registration"),
+        empty_label="All vehicles",
+    )
+
+    class Meta:
+        model = Booking
+        fields = ["vehicle"]
+
+    def get_form_class(self):
+        form = super().get_form_class()
+        form.helper = FormHelper()
+        form.helper.disable_csrf = True
+        form.helper.layout = Layout(
+            InlineField("vehicle"),
+        )
+
+        return form
+
+
 @require_backoffice_access
 def bookings(request):
     context = {
@@ -51,7 +88,10 @@ def bookings(request):
         "user": request.user,
     }
 
-    bookings = Booking.objects.all().order_by("-reservation_time")
+    filter = BookingsFilter(
+        request.GET, queryset=Booking.objects.all().order_by("-reservation_time")
+    )
+    bookings = filter.qs
     paginator = Paginator(bookings, 50)
 
     page_number = request.GET.get("page", 1)
@@ -62,6 +102,12 @@ def bookings(request):
 
     context["page"] = page_obj
     context["page_range"] = page_range
+    context["filter"] = filter
+
+    # Hack for pagination & filtering. Should really use a templatetag to generate URLs.
+    _request_copy = request.GET.copy()
+    parameters = _request_copy.pop("page", True) and _request_copy.urlencode()
+    context["parameters"] = parameters
 
     return render(request, "backoffice/bookings.html", context)
 
