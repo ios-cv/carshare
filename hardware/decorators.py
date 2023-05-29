@@ -32,7 +32,7 @@ def require_authenticated_box(view_func=None):
         box = Box.objects.filter(serial=int(box_id, base=16), secret=box_secret).first()
 
         if box is None:
-            log.info("Box could not be authenticated.")
+            log.info(f"Box {box_id} could not be authenticated.")
             log.debug(f"box ID: {box_id}, box secret: {box_secret}")
             return JsonResponse({"error": "unauthorized"}, status=401)
         else:
