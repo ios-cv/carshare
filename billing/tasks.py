@@ -6,6 +6,7 @@ from celery import shared_task
 
 from datetime import time
 
+
 from django.utils import timezone
 
 from billing.models import BillingAccount
@@ -28,7 +29,7 @@ def last_month(now):
 def invoice_line_text(booking):
     return (
         f"GO-EV Car Share: Rental #{booking.id:06d}, "
-        f"{booking.reservation_time.lower:%d/%m/%y %H:%M} "
+        f"{tz.localize(booking.reservation_time.lower):%d/%m/%y %H:%M} "
         f"to {booking.reservation_time.upper:%d/%m/%y %H:%M}, "
         f"({booking.user.first_name} {booking.user.last_name}) "
         f"[{booking.vehicle.registration}]."
