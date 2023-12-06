@@ -6,13 +6,14 @@ from celery import shared_task
 
 from datetime import time
 
-
 from django.utils import timezone
 
 from billing.models import BillingAccount
 from bookings.models import Booking
 
 log = logging.getLogger(__name__)
+
+tz = timezone.get_current_timezone()
 
 # TODO: Use Django Settings for this.
 TAX_RATE_ID = os.environ.get("STRIPE_VAT_TAX_RATE_ID")
