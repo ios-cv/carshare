@@ -13,8 +13,6 @@ from bookings.models import Booking
 
 log = logging.getLogger(__name__)
 
-tz = timezone.get_current_timezone()
-
 # TODO: Use Django Settings for this.
 TAX_RATE_ID = os.environ.get("STRIPE_VAT_TAX_RATE_ID")
 TAX_NUMBER_ID = os.environ.get("STRIPE_VAT_NUMBER_ID")
@@ -30,7 +28,7 @@ def last_month(now):
 def invoice_line_text(booking):
     return (
         f"GO-EV Car Share: Rental #{booking.id:06d}, "
-        f"{tz.localize(booking.reservation_time.lower):%d/%m/%y %H:%M} "
+        f"{booking.reservation_time.lower:%d/%m/%y %H:%M} "
         f"to {booking.reservation_time.upper:%d/%m/%y %H:%M}, "
         f"({booking.user.first_name} {booking.user.last_name}) "
         f"[{booking.vehicle.registration}]."
