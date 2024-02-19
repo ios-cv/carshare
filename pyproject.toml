@@ -6,25 +6,28 @@ authors = ["George Goldberg <george@appletreetechnology.com>"]
 license = "AGPL Version 3"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-Django = "^4.1.5"
-django-tailwind = "^3.4.0"
-psycopg-binary = "^3.1.6"
-black = "^23.1.0"
-django-allauth = "^0.51.0"
-django-crispy-forms = "^1.14.0"
-Pillow = "^9.4.0"
-requests = "^2.28.1"
-psycopg2-binary = "^2.9.5"
-stripe = "^5.0.0"
-celery = "^5.2.7"
-django-celery-results = "^2.4.0"
-django-celery-beat = "^2.4.0"
-django-polymorphic = "^3.1.0"
-gunicorn = "^20.1.0"
-django-filter = "^23.2"
+python = "^3.12"
+Django = "^5.0.2"
+django-tailwind = "^3.8.0"
+psycopg-binary = "^3.1.18"
+black = "^24.2.0"
+django-allauth = "^0.61.1"
+django-crispy-forms = "^2.1"
+Pillow = "^10.2.0"
+requests = "^2.31.0"
+psycopg2-binary = "^2.9.9"
+stripe = "^8.3.0"
+celery = "^5.3.6"
+django-celery-results = "^2.5.1"
+django-celery-beat = {git = "https://github.com/celery/django-celery-beat", rev = "f66796b9c5c9e47d118cb5b41d970f07cce72bbe"}
+django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic", rev = "fa6bc9f10b45fbe950e8db8af41fa3b35380d129"}
+gunicorn = "^21.2.0"
+django-filter = "^23.5"
 
 [tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+django-tailwind = {extras = ["reload"], version = "^3.8.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

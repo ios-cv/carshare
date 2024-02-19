@@ -20,10 +20,10 @@ nothing:
 	@echo Please specify a make target.
 
 format:
-	black .
+	poetry run black .
 
 build:
-	python manage.py tailwind build
+	poetry run python manage.py tailwind build
 
 bundle: build
 	tar -czv --exclude-vcs --exclude-vcs-ignores --exclude '*/bundle.tar.gz' --exclude '*/node_modules' --exclude 'carshare/media' --exclude '*/__pycache__' -f bundle.tar.gz ../carshare/* ../crispy-tailwind/*
