@@ -14,6 +14,7 @@ urlpatterns = [
         name="billing_set_payment",
     ),
     path("setup_complete", views.setup_complete, name="billing_setup_complete"),
+    path("create_account_complete", views.create_account_complete, name="billing_create_account_complete"),
     path("", views.profile_billing_accounts, name="billing_accounts_list"),
     path(
         "account/<int:billing_account>/members",

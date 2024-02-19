@@ -132,8 +132,8 @@ def set_payment(request, billing_account):
         return redirect("users_incomplete")
 
     if billing_account.stripe_setup_intent_active:
-        # FIXME: Redirect location should depend on whether this is the initial setup or not.
-        return redirect("drivers_create_profile")
+        # FIXME: Should redirect location depend on whether this is the initial setup or not?
+        return redirect("billing_create_account_complete")
 
     intent = stripe.SetupIntent.create(
         customer=billing_account.stripe_customer_id,
@@ -162,10 +162,21 @@ def setup_complete(request):
         billing_account.stripe_setup_intent_active = True
         billing_account.save()
 
-        return redirect("drivers_create_profile")
+        if billing_account.account_type == BillingAccount.BUSINESS:
+            return redirect("billing_create_account_complete")
+        else:
+            return redirect("drivers_create_profile")
 
     return render(request, "billing/setup_complete.html", context)
 
+
+@login_required
+def create_account_complete(request):
+    context = {
+        "menu": "billing",
+    }
+
+    return render(request, "billing/create_account_complete.html", context)
 
 @login_required
 def profile_billing_accounts(request):

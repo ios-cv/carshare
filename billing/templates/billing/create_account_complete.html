@@ -1,0 +1,28 @@
+{% extends "portal_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block portal_header_text %}
+  Create a business account
+{% endblock %}
+
+{% block portal_content %}
+  <div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      Your business billing account has been created. You can now either
+      register as a driver yourself, or invite other people to register
+      as drivers under your business billing account.
+      <div class="flex flex-col sm:flex-row justify-start pt-6">
+        <a href="{% url 'drivers_create_profile' %}"
+           class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+          Register as a driver
+        </a>
+        <a href="{% url 'billing_accounts_list' %}"
+           class="sm:ml-3 mt-3 sm:mt-0 inline-flex items-center rounded-md border border-transparent bg-blue-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Invite other drivers
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
