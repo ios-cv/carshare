@@ -1,14 +1,14 @@
-FROM python:3.11-slim as base
+FROM python:3.12-slim as base
 
 WORKDIR /usr/src/app
 
 FROM base as build
 
-ENV POETRY_VERSION=1.3.2
+ENV POETRY_VERSION=1.5.1
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends curl build-essential gcc libpq-dev git gpg \
+    && apt-get install -y --no-install-recommends curl build-essential gcc libpq-dev git gpg libffi-dev \
     && mkdir -p /etc/apt/keyrings; \
      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
      echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list; \
