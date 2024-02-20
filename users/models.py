@@ -117,8 +117,7 @@ class User(AbstractUser):
 
         # First check for a personal billing account that's been approved.
         personal_billing_account = self.owned_billing_accounts.filter(
-            ~Q(approved_at=None),
-            account_type="p"
+            ~Q(approved_at=None), account_type="p"
         ).first()
 
         if personal_billing_account is None:
@@ -131,10 +130,14 @@ class User(AbstractUser):
 
         # Then check for an approved driver profile of the appropriate type.
         driver_profile_type = personal_billing_account.driver_profile_python_type
-        driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
-            approved_to_drive=True,
-            expires_at__gt=timezone.now(),
-        ).first()
+        driver_profile = (
+            self.driver_profiles.instance_of(driver_profile_type)
+            .filter(
+                approved_to_drive=True,
+                expires_at__gt=timezone.now(),
+            )
+            .first()
+        )
 
         if driver_profile is None:
             log.debug(
@@ -168,7 +171,10 @@ class User(AbstractUser):
                 account_type="p",
             ).first()
 
-            if personal_billing_account is None or not personal_billing_account.complete:
+            if (
+                personal_billing_account is None
+                or not personal_billing_account.complete
+            ):
                 log.debug("No pending personal billing account.")
                 return False
 
@@ -232,10 +238,14 @@ class User(AbstractUser):
 
         # Then check for an approved driver profile of the appropriate type.
         driver_profile_type = business_billing_account.driver_profile_python_type
-        driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
-            approved_to_drive=True,
-            expires_at__gt=timezone.now(),
-        ).first()
+        driver_profile = (
+            self.driver_profiles.instance_of(driver_profile_type)
+            .filter(
+                approved_to_drive=True,
+                expires_at__gt=timezone.now(),
+            )
+            .first()
+        )
 
         if driver_profile is None:
             log.debug(
@@ -352,7 +362,9 @@ class User(AbstractUser):
             submitted_at__isnull=False,
         )
 
-        log.debug(f"User {self.id} has {driver_profiles.count()} pending driver profiles")
+        log.debug(
+            f"User {self.id} has {driver_profiles.count()} pending driver profiles"
+        )
 
         if driver_profiles.count() > 0:
             return True
@@ -375,8 +387,7 @@ class User(AbstractUser):
 
     def can_view_bookings(self):
         return (
-            self.has_validated_mobile()
-            and self.has_access_to_valid_billing_account()
+            self.has_validated_mobile() and self.has_access_to_valid_billing_account()
         )
 
     def can_access_bookings(self):

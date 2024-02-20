@@ -80,4 +80,3 @@ def require_user_can_view_bookings(view_func=None):
             return redirect("users_incomplete")
 
     return wrapper_func
-

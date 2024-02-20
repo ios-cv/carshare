@@ -182,6 +182,7 @@ def create_account_complete(request):
 
     return render(request, "billing/create_account_complete.html", context)
 
+
 @login_required
 def profile_billing_accounts(request):
     context = {
@@ -226,9 +227,11 @@ def profile_manage_members(request, billing_account):
                 ),
                 None,
                 [invite.email],
-                reply_to=None
-                if settings.DEFAULT_REPLY_TO_EMAIL is None
-                else [settings.DEFAULT_REPLY_TO_EMAIL],
+                reply_to=(
+                    None
+                    if settings.DEFAULT_REPLY_TO_EMAIL is None
+                    else [settings.DEFAULT_REPLY_TO_EMAIL]
+                ),
             )
             email.send(fail_silently=False)
             form = InviteMemberForm(billing_account, request.user)

@@ -263,9 +263,11 @@ def approve_billing_account(request, id):
             ),
             None,
             [ba.owner.email],
-            reply_to=None
-            if settings.DEFAULT_REPLY_TO_EMAIL is None
-            else [settings.DEFAULT_REPLY_TO_EMAIL],
+            reply_to=(
+                None
+                if settings.DEFAULT_REPLY_TO_EMAIL is None
+                else [settings.DEFAULT_REPLY_TO_EMAIL]
+            ),
         )
         email.send(fail_silently=False)
 
