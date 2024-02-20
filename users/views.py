@@ -13,6 +13,7 @@ from .forms import (
     ResetPasswordForm,
     ResetPasswordKeyForm,
 )
+from .models import User
 from .sms import send_sms_verification_code
 
 
@@ -23,6 +24,23 @@ def incomplete(request):
         "user": request.user,
         "menu": "profile",
     }
+
+    user: User = request.user
+
+    personal_state = "incomplete"
+    if user.is_own_personal_account_validated():
+        personal_state = "approved"
+    elif user.is_own_personal_account_pending_validation():
+        personal_state = "pending"
+
+    business_state = "incomplete"
+    # TODO: Calculate business state
+
+    context = {
+        "personal_state": personal_state,
+        "business_state": business_state,
+    }
+
     return render(request, "users/incomplete.html", context)
 
 

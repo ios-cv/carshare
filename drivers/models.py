@@ -1,3 +1,4 @@
+import datetime
 import os
 import uuid
 
@@ -320,7 +321,7 @@ class FullDriverProfile(DriverProfile):
             timezone.datetime.combine(
                 self.licence_expiry_date,
                 timezone.datetime.max.time(),
-                timezone.utc,
+                datetime.timezone.utc,
             ),
             timezone.now() + timezone.timedelta(days=365),
         )

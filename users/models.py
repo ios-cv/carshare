@@ -117,6 +117,7 @@ class User(AbstractUser):
 
         # First check for a personal billing account that's been approved.
         personal_billing_account = self.owned_billing_accounts.filter(
+            ~Q(approved_at=None),
             account_type="p"
         ).first()
 
@@ -128,18 +129,12 @@ class User(AbstractUser):
             f"Own personal billing account {personal_billing_account.id} found for user: {self.id}"
         )
 
-        if personal_billing_account.approved_at is None:
-            log.debug(
-                f"Own personal billing account {personal_billing_account.id} for user: {self.id} has not been approved."
-            )
-            return False
-
         # Then check for an approved driver profile of the appropriate type.
         driver_profile_type = personal_billing_account.driver_profile_python_type
         driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
             approved_to_drive=True,
             expires_at__gt=timezone.now(),
-        )
+        ).first()
 
         if driver_profile is None:
             log.debug(
@@ -163,19 +158,19 @@ class User(AbstractUser):
 
         if personal_billing_account is not None:
             log.debug(
-                f"Approved own personal billing account found for user: {self.id}"
+                f"Approved own personal billing account id {personal_billing_account.id} found for user: {self.id}"
             )
-            return False
 
-        # Search for a personal billing account that's not been approved.
-        personal_billing_account = self.owned_billing_accounts.filter(
-            approved_at=None,
-            account_type="p",
-        ).first()
+        else:
+            # Search for a personal billing account that's not been approved.
+            personal_billing_account = self.owned_billing_accounts.filter(
+                approved_at=None,
+                account_type="p",
+            ).first()
 
-        if personal_billing_account is None or not personal_billing_account.complete:
-            log.debug("No pending personal billing account.")
-            return False
+            if personal_billing_account is None or not personal_billing_account.complete:
+                log.debug("No pending personal billing account.")
+                return False
 
         log.debug(
             f"Own personal billing account {personal_billing_account.id} found for user: {self.id}"
@@ -189,7 +184,7 @@ class User(AbstractUser):
         )
         for dp in driver_profiles:
             log.debug(
-                f"Found appropriate pending driver profile for user {self.id} that is"
+                f"Found appropriate pending driver profile {dp.id} for user {self.id} that is"
                 f"compatible with own billing account: {personal_billing_account.id}."
             )
             return True
@@ -201,6 +196,9 @@ class User(AbstractUser):
             expires_at__gt=timezone.now(),
         )
 
+        # FIXME: This doesn't actually check the DP goes with the BA. But we are working
+        #        with the assumption by this stage that there is only one personal BA.
+        #        Need to confirm whether that assumption is actually safe.
         for dp in driver_profiles:
             if personal_billing_account.approved_at is None:
                 return True
@@ -237,7 +235,7 @@ class User(AbstractUser):
         driver_profile = self.driver_profiles.instance_of(driver_profile_type).filter(
             approved_to_drive=True,
             expires_at__gt=timezone.now(),
-        )
+        ).first()
 
         if driver_profile is None:
             log.debug(
@@ -260,7 +258,9 @@ class User(AbstractUser):
         ).first()
 
         if business_billing_account is not None:
-            log.debug("There's an already approved business billing account")
+            log.debug(
+                f"There's an already approved business billing account id {business_billing_account.id} for user {self.id}"
+            )
             return False
 
         # Next check if there's an unapproved one that's complete
@@ -305,6 +305,9 @@ class User(AbstractUser):
             expires_at__gt=timezone.now(),
         )
 
+        # FIXME: This doesn't actually check the DP goes with the BA. But we are working
+        #        with the assumption by this stage that there is only one personal BA.
+        #        Need to confirm whether that assumption is actually safe.
         for dp in driver_profiles:
             if business_billing_account.approved_at is None:
                 return True
@@ -316,18 +319,15 @@ class User(AbstractUser):
     def can_make_bookings(self):
         """
         This method can be used to check whether this user has the rights to make
-        bookings under any of their associated accounts.
+        bookings. Essentially, the user must have all their basic user data completed
+        and validated, and must also have at least one billing account associated
+        with them which has been approved.
 
         :return: True if the user can make bookings, otherwise False.
         """
-        # TODO: Implement me properly with some check for a billing account that's valid and can make bookings!
-        # Note: For now we require the user to be able to drive to make bookings. If we waive this requirement
-        #       the UI will get very confusing because it would allow you to make bookings but then be unable to
-        #       actually unlock the cars, which would be extremely weird and confusing.
         return (
             self.has_validated_mobile()
             and self.has_booking_permission_on_a_valid_billing_account()
-            and self.can_drive()
         )
 
     def can_access_bookings(self):
