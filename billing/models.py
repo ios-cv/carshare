@@ -208,14 +208,4 @@ def get_billing_accounts_suitable_for_booking(user, booking_end):
         ~Q(approved_at=None),
     )
 
-    # Filter the billing account list python side for those where the user has a valid driver
-    # profile of the appropriate type.
-    r = []
-    for ba in q:
-        d = user.has_valid_driver_profile(
-            profile_type=ba.driver_profile_python_type, at=booking_end
-        )
-        if d:
-            r.append(ba)
-
-    return r
+    return q
