@@ -1,6 +1,8 @@
 """ This module contains code related to calculating the price of rentals. """
 
+import datetime
 import math
+
 from django.utils import timezone
 
 DAY_RATE = 24
@@ -17,7 +19,7 @@ def calculate_booking_cost(user, vehicle, start, end):
         return 0
 
     # If booking runs into 2024, then use new prices.
-    new_billing_start = timezone.datetime(2024, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
+    new_billing_start = timezone.datetime(2024, 1, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc)
     if end > new_billing_start:
         day_rate = NEW_DAY_RATE
         hour_rate = NEW_HOUR_RATE

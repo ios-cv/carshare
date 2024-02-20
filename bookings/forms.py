@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from crispy_forms.bootstrap import InlineCheckboxes
@@ -81,7 +82,7 @@ class BookingSearchForm(forms.Form):
         if start + timezone.timedelta(minutes=5) < timezone.now():
             raise ValidationError("Your booking must not start in the past.")
 
-        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, timezone.utc):
+        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, datetime.timezone.utc):
             raise ValidationError(
                 "Your booking must start after 10am on Sunday 15th January. Bookings before this date must be made in the old app."
             )
@@ -179,7 +180,7 @@ class ConfirmBookingForm(forms.Form):
         if start + timezone.timedelta(minutes=5) < timezone.now():
             raise ValidationError("Your booking must not start in the past.")
 
-        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, timezone.utc):
+        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, datetime.timezone.utc):
             raise ValidationError(
                 "Your booking must start after 10am on Sunday 15th January. Bookings before this date must be made in the old app."
             )
@@ -265,7 +266,7 @@ class EditBookingForm(forms.Form):
         ):
             raise ValidationError("Your booking must not start in the past.")
 
-        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, timezone.utc):
+        if start < timezone.datetime(2023, 1, 15, 10, 0, 0, 0, datetime.timezone.utc):
             raise ValidationError(
                 "Your booking must start after 10am on Sunday 15th January. Bookings before this date must be made in the old app."
             )
