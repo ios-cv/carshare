@@ -326,28 +326,33 @@ class User(AbstractUser):
         log.debug(f"Own business account for user: {self.id} is not pending")
         return False
 
-    # def has_valid_driver_profile(self):
-    #     """
-    #     This method checks whether the driver has a valid full driver profile.
-    #
-    #     If you are displaying a reminder about this, you should check
-    #     has_pending_driver_profile() first and preferentially display
-    #     the message that would go with that instead.
-    #
-    #     :return: True if there are billing accounts without a valid driver profile, else False.
-    #     """
-    #     log.debug(f"Checking if user {self.id} has a valid full driver profile")
-    #     driver_profiles = self.driver_profiles.instance_of("FullDriverProfile").filter(
-    #         approved_to_drive=True,
-    #         expires_at__gt=timezone.now(),
-    #     )
-    #
-    #     log.debug(f"User {self.id} has {driver_profiles.count()} valid full driver profiles")
-    #
-    #     if driver_profiles.count() > 0:
-    #         return True
-    #
-    #     return False
+    def is_own_business_billing_account_pending_validation(self):
+        log.debug(f"Checking if own business biling account is pending for user: {self.id}")
+
+        # First check for a business billing account that's been approved.
+        business_billing_account = self.owned_billing_accounts.filter(
+            ~Q(approved_at=None),
+            account_type="b",
+        ).first()
+
+        if business_billing_account is not None:
+            log.debug(
+                f"There's an already approved business billing account id {business_billing_account.id} for user {self.id}"
+            )
+            return False
+
+        # Next check if there's an unapproved one that's complete
+        business_billing_account = None
+        business_billing_accounts = self.owned_billing_accounts.filter(
+            approved_at=None,
+            account_type="b",
+        )
+
+        for b in business_billing_accounts:
+            if b.complete:
+                return True
+
+        return False
 
     def has_pending_driver_profile(self):
         """

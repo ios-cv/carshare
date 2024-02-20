@@ -34,7 +34,12 @@ def incomplete(request):
         personal_state = "pending"
 
     business_state = "incomplete"
-    # TODO: Calculate business state
+    if user.is_own_business_account_validated():
+        business_state = "approved"
+    elif user.is_own_business_account_pending_validation():
+        business_state = "pending"
+    elif user.is_own_business_billing_account_pending_validation():
+        business_state = "ba_pending"
 
     context = {
         "personal_state": personal_state,

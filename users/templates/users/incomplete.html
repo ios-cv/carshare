@@ -81,7 +81,7 @@
             </div>
           {% endif %}
 
-          {% if business_state == "pending" or business_state == "approved" %}
+          {% if business_state == "pending" or business_state == "approved" or business_state == "ba_pending" %}
             <div class="rounded-md bg-teal-100 p-4 sm:mx-6">
               <div class="flex">
                 <div class="flex-shrink-0">
@@ -96,6 +96,11 @@
                     {% if business_state == "pending" %}
                       Thank you, your business details have been submitted and will soon be reviewed
                       by a member of the GoEV team. This typically takes around 2 working days.
+                    {% elif business_state == "ba_pending" %}
+                      Thank you, your business billing details have been submitted and will soon be
+                      reviewed by a member of the GoEV team. This typically takes around 2 working days.
+                      In the meantime, you can invite other people as drivers on your account, or fill
+                      out your own driver details by clicking "Create business account" below.
                     {% else %}
                       Thank you, your business details have been submitted and approved.
                     {% endif %}
@@ -140,7 +145,7 @@
                   {% endif %}
                 </div>
                 <div class="mt-5 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                  {% if business_state == 'incomplete' %}
+                  {% if business_state == 'incomplete' or business_state == "ba_pending" %}
                     <a href="{% url 'billing_create_account' 'business' %}?initial">
                     <button type="button"
                             class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
