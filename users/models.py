@@ -316,6 +316,49 @@ class User(AbstractUser):
         log.debug(f"Own business account for user: {self.id} is not pending")
         return False
 
+    # def has_valid_driver_profile(self):
+    #     """
+    #     This method checks whether the driver has a valid full driver profile.
+    #
+    #     If you are displaying a reminder about this, you should check
+    #     has_pending_driver_profile() first and preferentially display
+    #     the message that would go with that instead.
+    #
+    #     :return: True if there are billing accounts without a valid driver profile, else False.
+    #     """
+    #     log.debug(f"Checking if user {self.id} has a valid full driver profile")
+    #     driver_profiles = self.driver_profiles.instance_of("FullDriverProfile").filter(
+    #         approved_to_drive=True,
+    #         expires_at__gt=timezone.now(),
+    #     )
+    #
+    #     log.debug(f"User {self.id} has {driver_profiles.count()} valid full driver profiles")
+    #
+    #     if driver_profiles.count() > 0:
+    #         return True
+    #
+    #     return False
+
+    def has_pending_driver_profile(self):
+        """
+        This method checks whether the user has any driver profiles pending approval, and if
+        so warns them that they won't be able to drive until this is resolved.
+
+        :return: True if user has pending driver profiles, else False
+        """
+        log.debug(f"Checking if user {self.id} has a pending driver profile")
+        driver_profiles = self.driver_profiles.filter(
+            ~Q(approved_to_drive=True),
+            submitted_at__isnull=False,
+        )
+
+        log.debug(f"User {self.id} has {driver_profiles.count()} pending driver profiles")
+
+        if driver_profiles.count() > 0:
+            return True
+
+        return False
+
     def can_make_bookings(self):
         """
         This method can be used to check whether this user has the rights to make
@@ -328,6 +371,12 @@ class User(AbstractUser):
         return (
             self.has_validated_mobile()
             and self.has_booking_permission_on_a_valid_billing_account()
+        )
+
+    def can_view_bookings(self):
+        return (
+            self.has_validated_mobile()
+            and self.has_access_to_valid_billing_account()
         )
 
     def can_access_bookings(self):

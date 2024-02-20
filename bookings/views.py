@@ -11,6 +11,7 @@ from hardware.models import Vehicle, BoxAction
 from users.decorators import (
     require_user_can_make_bookings,
     require_user_can_access_bookings,
+    require_user_can_view_bookings,
 )
 
 from .forms import (
@@ -37,7 +38,7 @@ def home(request):
 
 
 @login_required
-@require_user_can_access_bookings
+@require_user_can_view_bookings
 def my_bookings(request):
     context = {
         "bookings": Booking.objects.filter(user_id=request.user.id).order_by(

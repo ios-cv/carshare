@@ -31,6 +31,7 @@ def create_billing_account(request, billing_account_type):
     context = {
         "menu": "billing",
         "account_type": billing_account_type,
+        "hide_driver_profile_warnings": True,
     }
 
     if billing_account_type == "personal":
@@ -84,6 +85,7 @@ def set_payment(request, billing_account):
     context = {
         "menu": "billing",
         "billing_account": billing_account,
+        "hide_driver_profile_warnings": True,
     }
 
     # Handle the "personal account" case first.
@@ -151,6 +153,7 @@ def set_payment(request, billing_account):
 def setup_complete(request):
     context = {
         "menu": "billing",
+        "hide_driver_profile_warnings": True,
     }
 
     intent = stripe.SetupIntent.retrieve(request.GET["setup_intent"])
@@ -174,6 +177,7 @@ def setup_complete(request):
 def create_account_complete(request):
     context = {
         "menu": "billing",
+        "hide_driver_profile_warnings": True,
     }
 
     return render(request, "billing/create_account_complete.html", context)

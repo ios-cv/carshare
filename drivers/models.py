@@ -280,7 +280,7 @@ class FullDriverProfile(DriverProfile):
             and self.approved_licence_expiry_date
         )
 
-    def is_driving_licenced_approved(self):
+    def is_driving_licence_approved(self):
         return self.approved_licence_front and self.approved_licence_back
 
     def is_identity_approved(self):
