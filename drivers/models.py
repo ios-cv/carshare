@@ -295,7 +295,7 @@ class FullDriverProfile(DriverProfile):
         return (
             self.is_personal_details_approved()
             and self.is_driving_licence_details_approved()
-            and self.is_driving_licenced_approved()
+            and self.is_driving_licence_approved()
             and self.is_identity_approved()
             and self.is_driving_record_approved()
         )

@@ -155,10 +155,21 @@ def get_personal_billing_account_for_user(user):
 
 
 def get_all_pending_approval():
-    """Returns a QuerySet encapsulating all billing accounts that are pending approval."""
-    return BillingAccount.objects.filter(
-        stripe_setup_intent_active=True, approved_at=None
+    """Returns a list of all billing accounts that are pending and ready for approval."""
+    all_bas = BillingAccount.objects.filter(
+        stripe_setup_intent_active=True,
+        approved_at=None,
     )
+
+    bas = []
+    for ba in all_bas:
+        if (
+            ba.account_type == BillingAccount.BUSINESS
+            or ba.owner.has_valid_driver_profile(ba.driver_profile_python_type)
+        ):
+            bas.append(ba)
+
+    return bas
 
 
 class BillingAccountMember(models.Model):
