@@ -327,7 +327,9 @@ class User(AbstractUser):
         return False
 
     def is_own_business_billing_account_pending_validation(self):
-        log.debug(f"Checking if own business biling account is pending for user: {self.id}")
+        log.debug(
+            f"Checking if own business biling account is pending for user: {self.id}"
+        )
 
         # First check for a business billing account that's been approved.
         business_billing_account = self.owned_billing_accounts.filter(
