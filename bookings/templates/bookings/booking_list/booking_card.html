@@ -1,3 +1,4 @@
+{% load utils %}
 <li
   class="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200"
   x-data="{cancelOpen: false}"
@@ -68,8 +69,11 @@
               <span class="ml-3">Edit</span>
             </a>
           </div>
-          {% include "bookings/booking_list/unlock-button.html" %}
-          {% include "bookings/booking_list/lock-button.html" %}
+          {% user_can_access_booking user booking as access %}
+          {% if access %}
+            {% include "bookings/booking_list/unlock-button.html" %}
+            {% include "bookings/booking_list/lock-button.html" %}
+          {% endif %}
         {% elif booking.reservation_ended %}
         {% else %}
           <div class="w-0 flex-1 flex">

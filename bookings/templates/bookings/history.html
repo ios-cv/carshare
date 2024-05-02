@@ -8,7 +8,7 @@
   <div class="px-4 py-4 sm:px-0">
     <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {% for booking in bookings %}
-        {% include "bookings/booking_list/booking_card.html" with booking=booking %}
+        {% include "bookings/booking_list/booking_card.html" with booking=booking user=user %}
       {% endfor %}
     </ul>
     {% for booking in bookings %}
