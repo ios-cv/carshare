@@ -7,8 +7,8 @@
   <section>
     <div class="shadow sm:overflow-hidden sm:rounded-md">
       <div class="bg-white py-6 px-4 sm:p-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">{{ billing_account.display_name }} members</h2>
-        <p class="mt-1 text-sm text-gray-500">This section shows a list of all the additional members of your
+        <h2 class="text-lg font-medium leading-6 text-gray-900">{{ billing_account.display_name }} drivers</h2>
+        <p class="mt-1 text-sm text-gray-500">This section shows a list of all the additional drivers of your
           billing account, as well as those who have been invited but not yet joined.</p>
       </div>
     </div>
@@ -18,7 +18,7 @@
   <section>
     <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
       <div class="px-4 sm:px-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">Pending invitations</h2>
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Pending additional driver invitations</h2>
       </div>
       <div class="mt-6 flex flex-col">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -63,7 +63,7 @@
   <section>
     <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
       <div class="px-4 sm:px-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">Members</h2>
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Additional drivers</h2>
       </div>
       <div class="mt-6 flex flex-col">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -109,17 +109,17 @@
   <section>
     <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
       <div class="px-4 sm:px-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">Invite a member</h2>
+        <h2 class="text-lg font-medium leading-6 text-gray-900">Invite an additional driver</h2>
       </div>
       <div class="mt-6">
         <div class="px-4 sm:px-6 py-4 border-t border-gray-200">
           <form action="#" method="POST">
             {% csrf_token %}
             {{ form|crispy }}
-            <p class="text-red-600">Important: as the owner of the billing account, you accept ultimate responsible for all usage of the scheme
-              by members of your billing account. You are responsible for all charges incurred by members of your
+            <p class="text-red-600">Important: as the owner of the billing account, you accept ultimate responsiblity for all usage of the scheme
+              by additional drivers on your billing account. You are responsible for all charges incurred by additional drivers of your
               billing account while driving on bookings made through your billing account, including any surcharges,
-              fines or damage excesses. All members of a billing account can access all bookings that are part of the
+              fines or damage excesses. All additional drivers of a billing account can access all bookings that are part of the
               billing account, no matter who made those bookings.</p>
             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
               {% include "components/submit-button.html" with label="Invite" %}
