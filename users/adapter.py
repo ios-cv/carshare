@@ -31,7 +31,8 @@ class AccountAdapter(DefaultAccountAdapter):
             context["password_reset_url"] = build_absolute_uri(
                 self.request,
                 reverse(
-                    "users_password_reset_key", kwargs={"key": key, "uidb36": uidb36}
+                    "account_reset_password_from_key",
+                    kwargs={"key": key, "uidb36": uidb36},
                 ),
             )
 

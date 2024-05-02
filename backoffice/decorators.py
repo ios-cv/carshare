@@ -11,7 +11,7 @@ def require_backoffice_access(view_func=None):
         user = request.user
 
         if user.is_anonymous:
-            return redirect("login")
+            return redirect("account_login")
         elif user.is_operator:
             return view_func(request, *args, **kwargs)
         else:

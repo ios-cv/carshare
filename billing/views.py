@@ -218,7 +218,7 @@ def profile_manage_members(request, billing_account):
                 "invite_url": request.build_absolute_uri(
                     reverse("billing_account_accept_invitation", args=(invite.secret,))
                 ),
-                "signup_url": request.build_absolute_uri(reverse("signup")),
+                "signup_url": request.build_absolute_uri(reverse("account_signup")),
             }
             email = EmailMessage(
                 "Invitation to join a billing account on GO-EV Car Share",
