@@ -78,10 +78,12 @@ class User(AbstractUser):
         )
         return False
 
-    def can_drive(self):
+    def can_drive(self, profile_type=None):
         """
         This method indicates whether the user has completed the minimum
         necessary steps to be able to drive vehicles in any capacity.
+
+        If profile_type is specified then we only consider driver profiles of the provided type.
 
         :return: True if the user can drive, otherwise False.
         """
@@ -92,10 +94,18 @@ class User(AbstractUser):
             log.debug(f"User: {self.id} does not have a validated mobile phone number.")
             return False
 
+        if profile_type is None:
+            dps = self.driver_profiles.filter(
+                approved_to_drive=True, expires_at__gt=timezone.now()
+            )
+        else:
+            dps = self.driver_profiles.instance_of(profile_type).filter(
+                approved_to_drive=True,
+                expires_at__gt=timezone.now(),
+            )
+
         # Next we must check if the user has any valid driver profile in place.
-        for dp in self.driver_profiles.filter(
-            approved_to_drive=True, expires_at__gt=timezone.now()
-        ):
+        for dp in dps:
             log.debug(
                 f"Found a valid driver profile: {dp.id} for user: {self.id}. User can drive."
             )
