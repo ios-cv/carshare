@@ -5,19 +5,19 @@
 >
   <div>
     {% if booking.cancelled %}
-      <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-red-300">
+      <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-red-300">
         <h3 class="text-lg leading-6 font-medium text-gray-900">Cancelled Booking</h3>
       </div>
     {% elif booking.reservation_in_progress %}
-      <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-green-600">
+      <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-green-600">
         <h3 class="text-lg leading-6 font-medium text-white">Current Booking</h3>
       </div>
     {% elif booking.reservation_ended %}
-      <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-gray-400">
+      <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-gray-400">
         <h3 class="text-lg leading-6 font-medium text-white">Completed Booking</h3>
       </div>
     {% else %}
-      <div class="bg-white px-4 py-5 sm:px-6 rounded-t-lg bg-blue-600">
+      <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-blue-600">
         <h3 class="text-lg leading-6 font-medium text-white">Upcoming Booking</h3>
       </div>
     {% endif %}
