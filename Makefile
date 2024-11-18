@@ -1,4 +1,4 @@
-.PHONY: nothing start-docker stop-docker clean-docker format
+.PHONY: nothing start-docker stop-docker clean-docker format setup-crispy-tailwind
 
 ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -27,3 +27,11 @@ build:
 
 bundle: build
 	tar -czv --exclude-vcs --exclude-vcs-ignores --exclude '*/bundle.tar.gz' --exclude '*/node_modules' --exclude 'carshare/media' --exclude '*/__pycache__' -f bundle.tar.gz ../carshare/* ../crispy-tailwind/*
+
+setup-crispy-tailwind:
+	@echo Setting up our modified version of crispy tailwind...
+	test -s crispy_tailwind || (\
+		git clone https://github.com/grundleborg/crispy-tailwind.git ../crispy-tailwind && \
+		cd ../crispy-tailwind && git checkout carshare && cd ../carshare && \
+		ln -s ../crispy-tailwind/crispy_tailwind crispy_tailwind \
+	)

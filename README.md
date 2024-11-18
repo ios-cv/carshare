@@ -32,17 +32,27 @@ Install dependencies (setting up a virtualenvironment in your preferred way firs
 
 Initialise the database, and setup a super user.
 
-    $ python manage.py migrate
-    $ python manage.py createsuperuser
+    $ poetry run python manage.py migrate
+    $ poetry run python manage.py createsuperuser
+
+Install the customised version of `crispy-tailwind`.
+
+    $ make setup-crispy-tailwind
+
+Install the theme JS dependencies.
+
+    $ cd theme/static_src
+    $ npm install
+    $ cd ../..
 
 To keep the stylesheets up to date, you should have the django tailwind task running while using your
 development environment:
 
-    $ python manage.py tailwind start
+    $ poetry run python manage.py tailwind start
 
 Finally, in another terminal, you can start the development server:
 
-    $ python manage.py runserver
+    $ poetry run python manage.py runserver
 
 and access the login page through your browser:
 
@@ -55,7 +65,7 @@ The backoffice and Django admin areas can be found at:
     http://localhost:8000/backoffice
     http://localhost:8000/admin
 
-We use the _black_python code style. You can reformat your code changes before you commit:
+We use the _black_ python code style. You can reformat your code changes before you commit:
 
     $ make format
 
