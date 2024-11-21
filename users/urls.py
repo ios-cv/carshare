@@ -18,12 +18,12 @@ urlpatterns = [
         name="confirm_email",
     ),
     path(
-        "mobile/add",
+        "mobile/add/",
         views.add_mobile,
         name="users_mobile_add",
     ),
     path(
-        "mobile/verify",
+        "mobile/verify/",
         views.verify_mobile,
         name="users_mobile_verify",
     ),
@@ -33,10 +33,10 @@ urlpatterns = [
         name="users_profile_my_details",
     ),
     path(
-        "password/reset", views.PasswordResetView.as_view(), name="users_password_reset"
+        "password/reset/", views.PasswordResetView.as_view(), name="users_password_reset"
     ),
     path(
-        "password/reset/done",
+        "password/reset/done/",
         views.PasswordResetDoneView.as_view(),
         name="users_password_reset_done",
     ),
@@ -46,7 +46,7 @@ urlpatterns = [
         name="account_reset_password_from_key",
     ),
     path(
-        "password/reset/key/done",
+        "password/reset/key/done/",
         views.PasswordResetFromKeyDoneView.as_view(),
         name="users_password_reset_key_done",
     ),
