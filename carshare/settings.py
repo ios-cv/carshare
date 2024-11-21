@@ -94,6 +94,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "carshare.context_processors.get_contact_info",
             ],
         },
     },
@@ -265,3 +266,9 @@ LOGGING = {
         },
     },
 }
+
+# contact details
+CONTACT_PHONE = '01720 575 301'
+CONTACT_CARSHARE_EMAIL = 'carshare@ioscv.co.uk'
+CONTACT_EMAIL = 'info@ioscv.co.uk'
+CONTACT_INTERNATIONAL_PHONE = '+441720575301'
