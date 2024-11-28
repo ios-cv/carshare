@@ -23,6 +23,7 @@ django-celery-beat = {git = "https://github.com/celery/django-celery-beat", rev 
 django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic", rev = "fa6bc9f10b45fbe950e8db8af41fa3b35380d129"}
 gunicorn = "^21.2.0"
 django-filter = "^23.5"
+django-extensions = "^3.2.3"
 
 [tool.poetry.dev-dependencies]
 

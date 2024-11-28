@@ -27,3 +27,11 @@ build:
 
 bundle: build
 	tar -czv --exclude-vcs --exclude-vcs-ignores --exclude '*/bundle.tar.gz' --exclude '*/node_modules' --exclude 'carshare/media' --exclude '*/__pycache__' -f bundle.tar.gz ../carshare/* ../crispy-tailwind/*
+
+generate-er-diagram:
+	@echo Generating DOT file
+	poetry run python manage.py graph_models -a > model.dot
+	@echo Converting to SVG
+	dot -Tsvg model.dot -o model.SVG
+	@echo Inserting into html viewer
+	poetry run python insert-diagram.py template_entity_relationship_diagram.html model.svg entity_relationship_diagram.html
