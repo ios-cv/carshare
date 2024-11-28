@@ -33,7 +33,9 @@ urlpatterns = [
         name="users_profile_my_details",
     ),
     path(
-        "password/reset/", views.PasswordResetView.as_view(), name="users_password_reset"
+        "password/reset/",
+        views.PasswordResetView.as_view(),
+        name="users_password_reset",
     ),
     path(
         "password/reset/done/",
