@@ -219,8 +219,8 @@ PROTECT_MEDIA = bool(os.environ.get("PROTECT_MEDIA", False))
 SMS_API_KEY = os.environ.get("SMS_API_KEY", None)
 
 # Stripe
-STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", None)
-STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", None)
+STRIPE_API_KEY = "sk_test_51QNWpQ3xFlyrd8hJqbknde1JD8HBAx4gmS6aOO1VPIfnxaIGSKASVrkFuB8wSp0hN1I9u0twZaVOUQjumgocanyM00NUxVgk8s"
+STRIPE_PUBLIC_KEY = "pk_test_51QNWpQ3xFlyrd8hJLfSwaERLEBe0XRPeBfTV5InYkTsrW589oSZDBWHXdHIN6Nw9JdyoLKwdkY1syu5tkISI9j7e00l3boDcB0"
 stripe.api_key = STRIPE_API_KEY
 
 # Base URL
@@ -269,5 +269,7 @@ LOGGING = {
 
 # contact details
 CONTACT_PHONE = os.environ.get("CONTACT_PHONE", "0111 222 333")
-CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL","your@email")
-CONTACT_INTERNATIONAL_PHONE = os.environ.get("CONTACT_INTERNATIONAL_PHONE","+44111222333")
+CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "your@email")
+CONTACT_INTERNATIONAL_PHONE = os.environ.get(
+    "CONTACT_INTERNATIONAL_PHONE", "+44111222333"
+)
