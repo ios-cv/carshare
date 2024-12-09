@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Share Entity Relationship Diagram</title>
+</head>
+<body>
+    PLACE_HOLDER
+    <script>
+        const svg = document.querySelector("svg");
+let viewBox = svg.viewBox.baseVal;
+
+// Initial ViewBox setup
+viewBox.x = 1350;
+viewBox.y = 1000;
+viewBox.width = 1000; // Width of the viewBox
+viewBox.height = 1000; // Height of the viewBox
+
+let isPanning = false;
+let startPoint = { x: 0, y: 0 };
+let endPoint = { x: 0, y: 0 };
+let scale = 1;
+
+// Mouse down event for panning
+svg.addEventListener("mousedown", (event) => {
+  isPanning = true;
+  startPoint = { x: event.clientX, y: event.clientY };
+  svg.style.cursor = "move";
+});
+
+// Mouse move event for dragging
+svg.addEventListener("mousemove", (event) => {
+  if (!isPanning) return;
+
+  endPoint = { x: event.clientX, y: event.clientY };
+  
+  const dx = (startPoint.x - endPoint.x) * (viewBox.width / svg.clientWidth);
+  const dy = (startPoint.y - endPoint.y) * (viewBox.height / svg.clientHeight);
+  
+  viewBox.x += dx;
+  viewBox.y += dy;
+
+  startPoint = endPoint;
+  svg.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+});
+
+// Mouse up or leave event to stop panning
+svg.addEventListener("mouseup", () => {
+  isPanning = false;
+  svg.style.cursor = "default";
+});
+
+svg.addEventListener("mouseleave", () => {
+  isPanning = false;
+  svg.style.cursor = "default";
+});
+
+// Zoom functionality
+svg.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  
+  const { width, height } = viewBox;
+  
+  const zoomFactor = 1.01;
+  const mouseX = event.clientX - svg.getBoundingClientRect().left;
+  const mouseY = event.clientY - svg.getBoundingClientRect().top;
+  
+  const svgX = (mouseX / svg.clientWidth) * width + viewBox.x;
+  const svgY = (mouseY / svg.clientHeight) * height + viewBox.y;
+
+  if (event.deltaY < 0) {
+    scale *= zoomFactor; // Zoom in
+  } else {
+    scale /= zoomFactor; // Zoom out
+  }
+  
+  const newWidth = width * scale;
+  const newHeight = height * scale;
+  
+  viewBox.x = svgX - (mouseX / svg.clientWidth) * newWidth;
+  viewBox.y = svgY - (mouseY / svg.clientHeight) * newHeight;
+  viewBox.width = newWidth;
+  viewBox.height = newHeight;
+  
+  svg.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+  scale=1;
+});
+
+    </script>
+</body>
+</html>
