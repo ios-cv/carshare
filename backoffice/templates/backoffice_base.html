@@ -203,7 +203,7 @@
         <div class="min-w-0 flex-1">
           {% if messages %}
             {% for message in messages %}
-              <div class="flex-row">{{ message }}</div>
+              <div class="flex-row px-2 rounded {% if 'success' in message.tags %}border border-green-800 bg-green-500{% endif %}">{{ message }}</div>
             {% endfor %}
           {% endif %}
           <h1 class="text-lg font-medium leading-6 text-gray-900 sm:truncate">{% block heading %}{% endblock %}</h1>
