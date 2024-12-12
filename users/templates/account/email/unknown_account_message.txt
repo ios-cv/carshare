@@ -5,7 +5,7 @@
 password reset for your GO-EV Car Share account. However, we do not have any record of a user
 with email {{ email }} in our database.
 
-** If you are activating your GO-EV account on our new system, then this message means that you have used the wrong email address. If you are not sure what email address your GO-EV account is linked to, then please contact us on {{ CONTACT_CARSHARE_EMAIL }} or {{ CONTACT_PHONE }} for help.**
+** If you are activating your GO-EV account on our new system, then this message means that you have used the wrong email address. If you are not sure what email address your GO-EV account is linked to, then please contact us on {{ CONTACT_EMAIL }} or {{ CONTACT_PHONE }} for help.**
 
 If you did not request a password reset, you can safely ignore this email.
 
