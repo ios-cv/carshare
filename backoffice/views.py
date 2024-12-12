@@ -26,7 +26,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle
+from hardware.models import Vehicle, BoxAction
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -304,4 +304,43 @@ def vehicles(request):
     context["page"] = page_obj
     context["page_range"] = page_range
 
+    return render(request, "backoffice/vehicles.html", context)
+
+@require_backoffice_access
+def lock(request,id):
+    context = {
+        "user": request.user,
+    }
+
+    vehicle=Vehicle.objects.get(pk=id)
+    context["vehicle"] = vehicle.name
+    box_id=vehicle.box
+    time_to_expire=timezone.now()+timezone.timedelta(minutes=10)
+    action=BoxAction(
+        action="lock",
+        created_at=timezone.now(),
+        expires_at=time_to_expire,
+        box=box_id,
+        user_id=1
+        )
+    action.save()
+    return render(request, "backoffice/confirm_lock.html", context)
+
+@require_backoffice_access
+def unlock(request,id):
+    context = {
+        "user": request.user,
+    }
+
+    vehicle=Vehicle.objects.get(pk=id)
+    box_id=vehicle.box
+    time_to_expire=timezone.now()+timezone.timedelta(minutes=10)
+    action=BoxAction(
+        action="unlock",
+        created_at=timezone.now(),
+        expires_at=time_to_expire,
+        box=box_id,
+        user_id=1
+        )
+    action.save()
     return render(request, "backoffice/vehicles.html", context)
