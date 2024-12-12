@@ -4,7 +4,7 @@
 
 {% block main %}
   {% if drivers_pending > 0 or accounts_pending > 0 %}
-    <a href="/backoffice/approvals/" class="bg-yellow-300 flex-row hover:bg-yellow-100 m-2 p-2">
+    <a href="{% url 'backoffice_approvals' %}" class="bg-yellow-300 flex-row hover:bg-yellow-100 m-2 p-2 text-sm">
       ❗
       {% if accounts_pending > 0 %}
         <div class="inline-block">
