@@ -59,5 +59,11 @@ We use the _black_python code style. You can reformat your code changes before y
 
     $ make format
 
+To generate an entity relationship diagram run:
+
+    $ make generate-er-diagram
+
+View the diagram by opening the generated html file which allows you to pan and zoom.
+
 Happy hacking!
 
