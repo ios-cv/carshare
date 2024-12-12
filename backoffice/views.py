@@ -314,16 +314,7 @@ def lock(request,id):
 
     vehicle=Vehicle.objects.get(pk=id)
     context["vehicle"] = vehicle.name
-    box_id=vehicle.box
-    time_to_expire=timezone.now()+timezone.timedelta(minutes=10)
-    action=BoxAction(
-        action="lock",
-        created_at=timezone.now(),
-        expires_at=time_to_expire,
-        box=box_id,
-        user_id=1
-        )
-    action.save()
+    perform_box_action(vehicle=vehicle,action='lock',user=request.user)
     return render(request, "backoffice/confirm_lock.html", context)
 
 @require_backoffice_access
@@ -333,14 +324,20 @@ def unlock(request,id):
     }
 
     vehicle=Vehicle.objects.get(pk=id)
+    context["vehicle"] = vehicle.name
+    perform_box_action(vehicle=vehicle,action='unlock',user=request.user)
+    return render(request, "backoffice/confirm_unlock.html", context)
+
+def perform_box_action(vehicle, action, user):
     box_id=vehicle.box
     time_to_expire=timezone.now()+timezone.timedelta(minutes=10)
     action=BoxAction(
-        action="unlock",
+        action=action,
         created_at=timezone.now(),
         expires_at=time_to_expire,
         box=box_id,
-        user_id=1
+        user_id=user.id,
         )
     action.save()
-    return render(request, "backoffice/vehicles.html", context)
+    print(f"{user.username} is {action}ing vehicle {vehicle.name}")
+    return
