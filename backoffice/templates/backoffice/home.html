@@ -16,7 +16,12 @@
         </div>
       {% endif %}
       {% if drivers_pending > 0 %}
-        <div class="inline-block">{{drivers_pending}} driver requires approval</div>
+        <div class="inline-block">
+          {% if drivers_pending > 1 %}
+            {{drivers_pending}} drivers require approval
+          {% else %}
+            1 driver requires approval
+          {% endif %}</div>
       {% endif %}
       ❗
     </a>
