@@ -307,40 +307,47 @@ def vehicles(request):
 
     return render(request, "backoffice/vehicles.html", context)
 
+
 @require_backoffice_access
-def lock(request,id):
+def lock(request, id):
     context = {
         "user": request.user,
     }
 
-    vehicle=Vehicle.objects.get(pk=id)
+    vehicle = Vehicle.objects.get(pk=id)
     context["vehicle"] = vehicle.name
-    perform_box_action(request=request,vehicle=vehicle,action_to_perform='lock',user=request.user)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="lock", user=request.user
+    )
     return redirect(reverse("backoffice_vehicles"))
 
+
 @require_backoffice_access
-def unlock(request,id):
+def unlock(request, id):
     context = {
         "user": request.user,
     }
 
-    vehicle=Vehicle.objects.get(pk=id)
+    vehicle = Vehicle.objects.get(pk=id)
     context["vehicle"] = vehicle.name
-    perform_box_action(request=request,vehicle=vehicle,action_to_perform='unlock',user=request.user)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="unlock", user=request.user
+    )
     return redirect(reverse("backoffice_vehicles"))
 
-def perform_box_action(request,vehicle, action_to_perform, user):
-    box_id=vehicle.box
-    time_to_expire=timezone.now()+timezone.timedelta(minutes=10)
-    action=BoxAction(
+
+def perform_box_action(request, vehicle, action_to_perform, user):
+    box_id = vehicle.box
+    time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
+    action = BoxAction(
         action=action_to_perform,
         created_at=timezone.now(),
         expires_at=time_to_expire,
         box=box_id,
         user_id=user.id,
-        )
+    )
     action.save()
-    message=f"{user.username} has {action_to_perform}ed vehicle {vehicle.name}"
+    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name}"
     print(message)
-    messages.success(request,message)
+    messages.success(request, message)
     return
