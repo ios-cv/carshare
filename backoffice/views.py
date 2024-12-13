@@ -347,7 +347,7 @@ def perform_box_action(request, vehicle, action_to_perform, user):
         user_id=user.id,
     )
     action.save()
-    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name}"
+    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     print(message)
     messages.success(request, message)
     return
