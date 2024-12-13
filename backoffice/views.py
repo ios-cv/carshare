@@ -347,6 +347,7 @@ def perform_box_action(request, vehicle, action_to_perform, user):
         user_id=user.id,
     )
     action.save()
+    # message is printed and dispatched regardless of outcome - may be worth exploring options to send different messages
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     print(message)
     messages.success(request, message)
