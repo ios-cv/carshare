@@ -15,7 +15,7 @@ from django.utils import timezone
 
 from django_filters import FilterSet, ModelChoiceFilter
 
-from bookings.models import TsTzRange
+from bookings.models import TsTzRange, STATE_LATE
 
 from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
@@ -50,6 +50,9 @@ def home(request):
                 end_tomorrow,
                 RangeBoundary(),
             ),
+        ).order_by("-reservation_time"),
+        "late_bookings": Booking.objects.filter(
+            state=STATE_LATE,
         ).order_by("-reservation_time"),
         "drivers_pending": drivers_pending,
         "accounts_pending": accounts_pending,
