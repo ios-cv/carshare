@@ -30,8 +30,8 @@ bundle: build
 
 generate-er-diagram:
 	@echo Generating DOT file
-	poetry run python manage.py graph_models -a > model.dot
+	poetry run python manage.py graph_models -a > documentation/model.dot
 	@echo Converting to SVG
-	dot -Tsvg model.dot -o model.SVG
+	dot -Tsvg documentation/model.dot -o documentation/model.SVG
 	@echo Inserting into html viewer
-	poetry run python insert-diagram.py template_entity_relationship_diagram.html model.svg entity_relationship_diagram.html
+	poetry run python documentation/insert-diagram.py documentation/template_entity_relationship_diagram.html documentation/model.svg documentation/entity_relationship_diagram.html
