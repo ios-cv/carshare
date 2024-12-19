@@ -38,6 +38,10 @@ from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
 def home(request):
     start_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_tomorrow = start_today + timezone.timedelta(days=2)
+
+    drivers_pending = len(get_all_driver_profiles_pending_approval())
+    accounts_pending = len(get_all_billing_accounts_pending_approval())
+
     context = {
         "menu": "dashboard",
         "user": request.user,
@@ -48,6 +52,8 @@ def home(request):
                 RangeBoundary(),
             ),
         ).order_by("-reservation_time"),
+        "drivers_pending": drivers_pending,
+        "accounts_pending": accounts_pending,
     }
     return render(request, "backoffice/home.html", context)
 
