@@ -94,6 +94,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "carshare.context_processors.get_contact_info",
             ],
         },
     },
@@ -265,3 +266,10 @@ LOGGING = {
         },
     },
 }
+
+# contact details
+CONTACT_PHONE = os.environ.get("CONTACT_PHONE", "0111 222 333")
+CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "your@email")
+CONTACT_INTERNATIONAL_PHONE = os.environ.get(
+    "CONTACT_INTERNATIONAL_PHONE", "+44111222333"
+)
