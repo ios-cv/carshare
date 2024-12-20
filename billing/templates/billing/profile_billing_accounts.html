@@ -55,9 +55,14 @@
               {% if ba.business_purchase_order %}
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500">Purchase Order</dt>
-                <div x-data="{newPO:'{{ ba.business_purchase_order }}', baseUrl:'{% url "billing_update_purchase_order_prep" ba.id %}'}">
-                  <input type="text" class="mt-1 text-sm text-gray-900" x-model="newPO">
-                  <a :href="baseUrl + newPO" class="">Update</a>
+                <div class="flex flex-row h-8"
+                x-data="{newPO:'{{ ba.business_purchase_order }}', baseUrl:'{% url "billing_update_purchase_order_prep" ba.id %}'}">
+                  <input type="text" x-model="newPO"
+                  class="rounded-w-md mt-1 text-sm text-gray-900 h-full">
+                  <a :href="baseUrl + newPO" 
+                  class="inline-flex items-center rounded-e-md border border-transparent bg-teal-600 px-3 h-full mt-1 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                    Update
+                  </a>
                 </div>
               </div>
               {% endif %}
