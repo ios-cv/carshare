@@ -66,7 +66,7 @@ def run_billing():
             "auto_advance": False,
             "pending_invoice_items_behavior": "exclude",
             "account_tax_ids": [TAX_NUMBER_ID],
-            "rendering":{"pdf":{"page_size":"a4"}},
+            "rendering": {"pdf": {"page_size": "a4"}},
         }
 
         invoice = stripe.Invoice.create(**invoice_kwargs)
@@ -121,7 +121,7 @@ def monthly_billing():
             "auto_advance": False,
             "pending_invoice_items_behavior": "exclude",
             "account_tax_ids": [TAX_NUMBER_ID],
-            "rendering":{"pdf":{"page_size":"a4"}},
+            "rendering": {"pdf": {"page_size": "a4"}},
         }
         invoice = stripe.Invoice.create(**invoice_kwargs)
 
