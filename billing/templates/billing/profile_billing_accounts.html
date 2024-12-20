@@ -52,6 +52,12 @@
                 <dt class="text-sm font-medium text-gray-500">VAT Number</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ ba.business_tax_id }}</dd>
               </div>
+              {% if ba.business_purchase_order %}
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">Purchase Order</dt>
+                <dd class="mt-1 text-sm text-gray-900">{{ ba.business_purchase_order }}</dd>
+              </div>
+              {% endif %}
             </dl>
 
           </div>
