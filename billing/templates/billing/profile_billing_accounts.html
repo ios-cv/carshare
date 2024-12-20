@@ -55,7 +55,10 @@
               {% if ba.business_purchase_order %}
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500">Purchase Order</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ ba.business_purchase_order }}</dd>
+                <div x-data="{newPO:'{{ ba.business_purchase_order }}', baseUrl:'{% url "billing_update_purchase_order_prep" ba.id %}'}">
+                  <input type="text" class="mt-1 text-sm text-gray-900" x-model="newPO">
+                  <a :href="baseUrl + newPO" class="">Update</a>
+                </div>
               </div>
               {% endif %}
             </dl>
