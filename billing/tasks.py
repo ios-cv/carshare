@@ -124,9 +124,14 @@ def monthly_billing():
         invoice = stripe.Invoice.create(**invoice_kwargs)
 
         if account.business_purchase_order:
-            invoice=stripe.Invoice.modify(
+            invoice = stripe.Invoice.modify(
                 invoice.id,
-                custom_fields=[{"name":"Purchase Order","value":account.business_purchase_order},]
+                custom_fields=[
+                    {
+                        "name": "Purchase Order",
+                        "value": account.business_purchase_order,
+                    },
+                ],
             )
 
         for booking in bookings:
