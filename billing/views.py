@@ -319,3 +319,12 @@ def profile_other_account_memberships(request):
         "profile_menu": "memberships",
     }
     return render(request, "billing/profile_other_account_memberships.html", context)
+
+@login_required
+def update_purchse_order(request,billing_account,new_purchase_order):
+    
+    billing_account = BillingAccount.objects.get(pk=billing_account)
+    billing_account.business_purchase_order=new_purchase_order
+    billing_account.save()
+    print(f"{request.user.username} changed purchase order for account '{billing_account.account_name}' to '{new_purchase_order}'")
+    return redirect(reverse("billing_accounts_list"))
