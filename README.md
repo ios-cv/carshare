@@ -69,5 +69,15 @@ We use the _black_ python code style. You can reformat your code changes before 
 
     $ make format
 
+In order to use the diagram generation script you must install graphviz:
+
+    https://graphviz.org/download/
+
+To generate an entity relationship diagram run:
+
+    $ make generate-er-diagram
+
+View the diagram by opening the generated html file which allows you to pan and zoom.
+
 Happy hacking!
 
