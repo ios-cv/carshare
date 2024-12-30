@@ -47,14 +47,4 @@ urlpatterns = [
         views.profile_other_account_memberships,
         name="billing_accounts_other_memberships",
     ),
-    path(
-        "billing/<str:billing_account>/<str:new_purchase_order>/",
-        views.update_purchse_order,
-        name="billing_update_purchase_order",
-    ),
-    path(
-        "billing/<str:billing_account>/",
-        views.update_purchse_order,
-        name="billing_update_purchase_order_prep",
-    ),
 ]
