@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="billingaccount",
             name="business_purchase_order",
-            field=models.CharField(blank=True, max_length=100, null=True),
+            field=models.CharField(blank=True, max_length=12, null=True),
         ),
     ]
