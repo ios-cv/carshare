@@ -72,7 +72,7 @@ class BillingAccount(models.Model):
     business_address_line_4 = models.CharField(max_length=100, null=True, blank=True)
     business_postcode = models.CharField(max_length=100, null=True, blank=True)
     business_tax_id = models.CharField(max_length=30, null=True, blank=True)
-    business_purchase_order = models.CharField(max_length=100, null=True, blank=True)
+    business_purchase_order = models.CharField(max_length=12, null=True, blank=True)
 
     @classmethod
     def by_stripe_customer_id(cls, stripe_customer_id):
