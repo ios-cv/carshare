@@ -198,7 +198,7 @@ def profile_billing_accounts(request):
             updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
             if updated_billing_account in billing_accounts:
                 update_purchase_order_form = UpdatePurchaseOrderForm(
-                    form_fill(request.POST, updated_billing_account),
+                    request.POST,
                     instance=updated_billing_account,
                 )
                 update_purchase_order_form.save()
@@ -361,11 +361,3 @@ def profile_other_account_memberships(request):
         "profile_menu": "memberships",
     }
     return render(request, "billing/profile_other_account_memberships.html", context)
-
-
-def form_fill(post, obj):
-    post = copy.copy(post)
-    for key, value in model_to_dict(obj).items():
-        if key not in post:
-            post[key] = value
-    return post
