@@ -203,13 +203,6 @@ def profile_billing_accounts(request):
                 )
                 update_purchase_order_form.save()
                 update_success = True
-                print(
-                    f"{request.user.username} changed purchase order for account '{updated_billing_account.account_name}'(id - {updated_billing_account.id})"
-                )
-            else:
-                print(
-                    f"!!! - {request.user.username} illegally attempted to change purchase order for account '{updated_billing_account.account_name}'(id - {updated_billing_account.id})"
-                )
         else:
             ba_id = form.cleaned_data["ba_id"]
 
