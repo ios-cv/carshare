@@ -125,7 +125,7 @@ class UpdatePurchaseOrderForm(ModelForm):
                 HTML(
                     "{{ ba.purchase_order_update_form.business_purchase_order.errors }}"
                 ),
-                css_class="text-sm text-red-500",
+                css_class="text-xs text-red-500",
             ),
             Div(
                 HTML(
