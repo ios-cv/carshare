@@ -18,4 +18,10 @@ db.sqlite3
 # Build artifacts
 bundle.tar.gz
 
+# Documentation generated files
+documentation/entity_relationship_diagram.html
+documentation/model.dot
+documentation/model.svg
+documentation/model.SVG
+
 .env
