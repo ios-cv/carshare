@@ -317,31 +317,32 @@ def vehicles(request):
 def close_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
     # FIXME: potential race condition as booking state could have been changed elsewhere
-    if booking.state in {
+    if booking.state not in {
         Booking.STATE_ACTIVE,
         Booking.STATE_PENDING,
         Booking.STATE_LATE,
     }:
-        booking.state = Booking.STATE_INACTIVE
-        booking.save()
+        return redirect(reverse("backoffice_bookings"))
+    
+    booking.state = Booking.STATE_INACTIVE
+    booking.save()
 
-        box = Box.objects.get(pk=booking.vehicle.box.id)
+    box = Box.objects.get(pk=booking.vehicle.box.id)
+    # FIXME: May also be a race condition
+    if box.current_booking == booking_id:
+        box.current_booking = None
+        box.save()
 
-        # FIXME: May also be a race condition
-        if box.current_booking == booking_id:
-            box.current_booking = None
-            box.save()
-
-        should_lock = request.GET.get("should_lock", "True")
-        if should_lock != "False":
-            time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
-            action = BoxAction(
-                action="lock",
-                created_at=timezone.now(),
-                expires_at=time_to_expire,
-                box=box,
-                user_id=request.user.id,
-            )
-            action.save()
+    should_lock = request.GET.get("should_lock", "True")
+    if should_lock != "False":
+        time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
+        action = BoxAction(
+            action="lock",
+            created_at=timezone.now(),
+            expires_at=time_to_expire,
+            box=box,
+            user_id=request.user.id,
+        )
+        action.save()
 
     return redirect(reverse("backoffice_bookings"))
