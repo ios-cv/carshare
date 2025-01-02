@@ -129,10 +129,22 @@ class UpdatePurchaseOrderForm(ModelForm):
             ),
             Div(
                 HTML(
-                    "<input type='text' name='business_purchase_order' value='{{ ba.purchase_order_update_form.business_purchase_order.value }}' class='rounded-l-md mt-1 text-sm text-gray-900 h-full'>"
+                    """<input type='text' name='business_purchase_order' 
+                    value='{% if ba.purchase_order_update_form.business_purchase_order.value %}{{ ba.purchase_order_update_form.business_purchase_order.value }}{% endif %}' 
+                    class='rounded-l-md mt-1 text-sm text-gray-900 h-full'>"""
                 ),
                 HTML(
-                    "<div class='{% if not ba.successfully_updated %}unchecked{% endif %} checkmark mt-2 icon--order-success'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='32px' height='32px'>  <g fill='none' stroke='#0D9488' stroke-width='2'> <circle cx='77' cy='77' r='72' style='stroke-dasharray:480px, 480px; stroke-dashoffset: 960px;'></circle><circle id='colored' fill='#0D9488' cx='77' cy='77' r='72' style='stroke-dasharray:480px, 480px; stroke-dashoffset: 960px;'></circle><polyline class='st0' stroke='#fff' stroke-width='10' points='43.5,77.8 63.7,97.9 112.2,49.4 ' style='stroke-dasharray:100px, 100px; stroke-dashoffset: 200px;'/>   </g> </svg></div>"
+                    """<div class='{% if not ba.successfully_updated %}unchecked{% endif %} checkmark mt-2 icon--order-success'>
+                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='32px' height='32px'>  
+                                <g fill='none' stroke='#0D9488' stroke-width='2'> 
+                                    <circle cx='77' cy='77' r='72' style='stroke-dasharray:480px, 480px; stroke-dashoffset: 960px;'></circle>
+                                    <circle id='colored' fill='#0D9488' cx='77' cy='77' r='72' 
+                                        style='stroke-dasharray:480px, 480px; stroke-dashoffset: 960px;'></circle>
+                                    <polyline class='st0' stroke='#fff' stroke-width='10' 
+                                        points='43.5,77.8 63.7,97.9 112.2,49.4 ' style='stroke-dasharray:100px, 100px; stroke-dashoffset: 200px;'/>   
+                                </g>
+                            </svg>
+                        </div>"""
                 ),
                 Submit(
                     "submit",
