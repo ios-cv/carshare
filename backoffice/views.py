@@ -316,6 +316,7 @@ def vehicles(request):
 @require_backoffice_access
 def close_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
+    # FIXME: potential race condition as booking state could have been changed elsewhere
     if booking.state in {
         Booking.STATE_ACTIVE,
         Booking.STATE_PENDING,
@@ -326,6 +327,7 @@ def close_booking(request, booking_id):
 
         box = Box.objects.get(pk=booking.vehicle.box.id)
 
+        # FIXME: May also be a race condition
         if box.current_booking == booking_id:
             box.current_booking = None
             box.save()
