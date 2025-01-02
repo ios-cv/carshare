@@ -71,6 +71,17 @@ def run_billing():
 
         invoice = stripe.Invoice.create(**invoice_kwargs)
 
+        if booking.billing_account.business_purchase_order:
+            invoice = stripe.Invoice.modify(
+                invoice.id,
+                custom_fields=[
+                    {
+                        "name": "Purchase Order",
+                        "value": booking.billing_account.business_purchase_order,
+                    },
+                ],
+            )
+
         amount = booking.cost * 100
 
         item = stripe.InvoiceItem.create(
