@@ -315,11 +315,6 @@ def vehicles(request):
 
 @require_backoffice_access
 def close_booking(request, booking_id, should_lock=True):
-    context = {
-        "menu": "bookings",
-        "user": request.user,
-    }
-
     booking = Booking.objects.get(pk=booking_id)
     booking.state = Booking.STATE_ENDED
     booking.save()
