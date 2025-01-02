@@ -29,12 +29,7 @@ urlpatterns = [
         name="backoffice_reject_billing_account",
     ),
     path(
-        "bookings/closebooking/<int:booking_id>/<int:should_lock>/",
-        views.close_booking,
-        name="backoffice_close_booking",
-    ),
-    path(
-        "bookings/closebooking/<int:booking_id>/",
+        "bookings/close/<int:booking_id>",
         views.close_booking,
         name="backoffice_close_booking",
     ),
