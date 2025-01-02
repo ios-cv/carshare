@@ -316,12 +316,7 @@ def vehicles(request):
 
 @require_backoffice_access
 def lock(request, id):
-    context = {
-        "user": request.user,
-    }
-
     vehicle = Vehicle.objects.get(pk=id)
-    context["vehicle"] = vehicle.name
     perform_box_action(
         request=request, vehicle=vehicle, action_to_perform="lock", user=request.user
     )
@@ -330,12 +325,7 @@ def lock(request, id):
 
 @require_backoffice_access
 def unlock(request, id):
-    context = {
-        "user": request.user,
-    }
-
     vehicle = Vehicle.objects.get(pk=id)
-    context["vehicle"] = vehicle.name
     perform_box_action(
         request=request, vehicle=vehicle, action_to_perform="unlock", user=request.user
     )
@@ -353,8 +343,6 @@ def perform_box_action(request, vehicle, action_to_perform, user):
         user_id=user.id,
     )
     action.save()
-    # message is printed and dispatched regardless of outcome - may be worth exploring options to send different messages
+    # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
-    print(message)
     messages.success(request, message)
-    return
