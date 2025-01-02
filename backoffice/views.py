@@ -323,7 +323,7 @@ def close_booking(request, booking_id):
         Booking.STATE_LATE,
     }:
         return redirect(reverse("backoffice_bookings"))
-    
+
     booking.state = Booking.STATE_INACTIVE
     booking.save()
 
