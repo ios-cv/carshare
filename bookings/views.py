@@ -40,10 +40,13 @@ def home(request):
 @login_required
 @require_user_can_view_bookings
 def my_bookings(request):
-    context = {
-        "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
+    bookings = Booking.objects.filter(user_id=request.user.id).order_by(
             "-reservation_time"
-        ),
+        )
+    for booking in bookings:
+        booking.can_lock = booking.vehicle.box.current_booking == booking
+    context = {
+        "bookings": bookings,
         "menu": "my_bookings",
         "cancel_cutoff": POLICY_CANCELLATION_CUTOFF_HOURS,
     }
