@@ -30,7 +30,7 @@ from hardware.models import Vehicle, Box, BoxAction
 from users.models import User
 
 from .decorators import require_backoffice_access
-from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
+from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm
 
 
 @require_backoffice_access
@@ -346,3 +346,18 @@ def close_booking(request, booking_id):
         action.save()
 
     return redirect(reverse("backoffice_bookings"))
+
+@require_backoffice_access
+def edit_booking(request, booking_id):
+    booking = Booking.objects.get(pk=booking_id)
+
+    form = EditBookingForm(instance = booking)
+
+    context = {
+        "booking":booking,
+        "menu":"bookings",
+        "user":request.user,
+        "form":form
+    }
+
+    return render(request, "backoffice/bookings/edit_booking.html",context)
