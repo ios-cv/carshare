@@ -3,11 +3,12 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 
 from django import forms
-from django.forms import ValidationError
+from django.forms import ValidationError, ModelForm
 from django.utils import timezone
 
 from drivers.fields import CustomImageField
 from drivers.models import DriverProfile, FullDriverProfile
+from bookings.models import Booking
 
 
 class DriverProfileReviewForm(forms.ModelForm):
@@ -183,3 +184,51 @@ class DriverProfileApprovalForm(forms.Form):
         self.driver_profile.approved_to_drive = True
         self.driver_profile.approved_by = user
         self.driver_profile.save()
+
+class EditBookingForm(ModelForm):
+    class Meta:
+        model=Booking
+        fields = ["vehicle","state","reservation_time","block_time","actual_start_time","actual_end_time"]
+        widgets={
+            "reservation_time":forms.MultiWidget(widgets=[forms.SplitDateTimeWidget(
+                date_attrs={"type": "date"},
+                time_attrs={"type": "time", "step": "60"},
+                date_format="%Y-%m-%d",
+                time_format="%H:%M",
+            ),forms.SplitDateTimeWidget(
+                date_attrs={"type": "date"},
+                time_attrs={"type": "time", "step": "60"},
+                date_format="%Y-%m-%d",
+                time_format="%H:%M",
+            )]),
+            "block_time":forms.MultiWidget(widgets=[forms.SplitDateTimeWidget(
+                date_attrs={"type": "date"},
+                time_attrs={"type": "time", "step": "60"},
+                date_format="%Y-%m-%d",
+                time_format="%H:%M",
+            ),forms.SplitDateTimeWidget(
+                date_attrs={"type": "date"},
+                time_attrs={"type": "time", "step": "60"},
+                date_format="%Y-%m-%d",
+                time_format="%H:%M",
+            )]),
+        }
+
+    actual_start_time = forms.SplitDateTimeField(
+        label="Actual start time",
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+    actual_end_time = forms.SplitDateTimeField(
+        label="Actual end time",
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
