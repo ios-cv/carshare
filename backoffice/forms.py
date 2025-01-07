@@ -188,34 +188,11 @@ class DriverProfileApprovalForm(forms.Form):
 class EditBookingForm(ModelForm):
     class Meta:
         model=Booking
-        fields = ["vehicle","state","reservation_time","block_time","actual_start_time","actual_end_time"]
-        widgets={
-            "reservation_time":forms.MultiWidget(widgets=[forms.SplitDateTimeWidget(
-                date_attrs={"type": "date"},
-                time_attrs={"type": "time", "step": "60"},
-                date_format="%Y-%m-%d",
-                time_format="%H:%M",
-            ),forms.SplitDateTimeWidget(
-                date_attrs={"type": "date"},
-                time_attrs={"type": "time", "step": "60"},
-                date_format="%Y-%m-%d",
-                time_format="%H:%M",
-            )]),
-            "block_time":forms.MultiWidget(widgets=[forms.SplitDateTimeWidget(
-                date_attrs={"type": "date"},
-                time_attrs={"type": "time", "step": "60"},
-                date_format="%Y-%m-%d",
-                time_format="%H:%M",
-            ),forms.SplitDateTimeWidget(
-                date_attrs={"type": "date"},
-                time_attrs={"type": "time", "step": "60"},
-                date_format="%Y-%m-%d",
-                time_format="%H:%M",
-            )]),
-        }
+        fields = ["vehicle","state","reservation_time","actual_start_time","actual_end_time"]
 
     actual_start_time = forms.SplitDateTimeField(
         label="Actual start time",
+        required=False,
         widget=forms.SplitDateTimeWidget(
             date_attrs={"type": "date"},
             time_attrs={"type": "time", "step": "60"},
@@ -225,6 +202,7 @@ class EditBookingForm(ModelForm):
     )
     actual_end_time = forms.SplitDateTimeField(
         label="Actual end time",
+        required=False,
         widget=forms.SplitDateTimeWidget(
             date_attrs={"type": "date"},
             time_attrs={"type": "time", "step": "60"},
