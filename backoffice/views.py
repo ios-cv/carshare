@@ -351,13 +351,26 @@ def close_booking(request, booking_id):
 def edit_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
 
-    form = EditBookingForm(instance = booking)
+    if request.method == "POST":
+        form = EditBookingForm(request.POST,instance=booking)
+        if form.is_valid():
+            reservation_time=form.cleaned_data.get("reservation_time")
+            booking.update_times(reservation_time.lower,reservation_time.upper)
+            try:
+                form.save()
+                return redirect(reverse("backoffice_bookings"))
+            except IntegrityError as err:
+                form.add_error(
+                    None,
+                    "Your booking could not be changed because the vehicle is not available then.",
+                )
 
+    else:
+        form = EditBookingForm(instance = booking)
     context = {
         "booking":booking,
         "menu":"bookings",
         "user":request.user,
         "form":form
     }
-
     return render(request, "backoffice/bookings/edit_booking.html",context)
