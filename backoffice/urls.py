@@ -39,4 +39,9 @@ urlpatterns = [
         views.edit_booking,
         name="backoffice_edit_booking",
     ),
+    path(
+        "vehicles/available/<str:start>/<str:end>/",
+        views.get_all_available_vehicles,
+        name="backoffice_available_vehicles",
+    ),
 ]

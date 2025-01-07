@@ -7,11 +7,14 @@ from django.contrib.postgres.fields import RangeBoundary
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db import IntegrityError
 from django.forms import ModelChoiceField
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.http import JsonResponse
 
 from django_filters import FilterSet, ModelChoiceFilter
 
@@ -26,8 +29,9 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction
+from hardware.models import Vehicle, Box, BoxAction, VehicleType
 from users.models import User
+from bookings.models import get_available_vehicles
 
 from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm
@@ -374,3 +378,14 @@ def edit_booking(request, booking_id):
         "form":form
     }
     return render(request, "backoffice/bookings/edit_booking.html",context)
+
+@require_backoffice_access
+def get_all_available_vehicles(request,start,end):
+    start = parse_datetime(start)
+    end = parse_datetime(end)
+    vehicle_types = VehicleType.objects.all()
+    available_vehicles = get_available_vehicles(start,end,vehicle_types)
+    available_vehicles = available_vehicles.values_list("name", "id", "registration")
+    available_vehicles_json = [{"name": name, "id": id,"registration": registration} for name, id, registration in available_vehicles]
+    #return HttpResponse(available_vehicles_json,content_type="application/json")
+    return JsonResponse(available_vehicles_json,safe=False)
