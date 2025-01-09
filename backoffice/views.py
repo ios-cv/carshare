@@ -26,7 +26,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle
+from hardware.models import Vehicle, Card
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -314,3 +314,47 @@ def vehicles(request):
     context["page_range"] = page_range
 
     return render(request, "backoffice/vehicles.html", context)
+
+@require_backoffice_access
+def user_details(request,id):
+    selected_user_details = User.objects.get(pk=id)
+    selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id) 
+    selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
+    selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
+    selected_user_cards = Card.objects.filter(user__id=id)
+    selected_user_bookings = Booking.objects.filter(user__id=id).order_by("-reservation_time")
+
+    filter = BookingsFilter(
+        request.GET, queryset=selected_user_bookings
+    )
+    bookings = filter.qs
+    paginator = Paginator(bookings, 5)
+
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    # Hack for pagination & filtering. Should really use a templatetag to generate URLs.
+    _request_copy = request.GET.copy()
+    parameters = _request_copy.pop("page", True) and _request_copy.urlencode()
+    context = {
+        "menu": "user",
+        "user": request.user,
+        "user_details":selected_user_details,
+        "driver_profiles":selected_user_driver_profiles,
+        "owned_billing_accounts":selected_user_owned_billing_accounts,
+        "member_billing_accounts":selected_user_member_billing_accounts,
+        "cards":selected_user_cards,
+        "page":page_obj,
+        "page_range":page_range,
+        "filter":filter,
+        "parameters":parameters
+    }
+    return render(request, "backoffice/user_details.html", context)
+
+@require_backoffice_access
+def user_with_name(request,username):
+    user=User.objects.get(username=username)
+    return user_details(request,user.id)

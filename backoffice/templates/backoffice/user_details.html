@@ -1,0 +1,56 @@
+{% extends "backoffice_base.html" %}
+
+{% block heading %}<div class="font-bold">User - {{ user_details.username }} ({{ user_details.first_name|title|add:" "|add:user_details.last_name|title }})</div>{% endblock %}
+
+
+{% block main %}
+<div>
+    <h3 class="text-lg font-bold px-3 py-2">Bookings</h3>
+    <div class="px-5">
+        <div class="inline-block min-w-full border-b border-gray-200 align-middle">
+            {% include "backoffice/bookings/bookings_list.html" with bookings=page %}
+          </div>
+      
+          {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}
+    </div>
+</div>
+<div class="px-5 py-2">
+  {% include "backoffice/components/user_details.html" with user_details=user_details%}
+</div>
+<div>
+    <h3 class="text-lg font-bold px-3 py-2">Driver Profiles</h3>
+    <div class="flex flex-wrap gap-5 px-5">
+        {% for p in driver_profiles %}
+            {% include "backoffice/components/driver_profile_card.html" with profile=p %}
+        {% endfor %}
+    </div>
+</div>
+<div>
+    <h3 class="text-lg font-bold px-3 py-2">Owned Billing Accounts</h3>
+    <div class="flex flex-wrap gap-5 px-5">
+        {% for ba in owned_billing_accounts %}
+            <div class="w-96">
+                {% include "billing/components/billing_account_card.html" with ba=ba owner=user_details.first_name %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<div>
+    <h3 class="text-lg font-bold px-3 py-2">Member of Billing Accounts</h3>
+    <div class="flex flex-wrap gap-5 px-5">
+        {% for ba in member_billing_accounts %}
+            <div class="w-96">
+                {% include "billing/components/billing_account_card.html" with ba=ba owner=ba.owner %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="pb-10">
+    <h3 class="text-lg font-bold px-3 py-2">Cards</h3>
+    <div class="flex flex-wrap gap-5 px-5">
+        {% for c in cards %}
+           {% include "backoffice/components/card_card.html" with card=c %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
