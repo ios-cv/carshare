@@ -1,0 +1,68 @@
+<section>
+    <div class="bg-white shadow sm:rounded-lg">
+
+      {% if ba.account_type == "p" %}
+        <div class="px-4 py-5 sm:rounded-t-lg sm:px-6">
+          <h2 class="text-lg font-medium leading-6 text-gray-900">
+            Personal Billing Account
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            {% if owner %}{{owner|title}}'s{% else %}Your{% endif %} billing account for personal usage.</p>
+        </div>
+      {% elif ba.account_type == "b" %}
+        <div class="px-4 py-5 sm:rounded-t-lg sm:px-6">
+          <h2 class="text-lg font-medium leading-6 text-gray-900">
+            {{ ba.account_name }}
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Business billing account for {{ ba.business_name }}</p>
+        </div>
+      {% endif %}
+
+      {% if ba.account_type == "b" %}
+        <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+            <div class="sm:col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Business name</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ ba.business_name }}</dd>
+            </div>
+            <div class="sm:col-span-1 sm:row-span-2">
+              <dt class="text-sm font-medium text-gray-500">Business address</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {% if ba.business_address_line_1 %}{{ ba.business_address_line_1 }}{% endif %}
+                {% if ba.business_address_line_2 %}<br/>{{ ba.business_address_line_2 }}{% endif %}
+                {% if ba.business_address_line_3 %}<br/>{{ ba.business_address_line_3 }}{% endif %}
+                {% if ba.business_address_line_4 %}<br/>{{ ba.business_address_line_4 }}{% endif %}
+                {% if ba.business_postcode %}<br/>{{ ba.business_postcode }}{% endif %}
+              </dd>
+            </div>
+            <div class="sm:col-span-1">
+              <dt class="text-sm font-medium text-gray-500">VAT Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ ba.business_tax_id }}</dd>
+            </div>
+          </dl>
+
+        </div>
+      {% elif ba.account_type == "p" %}
+        <!-- nothing to show here for personal accounts at the moment -->
+      {% endif %}
+
+      {% if manage_drivers %}
+      <div class="border-t px-4 py-5 sm:px-6 space-x-2">
+        <!--<a href="#"
+           class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Change Payment Card
+        </a>-->
+        <a href="{% url 'billing_account_members' billing_account=ba.id %}"
+           class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+          Manage Additional Drivers
+        </a>
+        <!--{% if ba.account_type == "b" %}
+          <a href="#"
+             class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+            Change Business Details
+          </a>
+        {% endif %}-->
+      </div>
+      {% endif %}
+    </div>
+</section>
