@@ -315,18 +315,19 @@ def vehicles(request):
 
     return render(request, "backoffice/vehicles.html", context)
 
+
 @require_backoffice_access
-def user_details(request,id):
+def user_details(request, id):
     selected_user_details = User.objects.get(pk=id)
-    selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id) 
+    selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
     selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
     selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
     selected_user_cards = Card.objects.filter(user__id=id)
-    selected_user_bookings = Booking.objects.filter(user__id=id).order_by("-reservation_time")
-
-    filter = BookingsFilter(
-        request.GET, queryset=selected_user_bookings
+    selected_user_bookings = Booking.objects.filter(user__id=id).order_by(
+        "-reservation_time"
     )
+
+    filter = BookingsFilter(request.GET, queryset=selected_user_bookings)
     bookings = filter.qs
     paginator = Paginator(bookings, 5)
 
@@ -342,19 +343,20 @@ def user_details(request,id):
     context = {
         "menu": "user",
         "user": request.user,
-        "user_details":selected_user_details,
-        "driver_profiles":selected_user_driver_profiles,
-        "owned_billing_accounts":selected_user_owned_billing_accounts,
-        "member_billing_accounts":selected_user_member_billing_accounts,
-        "cards":selected_user_cards,
-        "page":page_obj,
-        "page_range":page_range,
-        "filter":filter,
-        "parameters":parameters
+        "user_details": selected_user_details,
+        "driver_profiles": selected_user_driver_profiles,
+        "owned_billing_accounts": selected_user_owned_billing_accounts,
+        "member_billing_accounts": selected_user_member_billing_accounts,
+        "cards": selected_user_cards,
+        "page": page_obj,
+        "page_range": page_range,
+        "filter": filter,
+        "parameters": parameters,
     }
     return render(request, "backoffice/user_details.html", context)
 
+
 @require_backoffice_access
-def user_with_name(request,username):
-    user=User.objects.get(username=username)
-    return user_details(request,user.id)
+def user_with_name(request, username):
+    user = User.objects.get(username=username)
+    return user_details(request, user.id)

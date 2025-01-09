@@ -5,15 +5,9 @@ urlpatterns = [
     path("", views.home, name="backoffice_home"),
     path("bookings/", views.bookings, name="backoffice_bookings"),
     path("users/", views.users, name="backoffice_users"),
+    path("users/<int:id>/", views.user_details, name="backoffice_user_details"),
     path(
-        "users/<int:id>/", 
-        views.user_details, 
-        name="backoffice_user_details"
-    ),
-    path(
-        "users/<str:username>/", 
-        views.user_with_name, 
-        name="backoffice_user_with_name"
+        "users/<str:username>/", views.user_with_name, name="backoffice_user_with_name"
     ),
     path("accounts/", views.accounts, name="backoffice_accounts"),
     path("approvals/", views.approvals, name="backoffice_approvals"),
