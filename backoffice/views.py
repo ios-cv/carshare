@@ -4,6 +4,7 @@ from crispy_forms.bootstrap import InlineField
 
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -12,6 +13,7 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
@@ -27,6 +29,7 @@ from drivers.models import (
     DriverProfile,
 )
 from hardware.models import Vehicle, Card
+from hardware.forms import CreateCard
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -360,3 +363,25 @@ def user_details(request, id):
 def user_with_name(request, username):
     user = User.objects.get(username=username)
     return user_details(request, user.id)
+
+
+@require_backoffice_access
+def add_card(request, id):
+    try:
+        selected_user_details = User.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        messages.error(request, "No such user.")
+        return redirect("backoffice_users")
+    if request.method == "POST":
+        form = CreateCard(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("backoffice_user_details", id=id)
+    else:
+        form = CreateCard(initial={"user": id})
+    context = {
+        "user": request.user,
+        "form": form,
+        "user_details": selected_user_details,
+    }
+    return render(request, "backoffice/users/add_card.html", context)
