@@ -318,7 +318,11 @@ def vehicles(request):
 
 @require_backoffice_access
 def user_details(request, id):
-    selected_user_details = User.objects.get(pk=id)
+    try:
+        selected_user_details = User.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        return redirect("backoffice_users")
+
     selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
     selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
     selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
@@ -358,5 +362,10 @@ def user_details(request, id):
 
 @require_backoffice_access
 def user_with_name(request, username):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except ObjectDoesNotExist:
+        response = redirect("backoffice_users")
+        response["location"] += f"?q={username}"
+        return response
     return user_details(request, user.id)
