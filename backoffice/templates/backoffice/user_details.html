@@ -51,6 +51,15 @@
         {% for c in cards %}
            {% include "backoffice/components/card_card.html" with card=c %}
         {% endfor %}
+        <a class="w-72 h-36 border-gray-600 hover:border-gray-800 shadow hover:shadow-lg bg-slate-400 hover:bg-slate-300 border-4 rounded-lg box-border"
+        href="{% url "backoffice_add_card" user_details.id %}"
+        >
+            <div class="w-full h-full flex flex-col gap-3 items-center justify-center ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4b5563" class="size-20">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+            </div>
+        </a>
     </div>
 </div>
 {% endblock %}
