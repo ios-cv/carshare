@@ -20,5 +20,6 @@
     </form>
 </div>
 <a class="hidden" href="{{ request.get_host }}" id="base_url"></a>
-<a class="hidden" href="{% url "backoffice_available_vehicles" "start" "end" %}" id="available_vehicles_url"></a>
+<a class="hidden" href="{% url "backoffice_available_vehicles" %}" id="available_vehicles_url"></a>
+<input type="hidden" value="{{ booking.id }}" id="booking_id"/>
 {% endblock %}
