@@ -16,6 +16,8 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 
+import json
+
 from django_filters import FilterSet, ModelChoiceFilter
 
 from bookings.models import TsTzRange
@@ -31,7 +33,7 @@ from drivers.models import (
 )
 from hardware.models import Vehicle, Box, BoxAction, VehicleType
 from users.models import User
-from bookings.models import get_available_vehicles
+from bookings.models import get_available_vehicles_plus
 
 from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm
@@ -380,12 +382,24 @@ def edit_booking(request, booking_id):
     return render(request, "backoffice/bookings/edit_booking.html",context)
 
 @require_backoffice_access
-def get_all_available_vehicles(request,start,end):
-    start = parse_datetime(start)
-    end = parse_datetime(end)
-    vehicle_types = VehicleType.objects.all()
-    available_vehicles = get_available_vehicles(start,end,vehicle_types)
+def get_all_available_vehicles(request):
+    # if not request.method=="POST":
+    #     return JsonResponse({"error":{"message":"POST REQUIRED","status":421}})
+    if request.body:
+        data=json.loads(request.body)
+        start=data.get("start")
+        end=data.get("end")
+        booking_id=data.get("booking_id")
+    else:
+        start=None
+    if start and end:
+        start = parse_datetime(start)
+        end = parse_datetime(end)
+        vehicle_types = VehicleType.objects.all()
+        available_vehicles = get_available_vehicles_plus(start,end,vehicle_types,booking_id)
+    else:
+        available_vehicles = Vehicle.objects.all()
     available_vehicles = available_vehicles.values_list("name", "id", "registration")
-    available_vehicles_json = [{"name": name, "id": id,"registration": registration} for name, id, registration in available_vehicles]
+    available_vehicles_json = [dict({"name": name, "id": int(id),"registration": registration}) for name, id, registration in available_vehicles]
     #return HttpResponse(available_vehicles_json,content_type="application/json")
     return JsonResponse(available_vehicles_json,safe=False)
