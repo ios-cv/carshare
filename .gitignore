@@ -18,4 +18,6 @@ db.sqlite3
 # Build artifacts
 bundle.tar.gz
 
+# Environment variables
+.env.zsh
 .env
