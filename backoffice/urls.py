@@ -40,7 +40,7 @@ urlpatterns = [
         name="backoffice_edit_booking",
     ),
     path(
-        "vehicles/available/<str:start>/<str:end>/",
+        "vehicles/available/",
         views.get_all_available_vehicles,
         name="backoffice_available_vehicles",
     ),
