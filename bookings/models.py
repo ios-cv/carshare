@@ -210,6 +210,24 @@ def get_available_vehicles(start, end, vehicle_types):
         )
     ).filter(vehicle_type__in=vehicle_types)
 
+def get_available_vehicles_plus(start, end, vehicle_types, ignore_booking=None):
+    bookings_queryset = Booking.objects.values("vehicle_id").filter(
+        ~Q(state=Booking.STATE_CANCELLED),
+        block_time__overlap=TsTzRange(
+            start,
+            end + timezone.timedelta(minutes=POLICY_BUFFER_TIME),
+            RangeBoundary(),
+        ),
+    )
+
+    if ignore_booking:
+        bookings_queryset = bookings_queryset.exclude(id=ignore_booking)
+    
+    return Vehicle.objects.exclude(
+        id__in=Subquery(
+            bookings_queryset.order_by("vehicle_id").distinct("vehicle_id")
+        )
+    ).filter(vehicle_type__in=vehicle_types)
 
 def get_unavailable_vehicles(start, end, vehicle_types):
     vehicles = Vehicle.objects.filter(
