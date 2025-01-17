@@ -42,7 +42,7 @@ class BusinessBillingAccountForm(forms.ModelForm):
             "business_name": "The legal name of your business. This will be shown on your VAT invoices.",
             "business_address_line_1": "The address and post code provided here will appear on your VAT invoices.",
             "business_tax_id": "If you would like your VAT number shown on your invoices, please enter it here in the format GB123456789",
-            "business_purchase_order": "If you have a purchase order it will be displayed on your invoices, you may change this at any time.",
+            "business_purchase_order": "If you enter a purchase order number here it will be displayed on your invoices. You can change this at any time.",
         }
 
     def clean_business_tax_id(self):
@@ -109,7 +109,7 @@ class UpdatePurchaseOrderForm(ModelForm):
         fields = ["business_purchase_order"]
         labels = {"business_purchase_order": "Purchase order"}
         help_texts = {
-            "business_purchase_order": "If you have a purchase order it will be displayed on your invoices, you may change this at any time."
+            "business_purchase_order": "If you enter a purchase order number here it will be displayed on your invoices. You can change this at any time."
         }
 
     def __init__(self, *args, **kwargs):
