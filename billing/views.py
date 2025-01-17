@@ -189,7 +189,6 @@ def create_account_complete(request):
 def profile_billing_accounts(request):
     billing_accounts = request.user.owned_billing_accounts.all()
     update_success = False
-    form = UpdatePurchaseOrderForm()
     ba_id = None
     if request.method == "POST":
         form = UpdatePurchaseOrderForm(request.POST)
