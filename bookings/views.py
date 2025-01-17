@@ -43,8 +43,6 @@ def my_bookings(request):
     bookings = Booking.objects.filter(user_id=request.user.id).order_by(
         "-reservation_time"
     )
-    for booking in bookings:
-        booking.can_lock = booking.vehicle.box.current_booking == booking
     context = {
         "bookings": bookings,
         "menu": "my_bookings",
