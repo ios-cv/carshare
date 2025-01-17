@@ -172,7 +172,7 @@ class Booking(models.Model):
             self.reservation_time.lower,
             self.reservation_time.upper,
         )
-    
+
     @property
     def is_current_booking_on_box(self):
         """
