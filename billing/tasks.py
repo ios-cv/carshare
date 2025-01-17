@@ -76,7 +76,7 @@ def run_billing():
                 invoice.id,
                 custom_fields=[
                     {
-                        "name": "Purchase Order",
+                        "name": "Purchase Order No.",
                         "value": booking.billing_account.business_purchase_order,
                     },
                 ],
@@ -141,7 +141,7 @@ def monthly_billing():
                 invoice.id,
                 custom_fields=[
                     {
-                        "name": "Purchase Order",
+                        "name": "Purchase Order No.",
                         "value": account.business_purchase_order,
                     },
                 ],
