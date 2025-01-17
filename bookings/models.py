@@ -172,6 +172,13 @@ class Booking(models.Model):
             self.reservation_time.lower,
             self.reservation_time.upper,
         )
+    
+    @property
+    def is_current_booking_on_box(self):
+        """
+        Return True if this booking is the currently active booking according to the associated Box, otherwise False.
+        """
+        return self == self.vehicle.box.current_booking
 
     def can_be_modified_by_user(self, user):
         """Returns whether the provided user is allowed to modify (edit/cancel/etc) this booking."""
