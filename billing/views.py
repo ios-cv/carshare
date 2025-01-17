@@ -195,6 +195,7 @@ def profile_billing_accounts(request):
         if form.is_valid():
             ba_id = form.cleaned_data["ba_id"]
             updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
+            # only edit the PO if the billing account id supplied is for a billing account in the list of billing accounts belonging to this user
             if updated_billing_account in billing_accounts:
                 update_purchase_order_form = UpdatePurchaseOrderForm(
                     request.POST,
