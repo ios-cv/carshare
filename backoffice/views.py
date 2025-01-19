@@ -325,20 +325,22 @@ def close_booking(request, booking_id):
     form = CloseBookingForm(request.GET or None)
     if form.is_valid():
         should_lock = form.cleaned_data.get("should_lock")
+        return_url = form.cleaned_data.get("return_url")
     else:
         should_lock = False
+        return_url = reverse("backoffice_home")
 
     # Don't allow closing the booking if it hasn't started yet.
     if not booking.reservation_started():
         message = f"Failed to close booking #{booking_id} as it hasn't started yet."
         messages.error(request, message)
-        return redirect(reverse("backoffice_bookings"))
+        return redirect(return_url)
 
     # FIXME: potential race condition as booking state could have been changed elsewhere
     if not booking.in_closeable_state():
         message = f"Failed to close booking #{booking_id} as it is in an inappropriate state: {booking.get_state_display()}."
         messages.error(request, message)
-        return redirect(reverse("backoffice_bookings"))
+        return redirect(return_url)
 
     booking.state = Booking.STATE_INACTIVE
     booking.save()
@@ -365,7 +367,7 @@ def close_booking(request, booking_id):
         message = f"Lock action sent to vehicle {box.vehicle.registration}."
         messages.success(request, message)
 
-    return redirect(reverse("backoffice_bookings"))
+    return redirect(return_url)
 
 
 @require_backoffice_access

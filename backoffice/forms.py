@@ -4,6 +4,7 @@ from crispy_forms.layout import Layout
 
 from django import forms
 from django.forms import ValidationError
+from django.urls import reverse_lazy
 from django.utils import timezone
 
 from drivers.fields import CustomImageField
@@ -187,3 +188,4 @@ class DriverProfileApprovalForm(forms.Form):
 
 class CloseBookingForm(forms.Form):
     should_lock = forms.BooleanField(required=False, initial=False)
+    return_url = forms.CharField(required=False, initial=reverse_lazy("backoffice_home"))
