@@ -150,6 +150,23 @@ class Booking(models.Model):
         now = timezone.now()
         return self.reservation_time.lower <= now <= self.reservation_time.upper
 
+    def reservation_started(self):
+        """ Returns True if the booking has passed its start time, otherwise False. """
+        return timezone.now() >= self.reservation_time.lower
+
+    def in_closeable_state(self):
+        """
+        Return True if the state the booking is in allows it to be closed, else False.
+        Only considers the booking state. This doesn't consider who is trying to close it,
+        or the current time in relation to the booking time.
+        """
+        return self.state in {
+            Booking.STATE_ACTIVE,
+            Booking.STATE_PENDING,
+            Booking.STATE_LATE,
+            Booking.STATE_INACTIVE,
+        }
+
     @property
     def cancelled(self):
         return self.state == self.STATE_CANCELLED

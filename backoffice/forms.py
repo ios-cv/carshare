@@ -183,3 +183,7 @@ class DriverProfileApprovalForm(forms.Form):
         self.driver_profile.approved_to_drive = True
         self.driver_profile.approved_by = user
         self.driver_profile.save()
+
+
+class CloseBookingForm(forms.Form):
+    should_lock = forms.BooleanField(required=False, initial=False)

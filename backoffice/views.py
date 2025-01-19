@@ -3,6 +3,7 @@ from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.postgres.fields import RangeBoundary
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
@@ -30,7 +31,7 @@ from hardware.models import Vehicle, Box, BoxAction
 from users.models import User
 
 from .decorators import require_backoffice_access
-from .forms import DriverProfileApprovalForm, DriverProfileReviewForm
+from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBookingForm
 
 
 @require_backoffice_access
@@ -316,12 +317,23 @@ def vehicles(request):
 @require_backoffice_access
 def close_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
+
+    form = CloseBookingForm(request.GET or None)
+    if form.is_valid():
+        should_lock = form.cleaned_data.get("should_lock")
+    else:
+        should_lock = False
+
+    # Don't allow closing the booking if it hasn't started yet.
+    if not booking.reservation_started():
+        message = f"Failed to close booking #{booking_id} as it hasn't started yet."
+        messages.error(request, message)
+        return redirect(reverse("backoffice_bookings"))
+
     # FIXME: potential race condition as booking state could have been changed elsewhere
-    if booking.state not in {
-        Booking.STATE_ACTIVE,
-        Booking.STATE_PENDING,
-        Booking.STATE_LATE,
-    }:
+    if not booking.in_closeable_state():
+        message = f"Failed to close booking #{booking_id} as it is in an inappropriate state: {booking.get_state_display()}."
+        messages.error(request, message)
         return redirect(reverse("backoffice_bookings"))
 
     booking.state = Booking.STATE_INACTIVE
@@ -333,8 +345,10 @@ def close_booking(request, booking_id):
         box.current_booking = None
         box.save()
 
-    should_lock = request.GET.get("should_lock", "True")
-    if should_lock != "False":
+    message = f"Booking #{booking_id} closed."
+    messages.success(request, message)
+
+    if should_lock:
         time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
         action = BoxAction(
             action="lock",
@@ -344,5 +358,7 @@ def close_booking(request, booking_id):
             user_id=request.user.id,
         )
         action.save()
+        message = f"Lock action sent to vehicle {box.vehicle.registration}."
+        messages.success(request, message)
 
     return redirect(reverse("backoffice_bookings"))
