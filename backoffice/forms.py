@@ -188,4 +188,6 @@ class DriverProfileApprovalForm(forms.Form):
 
 class CloseBookingForm(forms.Form):
     should_lock = forms.BooleanField(required=False, initial=False)
-    return_url = forms.CharField(required=False, initial=reverse_lazy("backoffice_home"))
+    return_url = forms.CharField(
+        required=False, initial=reverse_lazy("backoffice_home")
+    )
