@@ -55,6 +55,7 @@
   </div>
   {% if booking.cancelled %}
   {% else %}
+    {% user_can_access_booking user booking as access %}
     <div>
       <div class="-mt-px flex divide-x divide-gray-200">
         {% if booking.reservation_in_progress %}
@@ -69,12 +70,15 @@
               <span class="ml-3">Edit</span>
             </a>
           </div>
-          {% user_can_access_booking user booking as access %}
           {% if access %}
             {% include "bookings/booking_list/unlock-button.html" %}
             {% include "bookings/booking_list/lock-button.html" %}
           {% endif %}
         {% elif booking.reservation_ended %}
+            {% if access and booking.is_current_booking_on_box %}
+              {% include "bookings/booking_list/lock-button.html" %}
+            {% endif %}
+            
         {% else %}
           <div class="w-0 flex-1 flex">
             <a href="{% url 'bookings_edit' booking.id %}"

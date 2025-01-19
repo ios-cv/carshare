@@ -40,10 +40,11 @@ def home(request):
 @login_required
 @require_user_can_view_bookings
 def my_bookings(request):
+    bookings = Booking.objects.filter(user_id=request.user.id).order_by(
+        "-reservation_time"
+    )
     context = {
-        "bookings": Booking.objects.filter(user_id=request.user.id).order_by(
-            "-reservation_time"
-        ),
+        "bookings": bookings,
         "menu": "my_bookings",
         "cancel_cutoff": POLICY_CANCELLATION_CUTOFF_HOURS,
     }
