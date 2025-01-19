@@ -4,6 +4,7 @@ from crispy_forms.bootstrap import InlineField
 
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -26,7 +27,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle
+from hardware.models import Vehicle, BoxAction
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -314,3 +315,37 @@ def vehicles(request):
     context["page_range"] = page_range
 
     return render(request, "backoffice/vehicles.html", context)
+
+
+@require_backoffice_access
+def lock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="lock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+@require_backoffice_access
+def unlock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="unlock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+def perform_box_action(request, vehicle, action_to_perform, user):
+    box_id = vehicle.box
+    time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
+    action = BoxAction(
+        action=action_to_perform,
+        created_at=timezone.now(),
+        expires_at=time_to_expire,
+        box=box_id,
+        user_id=user.id,
+    )
+    action.save()
+    # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
+    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
+    messages.success(request, message)
