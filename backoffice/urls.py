@@ -33,4 +33,14 @@ urlpatterns = [
         views.close_booking,
         name="backoffice_close_booking",
     ),
+    path(
+        "lock/<int:id>/",
+        views.lock,
+        name="backoffice_lock_car",
+    ),
+    path(
+        "unlock/<int:id>/",
+        views.unlock,
+        name="backoffice_unlock_car",
+    ),
 ]

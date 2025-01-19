@@ -28,6 +28,14 @@ build:
 bundle: build
 	tar -czv --exclude-vcs --exclude-vcs-ignores --exclude '*/bundle.tar.gz' --exclude '*/node_modules' --exclude 'carshare/media' --exclude '*/__pycache__' -f bundle.tar.gz ../carshare/* ../crispy-tailwind/*
 
+generate-er-diagram:
+	@echo Generating DOT file
+	poetry run python manage.py graph_models -a > documentation/model.dot
+	@echo Converting to SVG
+	dot -Tsvg documentation/model.dot -o documentation/model.svg
+	@echo Inserting into html viewer
+	poetry run python documentation/insert-diagram.py documentation/template_entity_relationship_diagram.html documentation/model.svg documentation/entity_relationship_diagram.html
+
 setup-crispy-tailwind:
 	@echo Setting up our modified version of crispy tailwind...
 	test -s crispy_tailwind || (\

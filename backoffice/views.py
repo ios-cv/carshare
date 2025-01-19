@@ -3,8 +3,8 @@ from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.postgres.fields import RangeBoundary
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from django_filters import FilterSet, ModelChoiceFilter
 
-from bookings.models import TsTzRange
+from bookings.models import TsTzRange, STATE_LATE
 
 from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
@@ -28,6 +28,7 @@ from drivers.models import (
     DriverProfile,
 )
 from hardware.models import Vehicle, Box, BoxAction
+from hardware.models import Vehicle, BoxAction
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -51,6 +52,9 @@ def home(request):
                 end_tomorrow,
                 RangeBoundary(),
             ),
+        ).order_by("-reservation_time"),
+        "late_bookings": Booking.objects.filter(
+            state=STATE_LATE,
         ).order_by("-reservation_time"),
         "drivers_pending": drivers_pending,
         "accounts_pending": accounts_pending,
@@ -362,3 +366,36 @@ def close_booking(request, booking_id):
         messages.success(request, message)
 
     return redirect(reverse("backoffice_bookings"))
+
+@require_backoffice_access
+def lock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="lock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+@require_backoffice_access
+def unlock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="unlock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+def perform_box_action(request, vehicle, action_to_perform, user):
+    box_id = vehicle.box
+    time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
+    action = BoxAction(
+        action=action_to_perform,
+        created_at=timezone.now(),
+        expires_at=time_to_expire,
+        box=box_id,
+        user_id=user.id,
+    )
+    action.save()
+    # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
+    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
+    messages.success(request, message)
