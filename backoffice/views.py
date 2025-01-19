@@ -367,6 +367,7 @@ def close_booking(request, booking_id):
 
     return redirect(reverse("backoffice_bookings"))
 
+
 @require_backoffice_access
 def lock(request, id):
     vehicle = Vehicle.objects.get(pk=id)

@@ -151,7 +151,7 @@ class Booking(models.Model):
         return self.reservation_time.lower <= now <= self.reservation_time.upper
 
     def reservation_started(self):
-        """ Returns True if the booking has passed its start time, otherwise False. """
+        """Returns True if the booking has passed its start time, otherwise False."""
         return timezone.now() >= self.reservation_time.lower
 
     def in_closeable_state(self):
