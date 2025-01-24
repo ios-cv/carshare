@@ -44,12 +44,6 @@ urlpatterns = [
         name="backoffice_unlock_car",
     ),
     path(
-        # no dangling slash as url is appended to
-        "bookings/close/<int:booking_id>",
-        views.close_booking,
-        name="backoffice_close_booking",
-    ),
-    path(
         "bookings/edit/<int:booking_id>/",
         views.edit_booking,
         name="backoffice_edit_booking",
