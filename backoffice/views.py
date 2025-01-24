@@ -37,7 +37,12 @@ from users.models import User
 from bookings.models import get_available_vehicles_plus
 
 from .decorators import require_backoffice_access
-from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm, CloseBookingForm
+from .forms import (
+    DriverProfileApprovalForm,
+    DriverProfileReviewForm,
+    EditBookingForm,
+    CloseBookingForm,
+)
 
 
 @require_backoffice_access
@@ -408,15 +413,16 @@ def perform_box_action(request, vehicle, action_to_perform, user):
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
 
+
 @require_backoffice_access
 def edit_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
 
     if request.method == "POST":
-        form = EditBookingForm(request.POST,instance=booking)
+        form = EditBookingForm(request.POST, instance=booking)
         if form.is_valid():
-            reservation_time=form.cleaned_data.get("reservation_time")
-            booking.update_times(reservation_time.lower,reservation_time.upper)
+            reservation_time = form.cleaned_data.get("reservation_time")
+            booking.update_times(reservation_time.lower, reservation_time.upper)
             try:
                 form.save()
                 return redirect(reverse("backoffice_bookings"))
@@ -427,34 +433,40 @@ def edit_booking(request, booking_id):
                 )
 
     else:
-        form = EditBookingForm(instance = booking)
+        form = EditBookingForm(instance=booking)
     context = {
-        "booking":booking,
-        "menu":"bookings",
-        "user":request.user,
-        "form":form
+        "booking": booking,
+        "menu": "bookings",
+        "user": request.user,
+        "form": form,
     }
-    return render(request, "backoffice/bookings/edit_booking.html",context)
+    return render(request, "backoffice/bookings/edit_booking.html", context)
+
 
 @require_backoffice_access
 def get_all_available_vehicles(request):
     # if not request.method=="POST":
     #     return JsonResponse({"error":{"message":"POST REQUIRED","status":421}})
     if request.body:
-        data=json.loads(request.body)
-        start=data.get("start")
-        end=data.get("end")
-        booking_id=data.get("booking_id")
+        data = json.loads(request.body)
+        start = data.get("start")
+        end = data.get("end")
+        booking_id = data.get("booking_id")
     else:
-        start=None
+        start = None
     if start and end:
         start = parse_datetime(start)
         end = parse_datetime(end)
         vehicle_types = VehicleType.objects.all()
-        available_vehicles = get_available_vehicles_plus(start,end,vehicle_types,booking_id)
+        available_vehicles = get_available_vehicles_plus(
+            start, end, vehicle_types, booking_id
+        )
     else:
         available_vehicles = Vehicle.objects.all()
     available_vehicles = available_vehicles.values_list("name", "id", "registration")
-    available_vehicles_json = [dict({"name": name, "id": int(id),"registration": registration}) for name, id, registration in available_vehicles]
-    #return HttpResponse(available_vehicles_json,content_type="application/json")
-    return JsonResponse(available_vehicles_json,safe=False)
+    available_vehicles_json = [
+        dict({"name": name, "id": int(id), "registration": registration})
+        for name, id, registration in available_vehicles
+    ]
+    # return HttpResponse(available_vehicles_json,content_type="application/json")
+    return JsonResponse(available_vehicles_json, safe=False)

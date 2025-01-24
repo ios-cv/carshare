@@ -193,10 +193,17 @@ class CloseBookingForm(forms.Form):
         required=False, initial=reverse_lazy("backoffice_home")
     )
 
+
 class EditBookingForm(ModelForm):
     class Meta:
-        model=Booking
-        fields = ["vehicle","state","reservation_time","actual_start_time","actual_end_time"]
+        model = Booking
+        fields = [
+            "vehicle",
+            "state",
+            "reservation_time",
+            "actual_start_time",
+            "actual_end_time",
+        ]
 
     actual_start_time = forms.SplitDateTimeField(
         label="Actual start time",
