@@ -2,6 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
 
+from itertools import chain
+
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
 from django.contrib import messages
@@ -9,10 +11,11 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms import ModelChoiceField
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
@@ -22,13 +25,14 @@ from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
     BillingAccount,
 )
+from billing.forms import UpdatePurchaseOrderForm
 from bookings.models import Booking
 from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction
-from hardware.models import Vehicle, BoxAction
+from hardware.models import Vehicle, Card, Box, BoxAction
+from hardware.forms import CreateCard
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -402,3 +406,104 @@ def perform_box_action(request, vehicle, action_to_perform, user):
     # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
+
+
+@require_backoffice_access
+def user_details(request, id):
+    selected_user_details = User.objects.get(pk=id)
+    selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
+    selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
+    selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
+    selected_user_cards = Card.objects.filter(user__id=id)
+    selected_user_bookings = Booking.objects.filter(user__id=id).order_by(
+        "-reservation_time"
+    )
+
+    filter = BookingsFilter(request.GET, queryset=selected_user_bookings)
+    bookings = filter.qs
+    paginator = Paginator(bookings, 5)
+
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    # Process and add purchase order update forms
+    update_success = False
+    ba_id = None
+    if request.method == "POST":
+        form = UpdatePurchaseOrderForm(request.POST)
+        if form.is_valid():
+            ba_id = form.cleaned_data["ba_id"]
+            updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
+            # backoffice user is allowed to edit any account
+            update_purchase_order_form = UpdatePurchaseOrderForm(
+                request.POST,
+                instance=updated_billing_account,
+            )
+            update_purchase_order_form.save()
+            update_success = True
+        else:
+            ba_id = form.cleaned_data["ba_id"]
+
+    for billing_account in chain(
+        selected_user_owned_billing_accounts, selected_user_member_billing_accounts
+    ):
+        if billing_account.id == ba_id:
+            billing_account.purchase_order_update_form = form
+            billing_account.successfully_updated = update_success
+        else:
+            billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
+                initial={
+                    "ba_id": billing_account.id,
+                    "business_purchase_order": billing_account.business_purchase_order,
+                }
+            )
+            billing_account.successfully_updated = False
+
+    # Hack for pagination & filtering. Should really use a templatetag to generate URLs.
+    _request_copy = request.GET.copy()
+    parameters = _request_copy.pop("page", True) and _request_copy.urlencode()
+    context = {
+        "menu": "user",
+        "user": request.user,
+        "user_details": selected_user_details,
+        "driver_profiles": selected_user_driver_profiles,
+        "owned_billing_accounts": selected_user_owned_billing_accounts,
+        "member_billing_accounts": selected_user_member_billing_accounts,
+        "cards": selected_user_cards,
+        "page": page_obj,
+        "page_range": page_range,
+        "filter": filter,
+        "parameters": parameters,
+    }
+    return render(request, "backoffice/user_details.html", context)
+
+
+@require_backoffice_access
+def user_with_name(request, username):
+    user = User.objects.get(username=username)
+    return user_details(request, user.id)
+
+
+@require_backoffice_access
+def add_card(request, id):
+    try:
+        selected_user_details = User.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        messages.error(request, "No such user.")
+        return redirect("backoffice_users")
+    if request.method == "POST":
+        form = CreateCard(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("backoffice_user_details", id=id)
+    else:
+        form = CreateCard(initial={"user": id})
+    context = {
+        "user": request.user,
+        "form": form,
+        "user_details": selected_user_details,
+    }
+    return render(request, "backoffice/users/add_card.html", context)

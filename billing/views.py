@@ -1,15 +1,17 @@
+import copy
 import logging
+from django.forms import model_to_dict
 import stripe
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 
-from .forms import BusinessBillingAccountForm, InviteMemberForm
+from .forms import BusinessBillingAccountForm, InviteMemberForm, UpdatePurchaseOrderForm
 from .models import (
     BillingAccount,
     get_personal_billing_account_for_user,
@@ -185,11 +187,44 @@ def create_account_complete(request):
 
 @login_required
 def profile_billing_accounts(request):
+    billing_accounts = request.user.owned_billing_accounts.all()
+    update_success = False
+    ba_id = None
+    if request.method == "POST":
+        form = UpdatePurchaseOrderForm(request.POST)
+        if form.is_valid():
+            ba_id = form.cleaned_data["ba_id"]
+            updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
+            # only edit the PO if the billing account id supplied is for a billing account in the list of billing accounts belonging to this user
+            if updated_billing_account in billing_accounts:
+                update_purchase_order_form = UpdatePurchaseOrderForm(
+                    request.POST,
+                    instance=updated_billing_account,
+                )
+                update_purchase_order_form.save()
+                update_success = True
+        else:
+            ba_id = form.cleaned_data["ba_id"]
+
+    for billing_account in billing_accounts:
+        if ba_id != None and billing_account.id == ba_id:
+            billing_account.purchase_order_update_form = form
+            billing_account.successfully_updated = update_success
+        else:
+            billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
+                initial={
+                    "ba_id": billing_account.id,
+                    "business_purchase_order": billing_account.business_purchase_order,
+                }
+            )
+            billing_account.successfully_updated = False
+
     context = {
         "menu": "profile",
         "profile_menu": "billing_accounts",
-        "billing_accounts": request.user.owned_billing_accounts.all(),
+        "billing_accounts": billing_accounts,
     }
+
     return render(request, "billing/profile_billing_accounts.html", context)
 
 
