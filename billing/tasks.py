@@ -69,6 +69,14 @@ def run_billing():
             "rendering": {"pdf": {"page_size": "a4"}},
         }
 
+        if booking.billing_account.business_purchase_order:
+            invoice_kwargs["custom_fields"].append(
+                {
+                    "name": "Purchase Order No.",
+                    "value": booking.billing_account.business_purchase_order,
+                }
+            )
+
         invoice = stripe.Invoice.create(**invoice_kwargs)
 
         amount = booking.cost * 100
@@ -124,6 +132,17 @@ def monthly_billing():
             "rendering": {"pdf": {"page_size": "a4"}},
         }
         invoice = stripe.Invoice.create(**invoice_kwargs)
+
+        if account.business_purchase_order:
+            invoice = stripe.Invoice.modify(
+                invoice.id,
+                custom_fields=[
+                    {
+                        "name": "Purchase Order No.",
+                        "value": account.business_purchase_order,
+                    },
+                ],
+            )
 
         for booking in bookings:
             log.info(f"Starting billing process for booking: {booking.id}")
