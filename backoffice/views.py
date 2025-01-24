@@ -2,6 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
 
+from itertools import chain
+
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
 from django.contrib import messages
@@ -9,7 +11,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms import ModelChoiceField
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -23,6 +25,7 @@ from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
     BillingAccount,
 )
+from billing.forms import UpdatePurchaseOrderForm
 from bookings.models import Booking
 from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
@@ -425,6 +428,37 @@ def user_details(request, id):
     page_range = paginator.get_elided_page_range(
         number=page_number, on_each_side=1, on_ends=1
     )
+
+    # Process and add purchase order update forms
+    update_success = False
+    ba_id = None
+    if request.method == "POST":
+        form = UpdatePurchaseOrderForm(request.POST)
+        if form.is_valid():
+            ba_id = form.cleaned_data["ba_id"]
+            updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
+            # backoffice user is allowed to edit any account
+            update_purchase_order_form = UpdatePurchaseOrderForm(
+                request.POST,
+                instance=updated_billing_account,
+            )
+            update_purchase_order_form.save()
+            update_success = True
+        else:
+            ba_id = form.cleaned_data["ba_id"]
+
+    for billing_account in chain(selected_user_owned_billing_accounts, selected_user_member_billing_accounts):
+        if billing_account.id == ba_id:
+            billing_account.purchase_order_update_form = form
+            billing_account.successfully_updated = update_success
+        else:
+            billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
+                initial={
+                    "ba_id": billing_account.id,
+                    "business_purchase_order": billing_account.business_purchase_order,
+                }
+            )
+            billing_account.successfully_updated = False
 
     # Hack for pagination & filtering. Should really use a templatetag to generate URLs.
     _request_copy = request.GET.copy()
