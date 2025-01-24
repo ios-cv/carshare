@@ -7,52 +7,31 @@
     </th>
     <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
         scope="col">
-      Registration
+      User
     </th>
     <th
       class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
       scope="col">
-      Vehicle Type
-    </th>
-    <th
-      class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
-      scope="col">
-      Location
+      Start
     </th>
     <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
         scope="col">
-      Box Serial
+      End
     </th>
     <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
         scope="col">
-      Last Seen At
+      Vehicle
     </th>
     <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
         scope="col">
-      Current Booking
-    </th>
-    <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-        scope="col">
-      Unlocked By
-    </th>
-    <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-        scope="col">
-      Desired Firmware Version
-    </th>
-    <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-        scope="col">
-      Current Firmware Version
-    </th>
-    <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
-    scope="col">
-      Lock / Unlock
+      Actions
     </th>
   </tr>
   </thead>
   <tbody class="divide-y divide-gray-100 bg-white">
 
-  {% for v in vehicles %}
-    {% include "backoffice/vehicles/vehicles_list_item.html" with v=v %}
+  {% for b in late_bookings %}
+    {% include "backoffice/bookings/bookings_list_item.html" with b=b %}
   {% endfor %}
 
   </tbody>

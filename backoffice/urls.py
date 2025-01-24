@@ -29,6 +29,21 @@ urlpatterns = [
         name="backoffice_reject_billing_account",
     ),
     path(
+        "bookings/close/<int:booking_id>",
+        views.close_booking,
+        name="backoffice_close_booking",
+    ),
+    path(
+        "lock/<int:id>/",
+        views.lock,
+        name="backoffice_lock_car",
+    ),
+    path(
+        "unlock/<int:id>/",
+        views.unlock,
+        name="backoffice_unlock_car",
+    ),
+    path(
         #no dangling slash as url is appended to
         "bookings/close/<int:booking_id>",
         views.close_booking,

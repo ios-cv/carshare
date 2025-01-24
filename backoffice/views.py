@@ -4,6 +4,7 @@ from crispy_forms.bootstrap import InlineField
 
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -20,7 +21,7 @@ import json
 
 from django_filters import FilterSet, ModelChoiceFilter
 
-from bookings.models import TsTzRange
+from bookings.models import TsTzRange, STATE_LATE
 
 from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
@@ -36,7 +37,7 @@ from users.models import User
 from bookings.models import get_available_vehicles_plus
 
 from .decorators import require_backoffice_access
-from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm
+from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, EditBookingForm, CloseBookingForm
 
 
 @require_backoffice_access
@@ -56,6 +57,9 @@ def home(request):
                 end_tomorrow,
                 RangeBoundary(),
             ),
+        ).order_by("-reservation_time"),
+        "late_bookings": Booking.objects.filter(
+            state=STATE_LATE,
         ).order_by("-reservation_time"),
         "drivers_pending": drivers_pending,
         "accounts_pending": accounts_pending,
@@ -322,13 +326,26 @@ def vehicles(request):
 @require_backoffice_access
 def close_booking(request, booking_id):
     booking = Booking.objects.get(pk=booking_id)
+
+    form = CloseBookingForm(request.GET or None)
+    if form.is_valid():
+        should_lock = form.cleaned_data.get("should_lock")
+        return_url = form.cleaned_data.get("return_url")
+    else:
+        should_lock = False
+        return_url = reverse("backoffice_home")
+
+    # Don't allow closing the booking if it hasn't started yet.
+    if not booking.reservation_started():
+        message = f"Failed to close booking #{booking_id} as it hasn't started yet."
+        messages.error(request, message)
+        return redirect(return_url)
+
     # FIXME: potential race condition as booking state could have been changed elsewhere
-    if booking.state not in {
-        Booking.STATE_ACTIVE,
-        Booking.STATE_PENDING,
-        Booking.STATE_LATE,
-    }:
-        return redirect(reverse("backoffice_bookings"))
+    if not booking.in_closeable_state():
+        message = f"Failed to close booking #{booking_id} as it is in an inappropriate state: {booking.get_state_display()}."
+        messages.error(request, message)
+        return redirect(return_url)
 
     booking.state = Booking.STATE_INACTIVE
     booking.save()
@@ -339,8 +356,10 @@ def close_booking(request, booking_id):
         box.current_booking = None
         box.save()
 
-    should_lock = request.GET.get("should_lock", "True")
-    if should_lock != "False":
+    message = f"Booking #{booking_id} closed."
+    messages.success(request, message)
+
+    if should_lock:
         time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
         action = BoxAction(
             action="lock",
@@ -350,8 +369,44 @@ def close_booking(request, booking_id):
             user_id=request.user.id,
         )
         action.save()
+        message = f"Lock action sent to vehicle {box.vehicle.registration}."
+        messages.success(request, message)
 
-    return redirect(reverse("backoffice_bookings"))
+    return redirect(return_url)
+
+
+@require_backoffice_access
+def lock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="lock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+@require_backoffice_access
+def unlock(request, id):
+    vehicle = Vehicle.objects.get(pk=id)
+    perform_box_action(
+        request=request, vehicle=vehicle, action_to_perform="unlock", user=request.user
+    )
+    return redirect(reverse("backoffice_vehicles"))
+
+
+def perform_box_action(request, vehicle, action_to_perform, user):
+    box_id = vehicle.box
+    time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
+    action = BoxAction(
+        action=action_to_perform,
+        created_at=timezone.now(),
+        expires_at=time_to_expire,
+        box=box_id,
+        user_id=user.id,
+    )
+    action.save()
+    # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
+    message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
+    messages.success(request, message)
 
 @require_backoffice_access
 def edit_booking(request, booking_id):
