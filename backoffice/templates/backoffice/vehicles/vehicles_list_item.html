@@ -44,4 +44,8 @@
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     v{{ v.box.firmware_version }}
   </td>
+  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500 flex flex-col gap-2">
+    {% include "backoffice/vehicles/lock-button.html" %}
+    {% include "backoffice/vehicles/unlock-button.html" %}
+  </td>
 </tr>
