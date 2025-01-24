@@ -447,7 +447,9 @@ def user_details(request, id):
         else:
             ba_id = form.cleaned_data["ba_id"]
 
-    for billing_account in chain(selected_user_owned_billing_accounts, selected_user_member_billing_accounts):
+    for billing_account in chain(
+        selected_user_owned_billing_accounts, selected_user_member_billing_accounts
+    ):
         if billing_account.id == ba_id:
             billing_account.purchase_order_update_form = form
             billing_account.successfully_updated = update_success
