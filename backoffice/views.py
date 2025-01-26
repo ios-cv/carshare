@@ -349,6 +349,7 @@ def close_booking(request, booking_id):
     # FIXME: May also be a race condition
     if box.current_booking == booking:
         box.current_booking = None
+        box.unlocked_by = None
         box.save()
 
     message = f"Booking #{booking_id} closed."
@@ -364,6 +365,11 @@ def close_booking(request, booking_id):
             user_id=request.user.id,
         )
         action.save()
+
+        box = Box.objects.get(pk=booking.vehicle.box.id)
+        box.locked = True
+        box.save()
+
         message = f"Lock action sent to vehicle {box.vehicle.registration}."
         messages.success(request, message)
 
@@ -399,6 +405,8 @@ def perform_box_action(request, vehicle, action_to_perform, user):
         user_id=user.id,
     )
     action.save()
+    vehicle.box.locked = True if action_to_perform == "lock" else False
+    vehicle.box.save()
     # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
