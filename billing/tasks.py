@@ -67,6 +67,7 @@ def run_billing():
             "pending_invoice_items_behavior": "exclude",
             "account_tax_ids": [TAX_NUMBER_ID],
             "rendering": {"pdf": {"page_size": "a4"}},
+            "custom_fields": [],
         }
 
         if booking.billing_account.business_purchase_order:
@@ -130,6 +131,7 @@ def monthly_billing():
             "pending_invoice_items_behavior": "exclude",
             "account_tax_ids": [TAX_NUMBER_ID],
             "rendering": {"pdf": {"page_size": "a4"}},
+            "custom_fields": [],
         }
         invoice = stripe.Invoice.create(**invoice_kwargs)
 
