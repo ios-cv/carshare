@@ -347,7 +347,7 @@ def close_booking(request, booking_id):
 
     box = Box.objects.get(pk=booking.vehicle.box.id)
     # FIXME: May also be a race condition
-    if box.current_booking == booking_id:
+    if box.current_booking == booking:
         box.current_booking = None
         box.save()
 
