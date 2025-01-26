@@ -16,6 +16,7 @@ import stripe
 
 from pathlib import Path
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
 if SENTRY_DSN:
@@ -26,6 +27,7 @@ if SENTRY_DSN:
         traces_sample_rate=0,
         environment=os.environ.get("SENTRY_ENVIRONMENT", "development"),
     )
+    ignore_logger("django.security.DisallowedHost")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
