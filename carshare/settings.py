@@ -11,9 +11,21 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+import sentry_sdk
 import stripe
 
 from pathlib import Path
+from sentry_sdk.integrations.django import DjangoIntegration
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        auto_session_tracking=False,
+        traces_sample_rate=0,
+        environment=os.environ.get("SENTRY_ENVIRONMENT", "development"),
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
