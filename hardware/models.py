@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from datetime import timedelta
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
@@ -242,5 +243,24 @@ class Telemetry(models.Model):
     class Meta:
         db_table = "telemetry"
 
+    def free_heap_bytes_to_str(self):
+        units=["bytes","KiB","MiB","GiB"]
+        free_bytes=self.box_free_heap_bytes
+        unit_index=0
+        while free_bytes>=1024 and unit_index<len(units)-1:
+            free_bytes/=1024
+            unit_index+=1
+        return f"{free_bytes:.2f} {units[unit_index]}"
+    
+    def uptime_to_str(self):
+        return str(timedelta(self.box_uptime_s))
+
     def __str__(self):
-        return f"telemetry for box {self.box.id} at {self.created_at}: {self.odometer_miles} miles, doors locked = {self.doors_locked}, aux battery {self.aux_battery_voltage}, {self.soc_percent}% charged"
+        return f"""telemetry for box {self.box.id} at {self.created_at}: 
+    {self.odometer_miles} miles
+    doors locked = {self.doors_locked}
+    aux battery @ {self.aux_battery_voltage}v
+    {self.soc_percent}% charged
+    ibutton_id: {self.ibutton_id}
+    uptime: {self.uptime_to_str}
+    free heap: {self.free_heap_bytes_to_str}"""
