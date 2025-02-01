@@ -61,6 +61,13 @@
       </div>
     </div>
     {% endif %}
+
+    <div class="sm:flex sm:items-center my-8">
+      <div class="sm:flex-auto">
+        <h1 class="text-xl font-semibold text-gray-900">State of Vehicles Charge</h1>
+      </div>
+    </div>
+    {% include "backoffice/telemetry/telemetry_list.html" with telemetry=telemetry %}
   </div>
 
 

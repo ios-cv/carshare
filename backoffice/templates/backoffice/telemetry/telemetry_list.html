@@ -1,0 +1,31 @@
+<table class="min-w-full mt-2">
+    <thead>
+    <tr class="border-t border-gray-200">
+      <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
+          scope="col">
+        Registration
+      </th>
+      <th
+        class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
+        scope="col">
+        State of Charge
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Time Charge Updated
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Last Seen At
+      </th>
+    </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 bg-white">
+  
+    {% for t in telemetry %}
+      {% include "backoffice/telemetry/telemetry_list_item.html" with t=t %}
+    {% endfor %}
+  
+    </tbody>
+  </table>
+  
