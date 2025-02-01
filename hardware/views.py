@@ -108,12 +108,12 @@ def api_v1_telemetry(request, box, data):
             log.debug(f"Telemetry data received from box {box.id}. {k}: {v}.")
 
         try:
-            odometer_miles=int(data["telemetry"]["odometer_miles"])
+            odometer_miles = int(data["telemetry"]["odometer_miles"])
         except (ValueError, KeyError, TypeError):
-            odometer_miles=None
+            odometer_miles = None
 
         try:
-            doors_locked=int(data["telemetry"]["doors_locked"])
+            doors_locked = int(data["telemetry"]["doors_locked"])
             if doors_locked == 1:
                 doors_locked = True
             elif doors_locked == 0:
@@ -128,7 +128,7 @@ def api_v1_telemetry(request, box, data):
         except (ValueError, KeyError, TypeError):
             aux_battery_voltage = None
 
-        ibutton_id = data["telemetry"].get("ibutton_id",None)
+        ibutton_id = data["telemetry"].get("ibutton_id", None)
 
         try:
             box_uptime_s = int(data["telemetry"]["box_uptime_s"])
@@ -145,17 +145,20 @@ def api_v1_telemetry(request, box, data):
         except (ValueError, KeyError, TypeError):
             soc_percent = None
 
-        if any(telemetry_data is not None for telemetry_data in (
-            odometer_miles, 
-            doors_locked, 
-            aux_battery_voltage, 
-            ibutton_id, 
-            box_uptime_s, 
-            box_free_heap_bytes, 
-            soc_percent
-            )):
+        if any(
+            telemetry_data is not None
+            for telemetry_data in (
+                odometer_miles,
+                doors_locked,
+                aux_battery_voltage,
+                ibutton_id,
+                box_uptime_s,
+                box_free_heap_bytes,
+                soc_percent,
+            )
+        ):
 
-            telemetry=Telemetry(
+            telemetry = Telemetry(
                 box=box,
                 odometer_miles=odometer_miles,
                 doors_locked=doors_locked,
@@ -164,7 +167,7 @@ def api_v1_telemetry(request, box, data):
                 box_uptime_s=box_uptime_s,
                 box_free_heap_bytes=box_free_heap_bytes,
                 soc_percent=soc_percent,
-                )
+            )
             telemetry.save()
         else:
             log.debug("Errors converting telemetry data")

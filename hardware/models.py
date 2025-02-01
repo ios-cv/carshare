@@ -227,15 +227,17 @@ class BoxAction(models.Model):
     class Meta:
         db_table = "box_action"
 
+
 class Telemetry(models.Model):
     """Represents data recieved from a box."""
+
     box = models.ForeignKey(Box, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     odometer_miles = models.FloatField(null=True)
     doors_locked = models.BooleanField(null=True)
     aux_battery_voltage = models.FloatField(null=True)
-    ibutton_id = models.CharField(max_length=16,null=True)
+    ibutton_id = models.CharField(max_length=16, null=True)
     box_uptime_s = models.IntegerField(null=True)
     box_free_heap_bytes = models.IntegerField(null=True)
     soc_percent = models.IntegerField(null=True)
@@ -244,14 +246,14 @@ class Telemetry(models.Model):
         db_table = "telemetry"
 
     def free_heap_bytes_to_str(self):
-        units=["bytes","KiB","MiB","GiB"]
-        free_bytes=self.box_free_heap_bytes
-        unit_index=0
-        while free_bytes>=1024 and unit_index<len(units)-1:
-            free_bytes/=1024
-            unit_index+=1
+        units = ["bytes", "KiB", "MiB", "GiB"]
+        free_bytes = self.box_free_heap_bytes
+        unit_index = 0
+        while free_bytes >= 1024 and unit_index < len(units) - 1:
+            free_bytes /= 1024
+            unit_index += 1
         return f"{free_bytes:.2f} {units[unit_index]}"
-    
+
     def uptime_to_str(self):
         return str(timedelta(self.box_uptime_s))
 
