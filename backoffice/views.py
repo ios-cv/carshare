@@ -27,8 +27,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction
-from hardware.models import Vehicle, BoxAction
+from hardware.models import Vehicle, Box, BoxAction, Telemetry
 from users.models import User
 
 from .decorators import require_backoffice_access
@@ -42,6 +41,34 @@ def home(request):
 
     drivers_pending = len(get_all_driver_profiles_pending_approval())
     accounts_pending = len(get_all_billing_accounts_pending_approval())
+
+    most_recent_telemetry_query= (Telemetry.objects.all()
+                .select_related("box","box__vehicle")
+                .order_by("box__vehicle","-created_at")
+                .distinct("box__vehicle"))
+    
+    most_recent_times_telemetry=[]
+    for tel in most_recent_telemetry_query:
+        most_recent_times_telemetry.append({
+            "registration":tel.box.vehicle.registration,
+            "most_recent":tel.created_at})
+
+    most_recent_soc_query= (Telemetry.objects.filter(soc_percent__isnull=False)
+                .select_related("box","box__vehicle")
+                .order_by("box__vehicle","-created_at")
+                .distinct("box__vehicle"))
+    most_recent_soc=[]
+    for tel in most_recent_soc_query:
+        most_recent_soc.append({
+            "registration":tel.box.vehicle.registration,
+            "soc":tel.soc_percent,
+            "created_at":tel.created_at})
+        
+    for soc_tel in most_recent_soc:
+        for tel in most_recent_times_telemetry:
+            if tel["registration"]==soc_tel["registration"]:
+                soc_tel["most_recent"]=tel["most_recent"]
+                break
 
     context = {
         "menu": "dashboard",
@@ -58,6 +85,7 @@ def home(request):
         ).order_by("-reservation_time"),
         "drivers_pending": drivers_pending,
         "accounts_pending": accounts_pending,
+        "telemetry":most_recent_soc,
     }
     return render(request, "backoffice/home.html", context)
 
