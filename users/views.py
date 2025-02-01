@@ -62,7 +62,7 @@ class LoginView(views.LoginView):
 class PasswordResetView(views.PasswordResetView):
     template_name = "users/password_reset.html"
     form_class = ResetPasswordForm
-    success_url = reverse_lazy("users_password_reset_done")
+    success_url = reverse_lazy("account_password_reset_done")
 
 
 class PasswordResetDoneView(views.PasswordResetDoneView):
@@ -72,7 +72,7 @@ class PasswordResetDoneView(views.PasswordResetDoneView):
 class PasswordResetFromKeyView(views.PasswordResetFromKeyView):
     template_name = "users/password_reset_from_key.html"
     form_class = ResetPasswordKeyForm
-    success_url = reverse_lazy("users_password_reset_key_done")
+    success_url = reverse_lazy("account_password_reset_key_done")
 
 
 class PasswordResetFromKeyDoneView(views.PasswordResetFromKeyDoneView):

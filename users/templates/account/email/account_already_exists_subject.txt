@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}Your GO-EV Car Share account already exists{% endblocktrans %}
+{% endautoescape %}

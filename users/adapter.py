@@ -1,5 +1,3 @@
-import re
-
 from allauth.utils import build_absolute_uri
 from allauth.account.adapter import DefaultAccountAdapter
 
@@ -18,24 +16,6 @@ class AccountAdapter(DefaultAccountAdapter):
         return ret
 
     def render_mail(self, template_prefix, email, context, headers=None):
-        # Fix non-configurable URLs in email templates to go to correct custom URLs.
-        if "signup_url" in context:
-            context["signup_url"] = build_absolute_uri(self.request, reverse("signup"))
-
-        if "password_reset_url" in context:
-            key = context["password_reset_url"].split("/key/", 1)[1]
-            (uidb36, key) = re.match(
-                r"^(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$", key
-            ).groups()
-            print(key)
-            context["password_reset_url"] = build_absolute_uri(
-                self.request,
-                reverse(
-                    "account_reset_password_from_key",
-                    kwargs={"key": key, "uidb36": uidb36},
-                ),
-            )
-
         # Set the REPLY-TO header on all emails.
         if settings.DEFAULT_REPLY_TO_EMAIL is not None:
             if headers is None:
