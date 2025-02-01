@@ -16,7 +16,7 @@ from bookings.models import (
 )
 
 from .decorators import require_authenticated_box, json_payload
-from .models import Card, BoxAction
+from .models import Card, BoxAction, Telemetry
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +106,68 @@ def api_v1_telemetry(request, box, data):
     if "telemetry" in data:
         for k, v in data["telemetry"].items():
             log.debug(f"Telemetry data received from box {box.id}. {k}: {v}.")
-        # FIXME: Actually save this data to the database somewhere.
+
+        try:
+            odometer_miles=int(data["telemetry"]["odometer_miles"])
+        except (ValueError, KeyError, TypeError):
+            odometer_miles=None
+
+        try:
+            doors_locked=int(data["telemetry"]["doors_locked"])
+            if doors_locked == 1:
+                doors_locked = True
+            elif doors_locked == 0:
+                doors_locked = False
+            else:
+                doors_locked = None
+        except (ValueError, KeyError, TypeError):
+            doors_locked = None
+
+        try:
+            aux_battery_voltage = float(data["telemetry"]["aux_battery_voltage"])
+        except (ValueError, KeyError, TypeError):
+            aux_battery_voltage = None
+
+        ibutton_id = data["telemetry"].get("ibutton_id",None)
+
+        try:
+            box_uptime_s = int(data["telemetry"]["box_uptime_s"])
+        except (ValueError, KeyError, TypeError):
+            box_uptime_s = None
+
+        try:
+            box_free_heap_bytes = int(data["telemetry"]["box_free_heap_bytes"])
+        except (ValueError, KeyError, TypeError):
+            box_free_heap_bytes = None
+
+        try:
+            soc_percent = int(data["telemetry"]["soc_percent"])
+        except (ValueError, KeyError, TypeError):
+            soc_percent = None
+
+        if any(telemetry_data is not None for telemetry_data in (
+            odometer_miles, 
+            doors_locked, 
+            aux_battery_voltage, 
+            ibutton_id, 
+            box_uptime_s, 
+            box_free_heap_bytes, 
+            soc_percent
+            )):
+
+            telemetry=Telemetry(
+                box=box,
+                odometer_miles=odometer_miles,
+                doors_locked=doors_locked,
+                aux_battery_voltage=aux_battery_voltage,
+                ibutton_id=ibutton_id,
+                box_uptime_s=box_uptime_s,
+                box_free_heap_bytes=box_free_heap_bytes,
+                soc_percent=soc_percent,
+                )
+            telemetry.save()
+        else:
+            log.debug("Errors converting telemetry data")
 
     return JsonResponse(response)
 
