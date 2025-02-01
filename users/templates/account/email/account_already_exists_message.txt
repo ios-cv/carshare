@@ -1,0 +1,19 @@
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+
+{% block content %}{% autoescape off %}{% blocktrans %}
+
+You are receiving this email because you or someone else tried to sign up to
+GO-EV Car Share using the email address:
+
+{{ email }}
+
+However, an account using that email address already exists.  If you do not
+remeber your password, please use the link below to reset it:
+
+{{ password_reset_url }}
+
+Regards,
+
+The GO-EV Team
+{% endblocktrans %}{% endautoescape %}{% endblock content %}
