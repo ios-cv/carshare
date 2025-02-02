@@ -234,7 +234,7 @@ class Telemetry(models.Model):
     box = models.ForeignKey(Box, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    odometer_miles = models.FloatField(null=True)
+    odometer_miles = models.IntegerField(null=True)
     doors_locked = models.BooleanField(null=True)
     aux_battery_voltage = models.FloatField(null=True)
     ibutton_id = models.CharField(max_length=16, null=True)

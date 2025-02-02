@@ -45,8 +45,8 @@ def home(request):
     most_recent_telemetry_query = (
         Telemetry.objects.all()
         .select_related("box", "box__vehicle")
-        .order_by("box__vehicle", "-created_at")
-        .distinct("box__vehicle")
+        .order_by("box", "-created_at")
+        .distinct("box")
     )
 
     most_recent_times_telemetry = []
@@ -61,8 +61,8 @@ def home(request):
     most_recent_soc_query = (
         Telemetry.objects.filter(soc_percent__isnull=False)
         .select_related("box", "box__vehicle")
-        .order_by("box__vehicle", "-created_at")
-        .distinct("box__vehicle")
+        .order_by("box", "-created_at")
+        .distinct("box")
     )
     most_recent_soc = []
     for tel in most_recent_soc_query:
@@ -71,6 +71,8 @@ def home(request):
                 "registration": tel.box.vehicle.registration,
                 "soc": tel.soc_percent,
                 "created_at": tel.created_at,
+                "locked": tel.box.locked,
+                "vehicle_id": tel.box.vehicle.id,
             }
         )
 
@@ -79,6 +81,8 @@ def home(request):
             if tel["registration"] == soc_tel["registration"]:
                 soc_tel["most_recent"] = tel["most_recent"]
                 break
+
+    most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
 
     context = {
         "menu": "dashboard",

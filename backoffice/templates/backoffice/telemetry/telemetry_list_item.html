@@ -1,9 +1,19 @@
 <tr>
+  <td class="h-6 w-6 max-w-none whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900">
+    <div class="flex items-center space-x-3 lg:pl-2">
+      {% include "backoffice/vehicles/status.html" with locked=t.locked %}
+      <a href="#" class="truncate hover:text-gray-600">
+        <span>
+          #{{ t.vehicle_id|stringformat:"02d" }}
+        </span>
+      </a>
+    </div>
+  </td>
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
     {{ t.registration }}
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
-    {{ t.soc }}
+    {{ t.soc }} %
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ t.created_at }}
