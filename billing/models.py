@@ -72,6 +72,7 @@ class BillingAccount(models.Model):
     business_address_line_4 = models.CharField(max_length=100, null=True, blank=True)
     business_postcode = models.CharField(max_length=100, null=True, blank=True)
     business_tax_id = models.CharField(max_length=30, null=True, blank=True)
+    business_purchase_order = models.CharField(max_length=50, null=True, blank=True)
 
     @classmethod
     def by_stripe_customer_id(cls, stripe_customer_id):
@@ -217,6 +218,6 @@ def get_billing_accounts_suitable_for_booking(user, booking_end):
     q = BillingAccount.objects.filter(
         Q(owner=user) | Q(members=user, billingaccountmember__can_make_bookings=True),
         ~Q(approved_at=None),
-    )
+    ).distinct()
 
     return q
