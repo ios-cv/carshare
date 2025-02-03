@@ -107,7 +107,7 @@ class UpdatePurchaseOrderForm(ModelForm):
     class Meta:
         model = BillingAccount
         fields = ["business_purchase_order"]
-        labels = {"business_purchase_order": "Purchase order"}
+        labels = {"business_purchase_order": "Purchase order number"}
         help_texts = {
             "business_purchase_order": "If you enter a purchase order number here it will be displayed on your invoices. You can change this at any time."
         }

@@ -218,6 +218,6 @@ def get_billing_accounts_suitable_for_booking(user, booking_end):
     q = BillingAccount.objects.filter(
         Q(owner=user) | Q(members=user, billingaccountmember__can_make_bookings=True),
         ~Q(approved_at=None),
-    )
+    ).distinct()
 
     return q
