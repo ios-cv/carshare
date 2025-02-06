@@ -32,7 +32,7 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction, VehicleType
+from hardware.models import Vehicle, Box, BoxAction, VehicleType, Telemetry
 from users.models import User
 from bookings.models import get_available_vehicles_plus
 
@@ -53,6 +53,48 @@ def home(request):
     drivers_pending = len(get_all_driver_profiles_pending_approval())
     accounts_pending = len(get_all_billing_accounts_pending_approval())
 
+    most_recent_telemetry_query = (
+        Telemetry.objects.all()
+        .select_related("box", "box__vehicle")
+        .order_by("box", "-created_at")
+        .distinct("box")
+    )
+
+    most_recent_times_telemetry = []
+    for tel in most_recent_telemetry_query:
+        most_recent_times_telemetry.append(
+            {
+                "registration": tel.box.vehicle.registration,
+                "most_recent": tel.created_at,
+            }
+        )
+
+    most_recent_soc_query = (
+        Telemetry.objects.filter(soc_percent__isnull=False)
+        .select_related("box", "box__vehicle")
+        .order_by("box", "-created_at")
+        .distinct("box")
+    )
+    most_recent_soc = []
+    for tel in most_recent_soc_query:
+        most_recent_soc.append(
+            {
+                "registration": tel.box.vehicle.registration,
+                "soc": tel.soc_percent,
+                "created_at": tel.created_at,
+                "locked": tel.box.locked,
+                "vehicle_id": tel.box.vehicle.id,
+            }
+        )
+
+    for soc_tel in most_recent_soc:
+        for tel in most_recent_times_telemetry:
+            if tel["registration"] == soc_tel["registration"]:
+                soc_tel["most_recent"] = tel["most_recent"]
+                break
+
+    most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
+
     context = {
         "menu": "dashboard",
         "user": request.user,
@@ -68,6 +110,7 @@ def home(request):
         ).order_by("-reservation_time"),
         "drivers_pending": drivers_pending,
         "accounts_pending": accounts_pending,
+        "telemetry": most_recent_soc,
     }
     return render(request, "backoffice/home.html", context)
 
@@ -357,8 +400,9 @@ def close_booking(request, booking_id):
 
     box = Box.objects.get(pk=booking.vehicle.box.id)
     # FIXME: May also be a race condition
-    if box.current_booking == booking_id:
+    if box.current_booking == booking:
         box.current_booking = None
+        box.unlocked_by = None
         box.save()
 
     message = f"Booking #{booking_id} closed."
@@ -374,6 +418,11 @@ def close_booking(request, booking_id):
             user_id=request.user.id,
         )
         action.save()
+
+        box = Box.objects.get(pk=booking.vehicle.box.id)
+        box.locked = True
+        box.save()
+
         message = f"Lock action sent to vehicle {box.vehicle.registration}."
         messages.success(request, message)
 
@@ -409,6 +458,8 @@ def perform_box_action(request, vehicle, action_to_perform, user):
         user_id=user.id,
     )
     action.save()
+    vehicle.box.locked = True if action_to_perform == "lock" else False
+    vehicle.box.save()
     # FIXME: message is dispatched regardless of outcome - may be worth exploring options to send different messages
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
