@@ -528,7 +528,7 @@ def user_details(request, id):
         "filter": filter,
         "parameters": parameters,
     }
-    return render(request, "backoffice/user_details.html", context)
+    return render(request, "backoffice/users/details.html", context)
 
 
 @require_backoffice_access
