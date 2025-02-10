@@ -43,4 +43,14 @@ urlpatterns = [
         views.unlock,
         name="backoffice_unlock_car",
     ),
+    path(
+        "vehicles/<int:vehicle_id>/",
+        views.vehicle_details,
+        name="vehicle_details"
+    ),
+    path(
+        "vehicles/telemetry/",
+        views.get_telemetry,
+        name="get_telemetry",
+    )
 ]
