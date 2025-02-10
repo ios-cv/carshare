@@ -1,0 +1,47 @@
+{% extends "backoffice_base.html" %}
+
+{% load static %}
+{% block scripts %}
+<script src="{% static "get-telemetry.js" %}" defer></script>
+{% endblock %}
+
+{% block heading %}{{ vehicle.registration }}{% endblock %}
+{% block buttons %}
+
+{% endblock %}
+
+{% block main %}
+
+<a class="hidden" href="{{ request.get_host }}" id="base_url"></a>
+<a href="{% url "get_telemetry" %}" class="hidden" id="telemetry_url"></a>
+<input type="hidden" id="vehicle_id" value="{{ vehicle.id }}">
+{% csrf_token %}
+
+    <p class="bg-yellow-400 text-black font-bold text-xl px-6 py-2 rounded-md border-4 border-black tracking-widest shadow-md w-fit">{{ vehicle.registration }}</p>
+    <p>Doors Locked:{{ most_recent.doors_locked.value }} ({{most_recent.doors_locked.age}})</p>
+    <p>Battery: {{ most_recent.battery.value }}v ({{most_recent.battery.age}})</p>
+    <p>Charge: {{ most_recent.soc.value }}% ({{most_recent.soc.age}})</p>
+    <p>Heap free bytes: {{ most_recent.free_heap.value }} ({{most_recent.free_heap.age}})</p>
+    <p>Box Uptime: {{ most_recent.uptime.value }} ({{most_recent.uptime.age}})</p>
+    <p >Miles Driven:<span class="bg-gray-900 text-white font-mono text-3xl px-2 py-1 border border-gray-700 rounded-sm shadow-md tracking-widest">{{ most_recent.miles.value }}</span></p>
+
+    <div class="relative w-32 h-32">
+        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle class="text-gray-200 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent" />
+    {% if most_recent.soc.value > 75 %}
+            <circle class="text-green-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+    stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+    {% elif most_recent.soc.value > 50 %}
+            <circle class="text-amber-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+    stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+    {% else %}
+            <circle class="text-red-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+    stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+    {% endif %}
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">
+          {{ most_recent.soc.value }}%
+        </div>
+      </div>
+
+{% endblock %}
