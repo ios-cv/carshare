@@ -1,0 +1,48 @@
+<table class="min-w-full">
+    <thead>
+    <tr class="border-t border-gray-200">
+      <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
+          scope="col">
+        <span class="lg:pl-8">ID</span>
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
+          scope="col">
+        Doors Locked
+      </th>
+      <th
+        class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
+        scope="col">
+        Auxillary Battery Voltage
+      </th>
+      <th
+        class="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
+        scope="col">
+        State of Charge %
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Box Uptime
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Box free heap
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Odometer (miles)
+      </th>
+      <th class="border-b border-gray-200 bg-gray-50 py-3 pr-6 text-right text-sm font-semibold text-gray-900"
+          scope="col">
+        Telemetry Recieved At
+      </th>
+    </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 bg-white">
+  
+    {% for t in telemetry %}
+      {% include "backoffice/vehicles/telemetry-list-item.html" with t=t %}
+    {% endfor %}
+  
+    </tbody>
+  </table>
+  
