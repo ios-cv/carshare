@@ -7,12 +7,10 @@ const telemetry={
     data:[],
     set_data(data){
         this.data=[...data];
-        console.log(this.data)
         this.update_chart();
     },
     update_chart(){
         const socPoints=this.data.filter((d)=>!(d.soc==null)).map((d)=>{return {y:d.soc,x:d.created_at}}).sort((a,b)=>a.x-b.x);
-        console.log(socPoints);
         drawChart(svgElement,socPoints)
     }
 }
@@ -49,9 +47,8 @@ function drawChart(svgElement, points) {
 
     // Determine min and max values for scaling
     const minX = Math.min(...points.map(p => p.x));
-    console.log(minX);
     const maxX = Math.max(...points.map(p => p.x));
-    console.log(maxX);
+    // FIXME: Handle zero and 1 data point edge cases
     const minY = 0//Math.min(...points.map(p => p.y));
     const maxY = 100;
 
@@ -65,8 +62,6 @@ function drawChart(svgElement, points) {
     // Convert points to chart coordinates
     const scaleX = (chartWidth - 2 * padding) / (maxX - minX);
     const scaleY = (chartHeight - 4 * padding) / (maxY - minY);
-    console.log(scaleX);
-    console.log(scaleY);
     function transformPoint(p) {
         return {
             x: (p.x - minX) * scaleX,
@@ -92,7 +87,6 @@ function drawChart(svgElement, points) {
     
     // Calculate appropriate circle radius and stroke width based on scale
     const scaleFactor = (chartWidth + chartHeight) / 300;
-    console.log(scaleFactor);
     const circleRadius = scaleFactor;
     const strokeWidth = scaleFactor / 2;
 
@@ -192,7 +186,6 @@ function drawChart(svgElement, points) {
     }
     svgElement.appendChild(gridGroup);
     const xEndBBox=xEnd.getBBox();
-    console.log(xEndBBox);
     xEnd.setAttribute("x",maxTX-xEndBBox.width);
 
     // Create a polyline element
