@@ -460,17 +460,10 @@ def perform_box_action(request, vehicle, action_to_perform, user):
 def vehicle_details(request, vehicle_id):
     vehicle=Vehicle.objects.get(pk=vehicle_id)
     next_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__startswith__gt=timezone.now()).order_by("reservation_time").first()
+    current_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__startswith__lt=timezone.now(),reservation_time__endswith__gt=timezone.now()).order_by("reservation_time").first()
     last_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__endswith__lt=timezone.now()).order_by("-reservation_time").first()
     telemetry=Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
 
-    """ most_recent={
-        "battery":Telemetry.objects.filter(box=vehicle.box, aux_battery_voltage__isnull=False).order_by("-created_at").first().aux_battery_voltage,
-        "soc":Telemetry.objects.filter(box=vehicle.box, soc_percent__isnull=False).order_by("-created_at").first().soc_percent,
-        "free_heap":Telemetry.objects.filter(box=vehicle.box, box_free_heap_bytes__isnull=False).order_by("-created_at").first().free_heap_bytes_to_str(),
-        "uptime":Telemetry.objects.filter(box=vehicle.box, box_uptime_s__is_null=False).order_by("-created_at").first().uptime_to_str(),
-        "doors_locked":Telemetry.objects.filter(box=vehicle.box, doors_locked__is_null=False).order_by("-created_at").first().doors_locked,
-        "miles":Telemetry.objects.filter(box=vehicle.box, odometer_miles__is_null=False).order_by("-created_at").first().odometer_miles,
-    } """
     most_recent={
         "battery":None,
         "soc":None,
@@ -538,8 +531,7 @@ def vehicle_details(request, vehicle_id):
         "most_recent":most_recent,
         "page":page_obj,
         "page_range":page_range,
-        "next_booking":next_booking,
-        "last_booking":last_booking
+        "bookings":[last_booking,current_booking,next_booking],
     }
     return render(request,"backoffice/vehicles/details.html",context)
 
