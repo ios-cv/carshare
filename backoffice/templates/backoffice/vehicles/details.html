@@ -17,7 +17,8 @@
 <input type="hidden" id="vehicle_id" value="{{ vehicle.id }}">
 {% csrf_token %}
 
-<img src="{% if vehicle.picture %}{{ vehicle.picture.url }}{% endif %}""><div class="relative w-32 h-32">
+<div class="m-8 flex flex-row gap-2">
+    <img src="{% if vehicle.picture %}{{ vehicle.picture.url }}{% endif %}""><div class="relative w-32 h-32">
     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
         <circle class="text-gray-200 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent" />
 {% if most_recent.soc.value > 75 %}
@@ -35,38 +36,61 @@ stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-l
       {{ most_recent.soc.value }}%
     </div>
   </div>
-  <h3>Previous, Current and Next Bookings</h3>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 m-8">Previous, Current and Next Bookings for {{ vehicle.registration }}</h3>
 {% include "backoffice/bookings/bookings_list.html" with bookings=bookings %}
-<table>
+
+<h3 class="text-xl font-semibold text-gray-900 m-8">Most Recent Telemetry Data</h3>
+<table class="my-8">
     <thead>
-        <th>Telemetry</th>
-        <th>Value</th>
-        <th>Age</th>
+        <tr class="border-b border-t border-gray-200 bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900">
+            <th class="border-b border-gray-200 px-6 py-3 text-left text-sm font-semibold text-gray-900 w-6">Telemetry</th>
+            <th class="border-b border-gray-200 px-6 py-3 text-left text-sm font-semibold text-gray-900 w-5">Value</th>
+            <th class="border-b border-gray-200 px-6 py-3 text-left text-sm font-semibold text-gray-900 w-8">Age</th>
+        </tr>
     </thead>
-    <tr>
-        <td>Doors Locked</td><td>{{ most_recent.doors_locked.value }}</td><td>{{most_recent.doors_locked.age}}</td>
-    </tr>
-    <tr>
-        <td>Battery</td><td>{{ most_recent.battery.value }}v</td><td>{{most_recent.battery.age}}</td>
-    </tr>
-    <tr>
-        <td>Charge</td><td>{{ most_recent.soc.value }}%</td><td>{{most_recent.soc.age}}</td>
-    </tr>
-    <tr>
-        <td>Free Heap</td><td>{{ most_recent.free_heap.value }}</td><td>{{most_recent.free_heap.age}}</td>
-    </tr>
-    <tr>
-        <td>Box Uptime</td><td>{{ most_recent.uptime.value }}</td><td>{{most_recent.uptime.age}}</td>
-    </tr>
-    <tr>
-        <td>Miles Driven</td><td>{{ most_recent.miles.value }}</td><td>{{most_recent.miles.age}}</td>
-    </tr>
+    <tbody class="divide-y divide-gray-100 bg-white">
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Doors Locked</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.doors_locked.value }}</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.doors_locked.age}}</td>
+        </tr>
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Battery</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.battery.value }}v</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.battery.age}}</td>
+        </tr>
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Charge</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.soc.value }}%</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.soc.age}}</td>
+        </tr>
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Free Heap</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.free_heap.value }}</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.free_heap.age}}</td>
+        </tr>
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Box Uptime</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.uptime.value }}</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.uptime.age}}</td>
+        </tr>
+        <tr>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">Miles Driven</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{ most_recent.miles.value }}</td>
+            <td class="whitespace-nowrap px-6 py-3 text-left text-sm text-gray-500">{{most_recent.miles.age}}</td>
+        </tr>
+</tbody>
 </table>
+
+
+<h3 class="text-xl font-semibold text-gray-900 m-8">All Telemetry Data From Last 7 Days</h3>
     {% include "backoffice/vehicles/telemetry-list.html" with telemetry=page %}
 
     {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}
 
     
+<h3 class="text-xl font-semibold text-gray-900 mt-8 ml-8">State of Charge for Last 7 Days</h3>
     <svg id="graph" width="1000"></svg>
 
 {% endblock %}
