@@ -2,8 +2,6 @@
 
 {% load static %}
 {% block scripts %}
-<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.1/chartjs-adapter-moment.min.js" integrity="sha512-hVy4KxCKgnXi2ok7rlnlPma4JHXI1VPQeempoaclV1GwRHrDeaiuS1pI6DVldaj5oh6Opy2XJ2CTljQLPkaMrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="module" src="{% static "get-telemetry.js" %}" defer></script>
 {% endblock %}
 
@@ -19,7 +17,7 @@
 <input type="hidden" id="vehicle_id" value="{{ vehicle.id }}">
 {% csrf_token %}
 
-<img src="{{ vehicle.picture.url }}"><div class="relative w-32 h-32">
+<img src="{% if vehicle.picture %}{{ vehicle.picture.url }}{% endif %}""><div class="relative w-32 h-32">
     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
         <circle class="text-gray-200 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent" />
 {% if most_recent.soc.value > 75 %}
@@ -37,27 +35,8 @@ stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-l
       {{ most_recent.soc.value }}%
     </div>
   </div>
-<table>
-    <thead><th></th><th>Name</th><th>Start Time</th><th>End Time</th></thead>
-    <tr>
-        <td>Current booking</td>
-        <td>{% if vehicle.box.current_booking %}{{vehicle.box.current_booking.user.first_name|title}} {{vehicle.box.current_booking.user.last_name|title}}{% else %}no current booking{% endif %}</td>
-        <td>{% if vehicle.box.current_booking %}{{vehicle.box.current_booking.reservation_time.lower}}{% else %}-{% endif %}</td>
-        <td>{% if vehicle.box.current_booking %}{{vehicle.box.current_booking.reservation_time.upper}}{% else %}-{% endif %}</td>
-    </tr>
-    <tr>
-        <td>Next booking</td>
-        <td>{% if next_booking %}{{ next_booking.user.first_name|title }} {{ next_booking.user.last_name|title }}{% else %}no upcoming booking{% endif %}</td>
-        <td>{% if next_booking %}{{ next_booking.reservation_time.lower }}{% else %}-{% endif %}</td>
-        <td>{% if next_booking %}{{ next_booking.reservation_time.upper }}{% else %}-{% endif %}</td>
-    </tr>
-    <tr>
-        <td>Previous booking</td>
-        <td>{% if last_booking %}{{ last_booking.user.first_name|title }} {{ last_booking.user.last_name|title }}{% else %}no previous booking{% endif %}</td>
-        <td>{% if last_booking %}{{ last_booking.reservation_time.lower }}{% else %}-{% endif %}</td>
-        <td>{% if last_booking %}{{ last_booking.reservation_time.upper }}{% else %}-{% endif %}</td>
-    </tr>
-</table>
+  <h3>Previous, Current and Next Bookings</h3>
+{% include "backoffice/bookings/bookings_list.html" with bookings=bookings %}
 <table>
     <thead>
         <th>Telemetry</th>
