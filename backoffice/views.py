@@ -456,66 +456,86 @@ def perform_box_action(request, vehicle, action_to_perform, user):
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
 
+
 @require_backoffice_access
 def vehicle_details(request, vehicle_id):
-    vehicle=Vehicle.objects.get(pk=vehicle_id)
-    next_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__startswith__gt=timezone.now()).order_by("reservation_time").first()
-    current_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__startswith__lt=timezone.now(),reservation_time__endswith__gt=timezone.now()).order_by("reservation_time").first()
-    last_booking=Booking.objects.filter(vehicle=vehicle,reservation_time__endswith__lt=timezone.now()).order_by("-reservation_time").first()
-    telemetry=Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
+    vehicle = Vehicle.objects.get(pk=vehicle_id)
+    next_booking = (
+        Booking.objects.filter(
+            vehicle=vehicle, reservation_time__startswith__gt=timezone.now()
+        )
+        .order_by("reservation_time")
+        .first()
+    )
+    current_booking = (
+        Booking.objects.filter(
+            vehicle=vehicle,
+            reservation_time__startswith__lt=timezone.now(),
+            reservation_time__endswith__gt=timezone.now(),
+        )
+        .order_by("reservation_time")
+        .first()
+    )
+    last_booking = (
+        Booking.objects.filter(
+            vehicle=vehicle, reservation_time__endswith__lt=timezone.now()
+        )
+        .order_by("-reservation_time")
+        .first()
+    )
+    telemetry = Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
 
-    most_recent={
-        "battery":None,
-        "soc":None,
-        "free_heap":None,
-        "uptime":None,
-        "doors_locked":None,
-        "miles":None,
+    most_recent = {
+        "battery": None,
+        "soc": None,
+        "free_heap": None,
+        "uptime": None,
+        "doors_locked": None,
+        "miles": None,
     }
     for t in telemetry:
         if most_recent["battery"] is None and t.aux_battery_voltage is not None:
-            most_recent["battery"]={
-                "value":t.aux_battery_voltage,
-                "age":timezone.now()-t.created_at,
+            most_recent["battery"] = {
+                "value": t.aux_battery_voltage,
+                "age": timezone.now() - t.created_at,
             }
         if most_recent["soc"] is None and t.soc_percent is not None:
-            most_recent["soc"]={
-                "value":t.soc_percent,
-                "age":timezone.now()-t.created_at
+            most_recent["soc"] = {
+                "value": t.soc_percent,
+                "age": timezone.now() - t.created_at,
             }
         if most_recent["free_heap"] is None and t.box_free_heap_bytes is not None:
-            most_recent["free_heap"]={
-                "value":t.free_heap_bytes_to_str(),
-                "age":timezone.now()-t.created_at
+            most_recent["free_heap"] = {
+                "value": t.free_heap_bytes_to_str(),
+                "age": timezone.now() - t.created_at,
             }
         if most_recent["uptime"] is None and t.box_uptime_s is not None:
-            most_recent["uptime"]={
-                "value":t.uptime_to_str(),
-                "age":timezone.now()-t.created_at
+            most_recent["uptime"] = {
+                "value": t.uptime_to_str(),
+                "age": timezone.now() - t.created_at,
             }
         if most_recent["doors_locked"] is None and t.doors_locked is not None:
-            most_recent["doors_locked"]={
-                "value":t.doors_locked,
-                "age":timezone.now()-t.created_at
+            most_recent["doors_locked"] = {
+                "value": t.doors_locked,
+                "age": timezone.now() - t.created_at,
             }
         if most_recent["miles"] is None and t.odometer_miles is not None:
-            most_recent["miles"]={
-                "value":t.odometer_miles,
-                "age":timezone.now()-t.created_at
+            most_recent["miles"] = {
+                "value": t.odometer_miles,
+                "age": timezone.now() - t.created_at,
             }
-        #Stop looking through telemetry if all most_recent values found
+        # Stop looking through telemetry if all most_recent values found
         if all(value is not None for value in most_recent.values()):
             break
-    
+
     for key in most_recent:
         if most_recent[key] is not None:
-            most_recent[key]["age"]=breakdown_timedelta(most_recent[key]["age"])
-            
-    if most_recent["soc"] is not None:
-        most_recent["soc_dial"]=251.2 * (1-t.soc_percent/100)
-    else:
-        most_recent["soc_dial"]=0
+            most_recent[key]["age"] = breakdown_timedelta(most_recent[key]["age"])
 
+    if most_recent["soc"] is not None:
+        most_recent["soc_dial"] = 251.2 * (1 - t.soc_percent / 100)
+    else:
+        most_recent["soc_dial"] = 0
 
     paginator = Paginator(telemetry, 10)
 
@@ -525,88 +545,93 @@ def vehicle_details(request, vehicle_id):
         number=page_number, on_each_side=1, on_ends=1
     )
 
-    context={
-        "vehicle":vehicle,
-        "telemetry":telemetry,
-        "most_recent":most_recent,
-        "page":page_obj,
-        "page_range":page_range,
-        "bookings":[last_booking,current_booking,next_booking],
+    context = {
+        "vehicle": vehicle,
+        "telemetry": telemetry,
+        "most_recent": most_recent,
+        "page": page_obj,
+        "page_range": page_range,
+        "bookings": [last_booking, current_booking, next_booking],
     }
-    return render(request,"backoffice/vehicles/details.html",context)
+    return render(request, "backoffice/vehicles/details.html", context)
+
 
 def breakdown_timedelta(timedelta):
-    seconds_in_an_hour=60*60
-    seconds_in_a_day=24*seconds_in_an_hour
-    seconds_in_a_month=30*seconds_in_a_day
-    seconds_in_a_year=365*seconds_in_a_day
+    seconds_in_an_hour = 60 * 60
+    seconds_in_a_day = 24 * seconds_in_an_hour
+    seconds_in_a_month = 30 * seconds_in_a_day
+    seconds_in_a_year = 365 * seconds_in_a_day
 
-    all_seconds=timedelta.days*seconds_in_a_day+timedelta.seconds
-    years, seconds_remaining=divmod(all_seconds,seconds_in_a_year)
-    months, seconds_remaining=divmod(seconds_remaining,seconds_in_a_month)
-    days, seconds_remaining=divmod(seconds_remaining,seconds_in_a_day)
-    hours, seconds_remaining=divmod(seconds_remaining,seconds_in_an_hour)
-    minutes, seconds_remaining=divmod(seconds_remaining,60)
-    seconds=int(seconds_remaining)
-    if years>0:
-        years_str=f"{years} years, "
+    all_seconds = timedelta.days * seconds_in_a_day + timedelta.seconds
+    years, seconds_remaining = divmod(all_seconds, seconds_in_a_year)
+    months, seconds_remaining = divmod(seconds_remaining, seconds_in_a_month)
+    days, seconds_remaining = divmod(seconds_remaining, seconds_in_a_day)
+    hours, seconds_remaining = divmod(seconds_remaining, seconds_in_an_hour)
+    minutes, seconds_remaining = divmod(seconds_remaining, 60)
+    seconds = int(seconds_remaining)
+    if years > 0:
+        years_str = f"{years} years, "
     else:
-        years_str=""
-    if months>0:
-        months_str=f"{months} months, "
+        years_str = ""
+    if months > 0:
+        months_str = f"{months} months, "
     else:
-        months_str=""
-    if days>0:
-        days_str=f"{days} days, "
+        months_str = ""
+    if days > 0:
+        days_str = f"{days} days, "
     else:
-        days_str=""
-    if hours>0:
-        hours_str=f"{hours} hours, "
+        days_str = ""
+    if hours > 0:
+        hours_str = f"{hours} hours, "
     else:
-        hours_str=""
-    if minutes>0:
-        minutes_str=f"{minutes} minutes, "
+        hours_str = ""
+    if minutes > 0:
+        minutes_str = f"{minutes} minutes, "
     else:
-        minutes_str=""
-    if seconds>0:
-        seconds_str=f"and {seconds} seconds"
+        minutes_str = ""
+    if seconds > 0:
+        seconds_str = f"and {seconds} seconds"
     else:
-        seconds_str=""
-    
+        seconds_str = ""
+
     return f"{years_str}{months_str}{days_str}{hours_str}{minutes_str}{seconds_str}"
+
 
 @require_backoffice_access
 def get_telemetry(request):
-    vehicle_id=None
+    vehicle_id = None
     if request.body:
-        data=json.loads(request.body)
-        vehicle_id=int(data.get("vehicle_id",None))
+        data = json.loads(request.body)
+        vehicle_id = int(data.get("vehicle_id", None))
     if vehicle_id is not None:
-        vehicle=Vehicle.objects.get(pk=vehicle_id)
+        vehicle = Vehicle.objects.get(pk=vehicle_id)
     else:
-        return JsonResponse("Invalid vehicle id",safe=False)
-    
-    telemetry=Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
-    telemetry=telemetry.values_list(
+        return JsonResponse("Invalid vehicle id", safe=False)
+
+    telemetry = Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
+    telemetry = telemetry.values_list(
         "soc_percent",
         "odometer_miles",
         "doors_locked",
         "aux_battery_voltage",
         "box_uptime_s",
         "box_free_heap_bytes",
-        "created_at"
+        "created_at",
+    )
+
+    telemetry_json = [
+        dict(
+            {
+                "soc": soc_percent,
+                "odometer": odometer_miles,
+                "doors_locked": doors_locked,
+                "battery": aux_battery_voltage,
+                "uptime": box_uptime_s,
+                "free_heap": box_free_heap_bytes,
+                "created_at": created_at.timestamp(),
+            }
         )
-    
-    telemetry_json=[
-        dict({
-            "soc": soc_percent,
-            "odometer": odometer_miles,
-            "doors_locked": doors_locked,
-            "battery": aux_battery_voltage,
-            "uptime": box_uptime_s,
-            "free_heap": box_free_heap_bytes,
-            "created_at": created_at.timestamp()})
-            for soc_percent, odometer_miles, doors_locked, aux_battery_voltage, box_uptime_s, box_free_heap_bytes, created_at in telemetry
+        for soc_percent, odometer_miles, doors_locked, aux_battery_voltage, box_uptime_s, box_free_heap_bytes, created_at in telemetry
     ]
 
     return JsonResponse(telemetry_json, safe=False)
