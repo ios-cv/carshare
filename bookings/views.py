@@ -6,6 +6,7 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDict
 from django.contrib import messages
+from psycopg2.extras import DateTimeTZRange
 
 from billing.pricing import calculate_booking_cost
 from hardware.models import Vehicle, BoxAction
@@ -134,8 +135,15 @@ def confirm_booking(request):
                 )
                 return redirect("bookings_history")
             except IntegrityError:
-                message="Sorry, that vehicle is no longer available for that time slot, please try another vehicle or a different time."
-                messages.error(request,message)
+                #check if the clashing booking was placed by this user.
+                reservation_time=DateTimeTZRange(form.cleaned_data["start"],form.cleaned_data["end"])
+                booking=Booking.objects.filter(vehicle_id=form.cleaned_data["vehicle_id"],reservation_time=reservation_time,user_id=request.user.id)
+                print(f"There were {booking.count()} bookings matching the search")
+                if booking.count() == 1:
+                    return redirect("bookings_history")
+                else:
+                    message="Sorry, that vehicle is no longer available for that time slot, please try another vehicle or a different time."
+                    messages.error(request,message)
 
         context["form"] = form
 
