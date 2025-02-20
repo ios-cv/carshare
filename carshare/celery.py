@@ -36,4 +36,8 @@ app.conf.beat_schedule = {
         "task": "manage_booking_states",
         "schedule": 60.0,
     },
+    "remove-old-telemetry": {
+        "task": "remove_old_telemetry",
+        "schedule": crontab(hour=3, minute=0, day_of_month="1"),
+    },
 }
