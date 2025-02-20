@@ -43,12 +43,12 @@ def home(request):
     accounts_pending = len(get_all_billing_accounts_pending_approval())
 
     most_recent_telemetry_query = (
-        Telemetry.objects.all()
-        .order_by("box", "-created_at")
-        .distinct("box")
+        Telemetry.objects.all().order_by("box", "-created_at").distinct("box")
     )
 
-    registrations=list(Vehicle.objects.all().values_list("registration","box_id","id").distinct())
+    registrations = list(
+        Vehicle.objects.all().values_list("registration", "box_id", "id").distinct()
+    )
     most_recent_times_telemetry = []
     for tel in most_recent_telemetry_query:
         most_recent_times_telemetry.append(
@@ -81,8 +81,8 @@ def home(request):
                 break
         for reg, box, id in registrations:
             if box == soc_tel["box_id"]:
-                soc_tel["registration"]=reg
-                soc_tel["vehicle_id"]=id
+                soc_tel["registration"] = reg
+                soc_tel["vehicle_id"] = id
                 break
 
     most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
