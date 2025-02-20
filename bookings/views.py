@@ -138,7 +138,6 @@ def confirm_booking(request):
                 #check if the clashing booking was placed by this user.
                 reservation_time=DateTimeTZRange(form.cleaned_data["start"],form.cleaned_data["end"])
                 booking=Booking.objects.filter(vehicle_id=form.cleaned_data["vehicle_id"],reservation_time=reservation_time,user_id=request.user.id)
-                print(f"There were {booking.count()} bookings matching the search")
                 if booking.count() == 1:
                     return redirect("bookings_history")
                 else:
