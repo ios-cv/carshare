@@ -6,10 +6,13 @@ from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
 
 from polymorphic.models import PolymorphicModel
 
 from users.models import User
+
+ALLOWED_FILE_EXTENSIONS = ["pdf", "jpg", "jpeg", "png"]
 
 
 def uuid_file_name(file):
@@ -113,22 +116,34 @@ class FullDriverProfile(DriverProfile):
     licence_expiry_date = models.DateField(null=True, blank=True)
 
     # Licence pictures
-    licence_front = models.ImageField(
-        null=True, blank=True, upload_to=licence_front_upload_to
+    licence_front = models.FileField(
+        null=True,
+        blank=True,
+        upload_to=licence_front_upload_to,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_FILE_EXTENSIONS)],
     )
-    licence_back = models.ImageField(
-        null=True, blank=True, upload_to=licence_back_upload_to
+    licence_back = models.FileField(
+        null=True,
+        blank=True,
+        upload_to=licence_back_upload_to,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_FILE_EXTENSIONS)],
     )
-    licence_selfie = models.ImageField(
-        null=True, upload_to=licence_selfie_upload_to, blank=True
+    licence_selfie = models.FileField(
+        null=True,
+        upload_to=licence_selfie_upload_to,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_FILE_EXTENSIONS)],
     )
 
     # DVLA Check Code
     licence_check_code = models.CharField(max_length=50, null=True, blank=True)
 
     # Additional proof of Address
-    proof_of_address = models.ImageField(
-        null=True, upload_to=proof_of_address_upload_to, blank=True
+    proof_of_address = models.FileField(
+        null=True,
+        upload_to=proof_of_address_upload_to,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_FILE_EXTENSIONS)],
     )
 
     # --------------------- Field Approvals ---------------------- #
