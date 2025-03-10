@@ -1,6 +1,23 @@
 {% load crispy_forms_field %}
 
-<div class="pb-6">
+<div class="pb-6" x-data="{
+  src : '{{ field.value }}'.length > 0 ? '/media/{{ field.value }}' : undefined,
+  nodeName:'SVG',
+  readyToDrop:false,
+  errorText:false,
+  setPreview(input) {
+      const [file] = input.files;
+      if (file) {
+        if (file.type == 'application/pdf'){
+          this.nodeName = 'IFRAME';
+        }
+        else{
+          this.nodeName = 'IMG';
+        }
+        this.src = URL.createObjectURL(file);
+      }
+  },
+}">
   {% if field.label and form_show_labels %}
     <label for="{{ field.id_for_label }}"
            class="{% if label_class %}{{ label_class }}{% else %}block text-gray-700 text-sm font-bold mb-2{% endif %}">
@@ -9,36 +26,53 @@
   {% endif %}
 
   <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
-       x-data="{
-                preview: '{{ field.value }}'.length > 0 ? '/media/{{ field.value }}' : undefined,
-                setPreview(input) {
-                    const [file] = input.files;
-                    if (file) {
-                      this.preview = URL.createObjectURL(file);
-                    }
-                },
-              }
-        ">
+  @drop="
+  const fileInput = document.getElementById('{{ field.id_for_label }}')
+  const {type}=$event.dataTransfer.files[0];
+  if(type === 'application/pdf' || type === 'image/png' || type === 'image/jpeg'){
+    fileInput.files = $event.dataTransfer.files;
+    setPreview(fileInput);
+    readyToDrop=false;
+  }
+  $event.preventDefault();
+" @dragover="
+  $event.preventDefault();
+  readyToDrop=true;
+" @dragleave="
+  readyToDrop=false;
+">
     <div class="space-y-1 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
-           aria-hidden="true" x-show="preview === undefined">
-        <path
-          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <img class="mx-auto pb-3" src="" x-bind:src="preview" style="max-height: 200px;"/>
+      
+      <div id="preview">
+        <iframe x-show="nodeName==='IFRAME'" src="" x-bind:src="src" class="mx-auto pb-3" scrolling="no" style="max-height: 200px;"></iframe>
+        <img x-show="nodeName==='IMG'" src="" x-bind:src="src" class="mx-auto pb-3" style="max-height: 200px;"></img>
+        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
+           aria-hidden="true" x-show="nodeName === 'SVG' && !readyToDrop">
+          <path
+            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" x-show="nodeName === 'SVG' && readyToDrop">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+          d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+        </svg>
+      </div>
       <div class="flex text-sm text-gray-600">
         <label for="{{ field.id_for_label }}"
                class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
           <span>Upload a file</span>
           <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="file" class="sr-only"
-                 accept=".png,.jpg,.jpeg"
+                 accept=".png,.jpg,.jpeg,.pdf"
                  x-on:change.debounce="setPreview($el)"/>
         </label>
         <!--<p class="pl-1"> or drag and drop</p>-->
       </div>
-      <p class="text-xs text-gray-500">PNG or JPG up to 10MB</p>
+      <p class="text-xs text-gray-500">PDF, PNG or JPG up to 10MB</p>
     </div>
   </div>
+  <div x-show="errorText" class="text-red-700">Please upload a valid PDF, PNG or JPG</div>
   {% include 'tailwind/layout/help_text_and_errors.html' %}
 </div>
+<script>
+
+</script>
