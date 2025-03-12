@@ -35,6 +35,10 @@
     fileInput.files = $event.dataTransfer.files;
     setPreview(fileInput);
     readyToDrop=false;
+    errorText=false;
+  }
+  else{
+    errorText=true;
   }
   $event.preventDefault();
 " @dragover="
@@ -77,7 +81,7 @@
       </div>
     </div>
   </div>
-  <div x-show="errorText" class="text-red-700">Please upload a valid PDF, PNG or JPG</div>
+  <div x-show="errorText" class="text-red-500 text-xs italic"><strong>Please choose a PDF, PNG or JPG file.</strong></div>
   {% include 'tailwind/layout/help_text_and_errors.html' %}
 </div>
 <script>
