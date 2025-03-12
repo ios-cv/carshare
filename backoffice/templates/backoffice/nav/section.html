@@ -1,10 +1,10 @@
 <a
   href="{% url url %}"
-  class="{% if name == current %}bg-indigo-800{% else %}hover:bg-indigo-600 hover:bg-opacity-75{% endif %} text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+  class="{% if name == current %}bg-teal-800 text-white {% else %}hover:bg-teal-600 hover:bg-opacity-75 text-teal-600{% endif %}  hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
   {% if name == current %}aria-current="page"{% endif %}
 >
   <svg
-    class="mr-3 h-6 w-6 flex-shrink-0 text-indigo-300"
+    class="mr-3 h-6 w-6 flex-shrink-0 text-teal-700"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
