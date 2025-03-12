@@ -4,48 +4,15 @@
 
 <div>
   <nav
-      class="bg-white border-b border-gray-200"
+      class="bg-white border-b border-gray-200 md:hidden"
       x-data="{navigationOpen: false}"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <a href="{% url 'bookings_history' %}">
-                <img class="h-8 w-auto" src="/static/logo.png" alt="GoEV Logo">
-              </a>
-            </div>
-            <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-              <a href="{% url 'bookings_search' %}"
-                 class="{% if menu == 'new_booking' %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                 {% if menu == 'new_booking' %}aria-current="page" {% endif %}
-              >
-                New Booking
-              </a>
-
-              <a href="{% url 'bookings_history' %}"
-                 class="{% if menu == 'my_bookings' %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                 {% if menu == 'my_bookings' %}aria-current="page" {% endif %}
-              >
-                My Bookings
-              </a>
-
-              <a href="{% url 'users_profile_my_details' %}"
-                 class="{% if menu == 'profile' or menu == 'billing' %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                 {% if menu == 'profile' or menu == 'billing' %}aria-current="page" {% endif %}
-              >
-                Profile & Billing
-              </a>
-            </div>
-          </div>
-          <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <form method="post" action="{% url 'account_logout' %}">
-              {% csrf_token %}
-              <button type="submit"
-                      class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                Sign Out
-              </button>
-            </form>
+        <div class="flex justify-between h-16 w-full">
+          <div class="flex-shrink-0 flex items-center">
+            <a href="{% url 'bookings_history' %}">
+              <img class="h-8 w-auto" src="/static/logo.png" alt="GoEV Logo">
+            </a>
           </div>
           <div class="-mr-2 flex items-center sm:hidden">
             <!-- Mobile menu button -->
