@@ -12,13 +12,13 @@
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
     {{ v.registration }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.vehicle_type.name }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.bay.name }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.box.serial_as_hex_string }}
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
@@ -38,10 +38,10 @@
       -
     {% endif %}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     v{{ v.box.desired_firmware_version.version }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     v{{ v.box.firmware_version }}
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500 flex flex-col gap-2">
