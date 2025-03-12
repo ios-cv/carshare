@@ -32,6 +32,7 @@ from drivers.models import (
     DriverProfile,
 )
 from hardware.models import Vehicle, Box, BoxAction, Telemetry, Card
+from hardware.forms import CreateCard
 from users.models import User
 
 from .decorators import require_backoffice_access
