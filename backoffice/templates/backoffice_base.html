@@ -88,25 +88,46 @@
       >
         <div class="pt-2 pb-3 space-y-1">
           <a
-            href="{% url 'bookings_search' %}"
-            class="{% if menu == 'new_booking' %}bg-teal-50 border-teal-500 text-teal-700{% else %} border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 {% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            {% if menu == 'new_booking' %}aria-current="page" {% endif %}
+            href="{% url 'backoffice_home' %}"
+            class="{% if menu == 'dashboard' %}bg-teal-50 border-teal-500 text-teal-700{% else %} border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 {% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+            {% if menu == 'dashboard' %}aria-current="page" {% endif %}
           >
-            New Booking
+            Dashboard
           </a>
 
-          <a href="{% url 'bookings_history' %}"
-             class="{% if menu == 'my_bookings' %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-             {% if menu == 'my_bookings' %}aria-current="page" {% endif %}
+          <a href="{% url 'backoffice_bookings' %}"
+             class="{% if menu == 'bookings' %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'bookings' %}aria-current="page" {% endif %}
           >
-            My Bookings
+            Bookings
           </a>
 
-          <a href="{% url 'users_profile_my_details' %}"
-             class="{% if menu == 'profile' or menu == 'billing' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-             {% if menu == 'profile' or menu == 'billing' %}aria-current="page" {% endif %}
+          <a href="{% url 'backoffice_users' %}"
+             class="{% if menu == 'users' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'users' %}aria-current="page" {% endif %}
           >
-            Profile & Billing
+            Users
+          </a>
+
+          <a href="{% url 'backoffice_accounts' %}"
+             class="{% if menu == 'accounts' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'accounts' %}aria-current="page" {% endif %}
+          >
+            Accounts
+          </a>
+
+          <a href="{% url 'backoffice_approvals' %}"
+             class="{% if menu == 'approvals' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'approvals' %}aria-current="page" {% endif %}
+          >
+            Approvals
+          </a>
+
+          <a href="{% url 'backoffice_vehicles' %}"
+             class="{% if menu == 'vehicles' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'vehicles' %}aria-current="page" {% endif %}
+          >
+            Vehicles
           </a>
 
         </div>
