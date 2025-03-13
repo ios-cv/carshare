@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 def parse_card_id(card_id):
-    return struct.unpack("<I", binascii.unhexlify(card_id))[0]
+    return binascii.unhexlify(card_id).decode("utf8")
 
 
 @csrf_exempt
