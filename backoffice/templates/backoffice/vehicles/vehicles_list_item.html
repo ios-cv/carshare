@@ -24,8 +24,9 @@
   <td class="hidden sm:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.box.last_seen_at }}
   </td>
+  <!-- Use shorter date on mobile -->
   <td class="sm:hidden whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
-    {{ v.box.last_seen_at|date:"D j M G:i" }}
+    {{ v.box.last_seen_at|date:"D j M H:i" }}
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {% if v.box.current_booking %}
