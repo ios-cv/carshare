@@ -66,6 +66,7 @@ def api_v1_telemetry(request, box, data):
     server_etag = box.vehicle.operator_cards_etag
 
     if server_etag != box_etag:
+        # FIXME: card ids should be strings not integers
         log.info(f"Operator Cards ETAG has changed for box {box.id}")
         response["operator_card_list"] = {
             "cards": [
