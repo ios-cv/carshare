@@ -11,11 +11,11 @@ NEW_DAY_RATE = 30
 NEW_HOUR_RATE = 5
 
 
-def calculate_booking_cost(user, vehicle, start, end):
+def calculate_booking_cost(user, vehicle, start, end, reason):
     """Calculates the cost of a rental."""
 
-    # If user is an operator/admin then don't charge them.
-    if user.is_operator:
+    # If user is an operator/admin then don't charge them, or if the reason is maintenance or retired.
+    if user.is_operator or reason == "maintenance" or reason == "retired":
         return 0
 
     # If booking runs into 2024, then use new prices.
