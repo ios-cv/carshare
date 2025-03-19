@@ -84,16 +84,19 @@ def home(request):
 
     most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
 
+    bookings = Booking.objects.filter(
+        reservation_time__overlap=TsTzRange(
+            start_today,
+            end_tomorrow,
+            RangeBoundary(),
+        ),
+    )
+
     context = {
         "menu": "dashboard",
         "user": request.user,
-        "bookings": Booking.objects.filter(
-            reservation_time__overlap=TsTzRange(
-                start_today,
-                end_tomorrow,
-                RangeBoundary(),
-            ),
-        ).order_by("-reservation_time"),
+        "bookings": bookings.order_by("-reservation_time"),
+        "calendar": bookings.order_by("box", "-reservation_time"),
         "late_bookings": Booking.objects.filter(
             state=STATE_LATE,
         ).order_by("-reservation_time"),
