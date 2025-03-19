@@ -38,6 +38,10 @@ STATE_LATE = "late"
 STATE_ENDED = "ended"
 STATE_BILLED = "billed"
 
+USER_BOOKING = "user booking"
+MAINTENANCE = "maintenance"
+RETIRED = "retired"
+
 
 class Booking(models.Model):
     STATE_PENDING = STATE_PENDING
@@ -64,6 +68,12 @@ class Booking(models.Model):
         STATE_INACTIVE,
     ]
 
+    REASONS = [
+        (USER_BOOKING, "user booking"),
+        (MAINTENANCE, "maintenance"),
+        (RETIRED, "retired"),
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -84,6 +94,13 @@ class Booking(models.Model):
         max_length=16,
         choices=STATE_CHOICES,
         default=STATE_PENDING,
+    )
+
+    reason = models.CharField(
+        max_length=12,
+        choices=REASONS,
+        default=USER_BOOKING,
+        null=False,
     )
 
     # Actual reservation times as visible to the user.
@@ -188,6 +205,7 @@ class Booking(models.Model):
             self.vehicle,
             self.reservation_time.lower,
             self.reservation_time.upper,
+            self.reason,
         )
 
     @property
