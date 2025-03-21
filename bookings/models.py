@@ -99,7 +99,7 @@ class Booking(models.Model):
     reason = models.CharField(
         max_length=12,
         choices=REASONS,
-        default=USER_BOOKING,
+        default=REASON_USER_BOOKING,
         null=False,
     )
 
