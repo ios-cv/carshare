@@ -38,9 +38,9 @@ STATE_LATE = "late"
 STATE_ENDED = "ended"
 STATE_BILLED = "billed"
 
-USER_BOOKING = "user booking"
-MAINTENANCE = "maintenance"
-RETIRED = "retired"
+REASON_USER_BOOKING = "user booking"
+REASON_MAINTENANCE = "maintenance"
+REASON_RETIRED = "retired"
 
 
 class Booking(models.Model):
@@ -69,9 +69,9 @@ class Booking(models.Model):
     ]
 
     REASONS = [
-        (USER_BOOKING, "user booking"),
-        (MAINTENANCE, "maintenance"),
-        (RETIRED, "retired"),
+        (REASON_USER_BOOKING, "user booking"),
+        (REASON_MAINTENANCE, "maintenance"),
+        (REASON_RETIRED, "retired"),
     ]
 
     user = models.ForeignKey(
