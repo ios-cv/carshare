@@ -1,3 +1,27 @@
-<tr>
-    
-</tr>
+<div class="flex flex-row border-b border-gray-200">
+    <span class="w-28 text-center">{{ vehicle.registration }}</span>
+    <div class="relative h-8 flex-grow">
+        {% for booking in vehicle.bookings %}
+            {% if booking.reason == "user booking" %}
+                <div class="bg-teal-600 absolute h-full has-tooltip" style="left:{{booking.start_offset_percent}}%;width:{{booking.duration_percent}}%;top:0px;bottom:0px;">
+                    <a href="{% url "backoffice_bookings" %}">
+                        <span class="tooltip rounded shadow-lg p-1 bg-gray-100 text-blue-800 -mt-8 -ml-[100px] min-w-max">{{ booking.user.first_name|title }} {{ booking.user.last_name|title }}: {{ booking.from }} - {{ booking.to }} - {{ booking.state }}</span>
+                    </a>
+                </div>
+            {% elif booking.reason == "maintenance" %}
+                <div class="bg-blue-600 absolute h-full has-tooltip" style="left:{{booking.start_offset_percent}}%;width:{{booking.duration_percent}}%;top:0px;bottom:0px;">
+                    <span class="tooltip rounded shadow-lg p-1 bg-gray-100 text-blue-800 -mt-8 -ml-[100px] min-w-max">Maintenance</span>
+                </div>
+            {% elif booking.reason == "retired" %}
+                <div class="bg-red-600 absolute h-full has-tooltip" style="left:{{booking.start_offset_percent}}%;width:{{booking.duration_percent}}%;top:0px;bottom:0px;">
+                    <span class="tooltip rounded shadow-lg p-1 bg-gray-100 text-blue-800 -mt-8 -ml-[100px] min-w-max">Vehicle has been retired</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="grid grid-rows-1 grid-flow-col h-full" style="grid-template-columns: repeat({{num_hours_in_period}},minmax(0,1fr));">
+            {% for hour in hours_in_period %}
+                <div class="border-l border-gray-200"></div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
