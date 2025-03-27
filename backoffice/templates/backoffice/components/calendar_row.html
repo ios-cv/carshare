@@ -5,7 +5,8 @@
             {% if booking.reason == "user booking" %}
                 <div class="bg-teal-600 absolute h-full has-tooltip" style="left:{{booking.start_offset_percent}}%;width:{{booking.duration_percent}}%;top:0px;bottom:0px;">
                     <a href="{% url "backoffice_bookings" %}">
-                        <span class="tooltip rounded shadow-lg p-1 bg-gray-100 text-blue-800 -mt-8 -ml-[100px] min-w-max">{{ booking.user.first_name|title }} {{ booking.user.last_name|title }}: {{ booking.from }} - {{ booking.to }} - {{ booking.state }}</span>
+                        <span class="tooltip rounded shadow-lg p-1 bg-gray-100 text-blue-800 -mt-8 min-w-max absolute"
+                        x-init="let rect=$el.getBoundingClientRect(); console.log(rect); if (rect.right>(window.innerWidth-50)){ $el.style.left=`-${rect.right-(window.innerWidth-50)}px`;}">{{ booking.user.first_name|title }} {{ booking.user.last_name|title }}: {{ booking.from }} - {{ booking.to }} - {{ booking.state }}</span>
                     </a>
                 </div>
             {% elif booking.reason == "maintenance" %}
