@@ -22,7 +22,7 @@ from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
     BillingAccount,
 )
-from bookings.models import Booking
+from bookings.models import Booking, STATE_CANCELLED
 from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
@@ -37,7 +37,13 @@ from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBook
 @require_backoffice_access
 def home(request):
     start_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_tomorrow = start_today + timezone.timedelta(days=2)
+    days_in_period = 2
+    end_tomorrow = start_today + timezone.timedelta(days=days_in_period)
+    seconds_in_period = (end_tomorrow - start_today).total_seconds()
+    hours_in_period = round((seconds_in_period + 1800) / 3600)
+    name_days_in_period = []
+    for day in range(days_in_period):
+        name_days_in_period.append((start_today + timezone.timedelta(days=day)))
 
     drivers_pending = len(get_all_driver_profiles_pending_approval())
     accounts_pending = len(get_all_billing_accounts_pending_approval())
@@ -91,27 +97,51 @@ def home(request):
                 end_tomorrow,
                 RangeBoundary(),
             ),
-        ).order_by("vehicle", "-reservation_time")
+        ).order_by("vehicle", "reservation_time")
+    )
+
+    bookings_for_table = sorted(
+        bookings, key=lambda x: x.reservation_time, reverse=True
     )
 
     vehicle = None
     bookings_for_calendar = []
-    for booking in bookings:
-        if vehicle != booking.vehicle:
-            vehicle = booking.vehicle
-            bookings_for_calendar.append(
-                {"registration": vehicle.registration, "bookings": []}
+    for b in bookings:
+        if b.state != STATE_CANCELLED:
+            if vehicle != b.vehicle:
+                vehicle = b.vehicle
+                bookings_for_calendar.append(
+                    {"registration": vehicle.registration, "bookings": []}
+                )
+            temp_booking = {
+                "state": b.state,
+                "from": b.reservation_time.lower,
+                "to": b.reservation_time.upper,
+                "user": b.user,
+                "reason": b.reason,
+            }
+            start_offset_seconds = int(
+                (b.reservation_time.lower - start_today).total_seconds()
             )
-        else:
-            bookings_for_calendar[-1]["bookings"].append(booking)
-
-    bookings.sort(key=lambda x: x.reservation_time, reverse=True)
+            end_offset_seconds = int((b.block_time.upper - start_today).total_seconds())
+            temp_booking["start_offset_percent"] = (
+                start_offset_seconds / seconds_in_period
+            ) * 100
+            duration_seconds = end_offset_seconds - start_offset_seconds
+            temp_booking["duration_percent"] = (
+                duration_seconds / seconds_in_period
+            ) * 100
+            bookings_for_calendar[-1]["bookings"].append(temp_booking)
 
     context = {
         "menu": "dashboard",
         "user": request.user,
-        "bookings": bookings,
+        "bookings": bookings_for_table,
         "calendar": bookings_for_calendar,
+        "hours_in_period": range(hours_in_period),
+        "num_hours_in_period": hours_in_period,
+        "days_in_period": days_in_period,
+        "name_days_in_period": name_days_in_period,
         "late_bookings": Booking.objects.filter(
             state=STATE_LATE,
         ).order_by("-reservation_time"),
