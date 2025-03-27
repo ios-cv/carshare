@@ -123,7 +123,9 @@ def home(request):
             start_offset_seconds = int(
                 (b.reservation_time.lower - start_today).total_seconds()
             )
-            end_offset_seconds = int((b.block_time.upper - start_today).total_seconds())
+            end_offset_seconds = int(
+                (b.reservation_time.upper - start_today).total_seconds()
+            )
             temp_booking["start_offset_percent"] = (
                 start_offset_seconds / seconds_in_period
             ) * 100
