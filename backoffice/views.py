@@ -130,9 +130,20 @@ def home(request):
                 start_offset_seconds / seconds_in_period
             ) * 100
             duration_seconds = end_offset_seconds - start_offset_seconds
+            if temp_booking["start_offset_percent"] < 0:
+                duration_seconds += start_offset_seconds
+                temp_booking["start_offset_percent"] = 0
             temp_booking["duration_percent"] = (
                 duration_seconds / seconds_in_period
             ) * 100
+
+            if (
+                temp_booking["start_offset_percent"] + temp_booking["duration_percent"]
+                > 100
+            ):
+                temp_booking["duration_percent"] = (
+                    100 - temp_booking["start_offset_percent"]
+                )
             bookings_for_calendar[-1]["bookings"].append(temp_booking)
 
     context = {
