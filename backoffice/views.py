@@ -43,24 +43,23 @@ def home(request):
     accounts_pending = len(get_all_billing_accounts_pending_approval())
 
     most_recent_telemetry_query = (
-        Telemetry.objects.all()
-        .select_related("box", "box__vehicle")
-        .order_by("box", "-created_at")
-        .distinct("box")
+        Telemetry.objects.all().order_by("box", "-created_at").distinct("box")
     )
 
+    registrations = list(
+        Vehicle.objects.all().values_list("registration", "box_id", "id").distinct()
+    )
     most_recent_times_telemetry = []
     for tel in most_recent_telemetry_query:
         most_recent_times_telemetry.append(
             {
-                "registration": tel.box.vehicle.registration,
+                "box_id": tel.box_id,
                 "most_recent": tel.created_at,
             }
         )
 
     most_recent_soc_query = (
         Telemetry.objects.filter(soc_percent__isnull=False)
-        .select_related("box", "box__vehicle")
         .order_by("box", "-created_at")
         .distinct("box")
     )
@@ -68,18 +67,22 @@ def home(request):
     for tel in most_recent_soc_query:
         most_recent_soc.append(
             {
-                "registration": tel.box.vehicle.registration,
+                "box_id": tel.box_id,
                 "soc": tel.soc_percent,
                 "created_at": tel.created_at,
                 "locked": tel.box.locked,
-                "vehicle_id": tel.box.vehicle.id,
             }
         )
 
     for soc_tel in most_recent_soc:
         for tel in most_recent_times_telemetry:
-            if tel["registration"] == soc_tel["registration"]:
+            if tel["box_id"] == soc_tel["box_id"]:
                 soc_tel["most_recent"] = tel["most_recent"]
+                break
+        for reg, box, id in registrations:
+            if box == soc_tel["box_id"]:
+                soc_tel["registration"] = reg
+                soc_tel["vehicle_id"] = id
                 break
 
     most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
