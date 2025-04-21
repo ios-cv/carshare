@@ -42,8 +42,12 @@ def home(request):
 @login_required
 @require_user_can_view_bookings
 def my_bookings(request):
-    bookings = Booking.objects.filter(user_id=request.user.id).order_by(
-        "-reservation_time"
+    bookings = (
+        Booking.objects.filter(user_id=request.user.id)
+        .order_by("-reservation_time")
+        .select_related("vehicle__box__current_booking")
+        .select_related("vehicle__bay__station")
+        .select_related("billing_account")
     )
     context = {
         "bookings": bookings,
