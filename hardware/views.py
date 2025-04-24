@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 def parse_card_id(card_id):
-    return struct.unpack("<I", binascii.unhexlify(card_id))[0]
+    return binascii.unhexlify(card_id).decode("utf8")
 
 
 @csrf_exempt
@@ -66,6 +66,7 @@ def api_v1_telemetry(request, box, data):
     server_etag = box.vehicle.operator_cards_etag
 
     if server_etag != box_etag:
+        # FIXME: card ids should be strings not integers
         log.info(f"Operator Cards ETAG has changed for box {box.id}")
         response["operator_card_list"] = {
             "cards": [
