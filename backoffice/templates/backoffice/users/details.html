@@ -1,65 +1,73 @@
 {% extends "backoffice_base.html" %}
 
-{% block heading %}<div class="font-bold">User - {{ user_details.username }} ({{ user_details.first_name|title|add:" "|add:user_details.last_name|title }})</div>{% endblock %}
+{% block heading %}<div class="text-lg font-medium leading-6 text-gray-900 sm:truncate">User - {{ user_details.username }} ({{ user_details.first_name|title|add:" "|add:user_details.last_name|title }})</div>{% endblock %}
 
 
 {% block main %}
-<div>
-    <h3 class="text-lg font-bold px-3 py-2">Bookings</h3>
-    <div class="px-5">
-        <div class="inline-block min-w-full border-b border-gray-200 align-middle">
-            {% include "backoffice/bookings/bookings_list.html" with bookings=page %}
-          </div>
-      
-          {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}
-    </div>
-</div>
-<div class="px-5 py-2">
-  {% include "backoffice/components/user_details.html" with user_details=user_details%}
-</div>
-<div>
-    <h3 class="text-lg font-bold px-3 py-2">Driver Profiles</h3>
-    <div class="flex flex-wrap gap-5 px-5">
-        {% for p in driver_profiles %}
-            {% include "backoffice/components/driver_profile_card.html" with profile=p %}
-        {% endfor %}
-    </div>
-</div>
-<div>
-    <h3 class="text-lg font-bold px-3 py-2">Owned Billing Accounts</h3>
-    <div class="flex flex-wrap gap-5 px-5">
-        {% for ba in owned_billing_accounts %}
-            <div class="w-96">
-                {% include "billing/components/billing_account_card.html" with ba=ba owner=user_details.first_name %}
+<div class="p-4 sm:p-6 lg:p-8">
+    <div>
+        <h3 class="text-xl font-semibold text-gray-900">Bookings</h3>
+
+        <div class="mt-8 flex flex-col">
+            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        {% include "backoffice/bookings/bookings_list.html" with bookings=page %}
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    </div>
-</div>
-<div>
-    <h3 class="text-lg font-bold px-3 py-2">Member of Billing Accounts</h3>
-    <div class="flex flex-wrap gap-5 px-5">
-        {% for ba in member_billing_accounts %}
-            <div class="w-96">
-                {% include "billing/components/billing_account_card.html" with ba=ba owner=ba.owner %}
+            <div class="mt-1">
+                {% include "backoffice/components/paginator.html" with page=page page_range=page_range %}
             </div>
-        {% endfor %}
+        </div>
     </div>
-</div>
-<div class="pb-10">
-    <h3 class="text-lg font-bold px-3 py-2">Cards</h3>
-    <div class="flex flex-wrap gap-5 px-5">
-        {% for c in cards %}
-           {% include "backoffice/components/card_card.html" with card=c %}
-        {% endfor %}
-        <a class="w-72 h-36 border-gray-600 hover:border-gray-800 shadow hover:shadow-lg bg-slate-400 hover:bg-slate-300 border-4 rounded-lg box-border"
-        href="{% url "backoffice_add_card" user_details.id %}"
-        >
-            <div class="w-full h-full flex flex-col gap-3 items-center justify-center ">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4b5563" class="size-20">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                  </svg>
-            </div>
-        </a>
+    <div class="px-5 py-2">
+        {% include "backoffice/components/user_details.html" with user_details=user_details%}
+    </div>
+    <div>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Driver Profiles</h3>
+        <div class="flex flex-wrap gap-5 px-5">
+            {% for p in driver_profiles %}
+                {% include "backoffice/components/driver_profile_card.html" with profile=p %}
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Owned Billing Accounts</h3>
+        <div class="flex flex-wrap gap-5 px-5">
+            {% for ba in owned_billing_accounts %}
+                <div class="w-96">
+                    {% include "billing/components/billing_account_card.html" with ba=ba owner=user_details.first_name %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Member of Billing Accounts</h3>
+        <div class="flex flex-wrap gap-5 px-5">
+            {% for ba in member_billing_accounts %}
+                <div class="w-96">
+                    {% include "billing/components/billing_account_card.html" with ba=ba owner=ba.owner %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="pb-10">
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Cards</h3>
+        <div class="flex flex-wrap gap-5 px-5">
+            {% for c in cards %}
+            {% include "backoffice/components/card_card.html" with card=c %}
+            {% endfor %}
+            <a class="w-72 h-36 border-gray-600 hover:border-gray-800 shadow hover:shadow-lg bg-slate-400 hover:bg-slate-300 border-4 rounded-lg box-border"
+            href="{% url "backoffice_add_card" user_details.id %}"
+            >
+                <div class="w-full h-full flex flex-col gap-3 items-center justify-center ">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4b5563" class="size-20">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
