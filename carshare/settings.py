@@ -288,3 +288,6 @@ CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "your@email")
 CONTACT_INTERNATIONAL_PHONE = os.environ.get(
     "CONTACT_INTERNATIONAL_PHONE", "+44111222333"
 )
+
+# old telemetry is deleted on the first of every month at 3am, it will be kept if younger than this value
+TELEMETRY_AGE_DAYS = int(os.environ.get("TELEMETRY_AGE_DAYS", 180))

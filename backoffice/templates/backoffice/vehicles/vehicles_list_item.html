@@ -12,36 +12,40 @@
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
     <a href="{% url "vehicle_details" v.id %}" class="underline">{{ v.registration }}</a>
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.vehicle_type.name }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.bay.name }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.box.serial_as_hex_string }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.box.last_seen_at }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <!-- Use shorter date on mobile -->
+  <td class="md:hidden whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+    {{ v.box.last_seen_at|date:"D j M H:i" }}
+  </td>
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {% if v.box.current_booking %}
       #{{ v.box.current_booking.id|stringformat:"06d" }}
     {% else %}
       -
     {% endif %}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {% if v.box.unlocked_by %}
       {{ v.box.unlocked_by }}
     {% else %}
       -
     {% endif %}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     v{{ v.box.desired_firmware_version.version }}
   </td>
-  <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
+  <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     v{{ v.box.firmware_version }}
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500 flex flex-col gap-2">
