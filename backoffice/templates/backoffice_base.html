@@ -4,7 +4,123 @@
 {% block content %}
 
 <div>
-  
+  <nav
+      class="bg-white border-b border-gray-200 md:hidden"
+      x-data="{navigationOpen: false}"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 w-full">
+          <div class="flex-shrink-0 flex items-center">
+            <a href="{% url 'bookings_history' %}">
+              <img class="h-8 w-auto" src="/static/logo.png" alt="GoEV Logo">
+            </a>
+          </div>
+          <div class="-mr-2 flex items-center md:hidden">
+            <!-- Mobile menu button -->
+            <button
+              type="button"
+              class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              aria-controls="mobile-menu" aria-expanded="false"
+              @click="navigationOpen = !navigationOpen"
+            >
+              <span class="sr-only">Open main menu</span>
+              <!--
+                Heroicon name: outline/menu
+
+                Menu open: "hidden", Menu closed: "block"
+              -->
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor" aria-hidden="true" x-show="!navigationOpen">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+              <!--
+                Heroicon name: outline/x
+
+                Menu open: "block", Menu closed: "hidden"
+              -->
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor" aria-hidden="true" x-show="navigationOpen">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu, show/hide based on menu state. -->
+      <div
+        class="md:hidden"
+        id="mobile-menu"
+        @click.away="navigationOpen = false"
+        x-show="navigationOpen"
+      >
+        <div class="pt-2 pb-3 space-y-1">
+          <a
+            href="{% url 'backoffice_home' %}"
+            class="{% if menu == 'dashboard' %}bg-teal-50 border-teal-500 text-teal-700{% else %} border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 {% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+            {% if menu == 'dashboard' %}aria-current="page" {% endif %}
+          >
+            Dashboard
+          </a>
+
+          <a href="{% url 'backoffice_bookings' %}"
+             class="{% if menu == 'bookings' %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'bookings' %}aria-current="page" {% endif %}
+          >
+            Bookings
+          </a>
+
+          <a href="{% url 'backoffice_users' %}"
+             class="{% if menu == 'users' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'users' %}aria-current="page" {% endif %}
+          >
+            Users
+          </a>
+
+          <a href="{% url 'backoffice_accounts' %}"
+             class="{% if menu == 'accounts' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'accounts' %}aria-current="page" {% endif %}
+          >
+            Accounts
+          </a>
+
+          <a href="{% url 'backoffice_approvals' %}"
+             class="{% if menu == 'approvals' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'approvals' %}aria-current="page" {% endif %}
+          >
+            Approvals
+          </a>
+
+          <a href="{% url 'backoffice_vehicles' %}"
+             class="{% if menu == 'vehicles' %} bg-teal-50 border-teal-500 text-teal-700 {% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+             {% if menu == 'vehicles' %}aria-current="page" {% endif %}
+          >
+            Vehicles
+          </a>
+
+          <a href="{% url 'public_home' %}"
+             class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+            Public Portal
+          </a>
+
+        </div>
+        <div class="pt-4 pb-3 border-t border-gray-200">
+          <div class="mt-3 space-y-1">
+
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                Sign Out
+              </button>
+            </form>
+
+          </div>
+        </div>
+        <div class="bg-blue-100 h-4"></div>
+      </div>
+    </nav>
+
   <!-- Static sidebar for desktop -->
   <div class="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
     <!-- Sidebar component, swap this element with another sidebar if you like -->
@@ -59,21 +175,12 @@
   </div>
 
   <div class="flex flex-1 flex-col md:pl-64">
-    <div class="sticky top-0 z-10 bg-gray-100 pl-1 pt-1 sm:pl-3 sm:pt-3 md:hidden">
-      <button type="button" class="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500">
-        <span class="sr-only">Open sidebar</span>
-        <!-- Heroicon name: outline/bars-3 -->
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-    </div>
     <main class="flex-1">
-       <div class="border-b border-gray-200 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
+       <div class="border-b border-gray-200 px-4 py-4 flex items-center justify-between lg:px-8">
         <div class="min-w-0 flex-1">
           <h1 class="text-lg font-medium leading-6 text-gray-900 sm:truncate">{% block heading %}{% endblock %}</h1>
         </div>
-        <div class="mt-4 flex sm:mt-0 sm:ml-4">
+        <div class="mt-0 flex sm:mt-4 sm:ml-4">
           <!--
           <button type="button" class="sm:order-0 order-1 ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:ml-0">Share</button>
           <button type="button" class="order-0 inline-flex items-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:order-1 sm:ml-3">Create</button>
