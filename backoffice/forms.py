@@ -3,12 +3,13 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 
 from django import forms
-from django.forms import ValidationError
+from django.forms import ValidationError, ModelForm
 from django.urls import reverse_lazy
 from django.utils import timezone
 
 from drivers.fields import CustomImageField
 from drivers.models import DriverProfile, FullDriverProfile
+from bookings.models import Booking
 
 
 class DriverProfileReviewForm(forms.ModelForm):
@@ -190,4 +191,37 @@ class CloseBookingForm(forms.Form):
     should_lock = forms.BooleanField(required=False, initial=False)
     return_url = forms.CharField(
         required=False, initial=reverse_lazy("backoffice_home")
+    )
+
+
+class EditBookingForm(ModelForm):
+    class Meta:
+        model = Booking
+        fields = [
+            "vehicle",
+            "state",
+            "reservation_time",
+            "actual_start_time",
+            "actual_end_time",
+        ]
+
+    actual_start_time = forms.SplitDateTimeField(
+        label="Actual start time",
+        required=False,
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+    actual_end_time = forms.SplitDateTimeField(
+        label="Actual end time",
+        required=False,
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
     )
