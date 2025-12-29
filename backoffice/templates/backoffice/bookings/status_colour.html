@@ -1,0 +1,9 @@
+{% if status == 'pending' %}<tr class="bg-yellow-100 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'active' %}<tr class="bg-green-200 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'inactive' %}<tr class="bg-blue-200 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'cancelled' %}<tr class="bg-gray-300 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'late' %}<tr class="bg-red-100 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'ended' %}<tr class="bg-purple-200 sm:bg-white text-black sm:text-gray-500">
+{% elif status == 'billed' %}<tr class="bg-gray-100 sm:bg-white text-black sm:text-gray-500">
+{% else %}<tr class="bg-pink-600 sm:bg-white text-black sm:text-gray-500">
+{% endif %}
