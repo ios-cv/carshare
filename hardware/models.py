@@ -266,13 +266,3 @@ class Telemetry(models.Model):
     ibutton_id: {self.ibutton_id}
     uptime: {self.uptime_to_str}
     free heap: {self.free_heap_bytes_to_str}"""
-
-    class Meta:
-        indexes = [
-            models.Index(fields=["box_id", "-created_at"], name="idx_box_created_desc"),
-            models.Index(
-                fields=["box_id", "-created_at"],
-                name="idx_created_desc_soc_not_null",
-                condition=models.Q(soc_percent__isnull=False),
-            ),
-        ]
