@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -123,10 +124,10 @@
   <!-- Static sidebar for desktop -->
   <div class="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
     <!-- Sidebar component, swap this element with another sidebar if you like -->
-    <div class="flex min-h-0 flex-1 flex-col bg-indigo-700">
+    <div class="flex min-h-0 flex-1 flex-col bg-teal-800">
       <div class="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
         <div class="flex flex-shrink-0 items-center px-4">
-          <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=300" alt="Your Company">
+          <img class="w-auto" src="{% static "logo.png" %}" alt="Isles of Scilly Community Venture">
         </div>
         <nav class="mt-5 flex-1 space-y-1 px-2">
 
@@ -150,19 +151,19 @@
 
         </nav>
       </div>
-      <div class="flex flex-shrink-0 border-t border-indigo-800 p-4">
+      <div class="flex flex-shrink-0 border-t border-teal-200 p-4">
         <div class="group block w-full flex-shrink-0">
           <div class="flex items-center">
-            <div>
-              <img class="inline-block h-9 w-9 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+            <div class="rounded-[30%] bg-white p-1">
+              <img class="inline-block h-9 w-9 rounded-full" src="{% static "square.png" %}" alt="">
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-white">{{user.first_name}} {{user.last_name}}</p>
+              <p class="text-sm font-medium text-white">{{user.first_name|title}} {{user.last_name|title}}</p>
 
                           <form method="post" action="{% url 'account_logout' %}">
             {% csrf_token %}
             <button type="submit"
-                    class="text-xs font-medium text-indigo-200 group-hover:text-white">
+                    class="text-xs font-medium text-teal-200 hover:text-teal-800 rounded w-full p-1 hover:bg-teal-200 text-center">
               Sign Out
             </button>
           </form>
