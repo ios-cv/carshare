@@ -1,10 +1,9 @@
 {% load user_utils %}
 
 <tr>
-  
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
     <a href="{% url "backoffice_user_with_name" u.username %}" class="underline">
-      {% if u.first_name %}{{ u.first_name|title }} {{ u.last_name|title }}{% else %}{{ u.username }}{% endif %}
+      {{ u.first_name|title }} {{ u.last_name|title }}
     </a>
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-sm text-gray-500">
