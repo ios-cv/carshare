@@ -21,19 +21,22 @@
             </div>
         </div>
     </div>
-    <div class="px-5 py-2">
-        {% include "backoffice/components/user_details.html" with user_details=user_details%}
-    </div>
     <div>
-        <h3 class="text-xl font-semibold text-gray-900 my-8">Driver Profiles</h3>
-        <div class="flex flex-wrap gap-5 px-5">
-            {% for p in driver_profiles %}
-                {% include "backoffice/components/driver_profile_card.html" with profile=p %}
-            {% endfor %}
+        <h3 class="text-xl font-semibold text-gray-900">User Details</h3>
+        <div class="px-5 py-2">
+            {% include "backoffice/components/user_details.html" with user_details=user_details%}
         </div>
     </div>
     <div>
-        <h3 class="text-xl font-semibold text-gray-900 my-8">Owned Billing Accounts</h3>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Driver Profiles</h3>
+        <ul class="flex flex-wrap gap-5 px-5">
+            {% for p in driver_profiles %}
+                {% include "backoffice/components/driver_profile_card.html" with profile=p %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Billing Accounts Owned by {{ user_details.first_name|title }} {{ user_details.last_name|title }}</h3>
         <div class="flex flex-wrap gap-5 px-5">
             {% for ba in owned_billing_accounts %}
                 <div class="w-96">
@@ -42,8 +45,9 @@
             {% endfor %}
         </div>
     </div>
+    {% if member_billing_accounts %}
     <div>
-        <h3 class="text-xl font-semibold text-gray-900 my-8">Member of Billing Accounts</h3>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">Billing Accounts {{ user_details.first_name|title }} {{ user_details.last_name|title }} is a Member of</h3>
         <div class="flex flex-wrap gap-5 px-5">
             {% for ba in member_billing_accounts %}
                 <div class="w-96">
@@ -52,8 +56,9 @@
             {% endfor %}
         </div>
     </div>
+    {% endif %}
     <div class="pb-10">
-        <h3 class="text-xl font-semibold text-gray-900 my-8">Cards</h3>
+        <h3 class="text-xl font-semibold text-gray-900 my-8">RFID Cards</h3>
         <div class="flex flex-wrap gap-5 px-5">
             {% for c in cards %}
             {% include "backoffice/components/card_card.html" with card=c %}
