@@ -5,7 +5,7 @@ urlpatterns = [
     path("", views.home, name="backoffice_home"),
     path("bookings/", views.bookings, name="backoffice_bookings"),
     path("users/", views.users, name="backoffice_users"),
-    path("users/card/add/<int:id>/", views.add_card, name="backoffice_add_card"),
+    path("users/<int:id>/cards/add/", views.add_card, name="backoffice_add_card"),
     path("users/<int:id>/", views.user_details, name="backoffice_user_details"),
     path(
         "users/<str:username>/", views.user_with_name, name="backoffice_user_with_name"
