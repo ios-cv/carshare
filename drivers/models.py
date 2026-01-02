@@ -83,6 +83,11 @@ class DriverProfile(PolymorphicModel):
     )
     def admin__is_approved(self):
         return self.approved_to_drive
+    
+    def is_expired(self):
+        if self.expires_at is None:
+            return False
+        return self.expires_at <= timezone.now()
 
 
 class ExternalDriverProfile(DriverProfile):
