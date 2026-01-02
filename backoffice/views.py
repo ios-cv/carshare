@@ -464,7 +464,7 @@ def perform_box_action(request, vehicle, action_to_perform, user):
 
 @require_backoffice_access
 def user_details(request, id):
-    selected_user_details = User.objects.get(pk=id)
+    selected_user_details = get_object_or_404(User, pk=id)
     selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
     selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
     selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
@@ -473,8 +473,8 @@ def user_details(request, id):
         "-reservation_time"
     )
 
-    filter = BookingsFilter(request.GET, queryset=selected_user_bookings)
-    bookings = filter.qs
+    filtered_Bookings = BookingsFilter(request.GET, queryset=selected_user_bookings)
+    bookings = filtered_Bookings.qs
     paginator = Paginator(bookings, 5)
 
     page_number = request.GET.get("page", 1)
@@ -529,7 +529,7 @@ def user_details(request, id):
         "cards": selected_user_cards,
         "page": page_obj,
         "page_range": page_range,
-        "filter": filter,
+        "filter": filtered_Bookings,
         "parameters": parameters,
     }
     return render(request, "backoffice/users/details.html", context)
@@ -537,7 +537,7 @@ def user_details(request, id):
 
 @require_backoffice_access
 def user_with_name(request, username):
-    user = User.objects.get(username=username)
+    user = get_object_or_404(User, username=username)
     return user_details(request, user.id)
 
 
