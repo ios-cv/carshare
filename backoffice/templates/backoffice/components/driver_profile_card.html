@@ -65,34 +65,34 @@
             <div>
                 <h3 class="font-semibold text-gray-700 mb-2">Licence Images</h3>
                 <p class="mt-1 text-gray-500 text-sm truncate"><strong>Front:</strong> 
-                    {% if profile.licence_front == "" %}
-                        Not Provided
+                    {% if profile.licence_front %}
+                        <a href="{{ profile.licence_front.url }}" target="_blank" class="text-blue-500">View</a>
                     {% else %}
-                        <a href="/media/{{ profile.licence_front }}" target="_blank" class="text-blue-500">View</a>
+                        Not Provided
                     {% endif%}
                 </p>
                 <p class="mt-1 text-gray-500 text-sm truncate"><strong>Back:</strong> 
-                    {% if profile.licence_back == "" %}
-                        Not Provided
+                    {% if profile.licence_back %}
+                        <a href="{{ profile.licence_back.url }}" target="_blank" class="text-blue-500">View</a>
                     {% else %}
-                        <a href="/media/{{ profile.licence_back }}" target="_blank" class="text-blue-500">View</a>
+                        Not Provided
                     {% endif %}
                 </p>
                 <p class="mt-1 text-gray-500 text-sm truncate"><strong>Selfie:</strong> 
-                    {% if profile.licence_selfie == "" %}
-                        Not Provided
+                    {% if profile.licence_selfie %}
+                        <a href="{{ profile.licence_selfie.url }}" target="_blank" class="text-blue-500">View</a>
                     {% else %}
-                        <a href="/media/{{ profile.licence_selfie }}" target="_blank" class="text-blue-500">View</a>
+                        Not Provided
                     {% endif %}
                 </p>
             </div>
             <div>
                 <h3 class="font-semibold text-gray-700 mb-2">Proof of Address</h3>
                 <p class="mt-1 text-gray-500 text-sm truncate"><strong>Document:</strong> 
-                    {% if profile.proof_of_address == "" %}
-                        Not Provided
+                    {% if profile.proof_of_address %}
+                        <a href="{{ profile.proof_of_address.url }}" target="_blank" class="text-blue-500">View</a>
                     {% else %}
-                        <a href="/media/{{ profile.proof_of_address }}" target="_blank" class="text-blue-500">View</a>
+                        Not Provided
                     {% endif %}
                 </p>
             </div>
