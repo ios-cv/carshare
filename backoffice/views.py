@@ -516,9 +516,6 @@ def user_details(request, id):
             )
             billing_account.successfully_updated = False
 
-    # Hack for pagination & filtering. Should really use a templatetag to generate URLs.
-    _request_copy = request.GET.copy()
-    parameters = _request_copy.pop("page", True) and _request_copy.urlencode()
     context = {
         "menu": "user",
         "user": request.user,
@@ -530,7 +527,6 @@ def user_details(request, id):
         "page": page_obj,
         "page_range": page_range,
         "filter": filtered_Bookings,
-        "parameters": parameters,
     }
     return render(request, "backoffice/users/details.html", context)
 
