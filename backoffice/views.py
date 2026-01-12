@@ -536,12 +536,6 @@ def user_details(request, id):
 
 
 @require_backoffice_access
-def user_with_name(request, username):
-    user = get_object_or_404(User, username=username)
-    return user_details(request, user.id)
-
-
-@require_backoffice_access
 def add_card(request, id):
     try:
         selected_user_details = User.objects.get(pk=id)
