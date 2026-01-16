@@ -473,8 +473,8 @@ def user_details(request, id):
         "-reservation_time"
     )
 
-    filtered_Bookings = BookingsFilter(request.GET, queryset=selected_user_bookings)
-    bookings = filtered_Bookings.qs
+    filtered_bookings = BookingsFilter(request.GET, queryset=selected_user_bookings)
+    bookings = filtered_bookings.qs
     paginator = Paginator(bookings, 5)
 
     page_number = request.GET.get("page", 1)
@@ -526,7 +526,7 @@ def user_details(request, id):
         "cards": selected_user_cards,
         "page": page_obj,
         "page_range": page_range,
-        "filter": filtered_Bookings,
+        "filter": filtered_bookings,
     }
     return render(request, "backoffice/users/details.html", context)
 
