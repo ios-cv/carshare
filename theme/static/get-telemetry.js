@@ -1,8 +1,8 @@
-const base_url=document.getElementById("base_url").getAttribute("href");
-const telemetry_url="http://"+base_url+document.getElementById("telemetry_url").getAttribute("href");
+const telemetry_url=document.getElementById("telemetry_url").getAttribute("href");
 const csrftoken=document.querySelector("[name=csrfmiddlewaretoken]").value;
 const vehicle_id=document.getElementById("vehicle_id").value;
 const svgElement=document.getElementById("graph");
+const graphMessage=document.getElementById("graph_message")
 const telemetry={
     data:[],
     set_data(data){
@@ -40,15 +40,16 @@ function get_telemetry(){
 get_telemetry();
 
 function drawChart(svgElement, points) {
-    if (!svgElement || !Array.isArray(points) || points.length === 0) {
-        console.error("Invalid arguments");
+    if (!svgElement || !Array.isArray(points) || points.length <= 1) {
+        graphMessage.textContent="Not enough telemetry recieved to draw graph."
         return;
     }
+    graphMessage.textContent="";
 
     // Determine min and max values for scaling
     const minX = Math.min(...points.map(p => p.x));
     const maxX = Math.max(...points.map(p => p.x));
-    // FIXME: Handle zero and 1 data point edge cases
+    
     const minY = 0//Math.min(...points.map(p => p.y));
     const maxY = 100;
 
