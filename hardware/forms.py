@@ -1,5 +1,4 @@
 from django import forms
-from users.models import User
 from hardware.models import Card
 
 
