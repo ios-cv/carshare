@@ -1,0 +1,53 @@
+{% load crispy_forms_tags %}
+<section>
+    <div class="bg-white shadow sm:rounded-lg">
+      <div>
+      {% if ba.account_type == "p" %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-{% if ba.approved %}green{% elif ba.complete %}orange{% else %}yellow{% endif %}-300">
+          <h2 class="text-lg leading-6 font-medium text-gray-900">
+            Personal Billing Account [{{ ba.id }}] - {% if ba.approved %}Approved{% elif ba.complete %}Submitted{% else %}Incomplete{% endif %}
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            {% if owner %}{{owner|title}}'s{% else %}Your{% endif %} billing account for personal usage.</p>
+        </div>
+      {% elif ba.account_type == "b" %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-{% if ba.approved %}green{% elif ba.complete %}orange{% else %}yellow{% endif %}-300">
+          <h2 class="text-lg font-medium leading-6 text-gray-900">
+            {{ ba.account_name }} [{{ ba.id }}] - {% if ba.approved %}Approved{% elif ba.complete %}Submitted{% else %}Incomplete{% endif %}
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Business billing account for {{ ba.business_name }}</p>
+        </div>
+      {% endif %}
+      </div>
+      {% if ba.account_type == "b" %}
+        <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+            <div class="sm:col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Business name</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ ba.business_name }}</dd>
+            </div>
+            <div class="sm:col-span-1 sm:row-span-2">
+              <dt class="text-sm font-medium text-gray-500">Business address</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {% if ba.business_address_line_1 %}{{ ba.business_address_line_1 }}{% endif %}
+                {% if ba.business_address_line_2 %}<br/>{{ ba.business_address_line_2 }}{% endif %}
+                {% if ba.business_address_line_3 %}<br/>{{ ba.business_address_line_3 }}{% endif %}
+                {% if ba.business_address_line_4 %}<br/>{{ ba.business_address_line_4 }}{% endif %}
+                {% if ba.business_postcode %}<br/>{{ ba.business_postcode }}{% endif %}
+              </dd>
+            </div>
+            <div class="sm:col-span-1">
+              <dt class="text-sm font-medium text-gray-500">VAT Number</dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ ba.business_tax_id }}</dd>
+            </div>
+            <div class="sm:col-span-1">
+              {% crispy ba.purchase_order_update_form %}
+            </div>
+          </dl>
+
+        </div>
+      {% elif ba.account_type == "p" %}
+        <!-- nothing to show here for personal accounts at the moment -->
+      {% endif %}
+    </div>
+</section>
