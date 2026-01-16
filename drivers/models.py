@@ -84,10 +84,21 @@ class DriverProfile(PolymorphicModel):
     def admin__is_approved(self):
         return self.approved_to_drive
 
-    def is_expired(self):
+    def is_expired(self,now=None):
+        """
+        Check if a driver profile has expired. This check is based exclusively on the expiry date, 
+        and does not concern itself whether the driver profile has ever been valid or approved.
+
+        Returns 'True' if the profile has expired, otherwise 'False'.
+        
+        :param now: can be set to check if a driver profile will be expired at a specific date
+        """
+        if now is None:
+            now=timezone.now()
+
         if self.expires_at is None:
             return False
-        return self.expires_at <= timezone.now()
+        return self.expires_at <= now
 
 
 class ExternalDriverProfile(DriverProfile):
