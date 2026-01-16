@@ -1,6 +1,6 @@
 {% extends "backoffice_base.html" %}
 
-{% block heading %}<div class="text-lg font-medium leading-6 text-gray-900 sm:truncate">User - {{ user_details.username }} ({{ user_details.first_name|title|add:" "|add:user_details.last_name|title }})</div>{% endblock %}
+{% block heading %}<div class="text-lg font-medium leading-6 text-gray-900 sm:truncate">User - {{ user_details.first_name|title|add:" "|add:user_details.last_name|title }} [{{ user_details.id }}]</div>{% endblock %}
 
 
 {% block main %}
@@ -40,7 +40,7 @@
         <div class="flex flex-wrap gap-5 px-5">
             {% for ba in owned_billing_accounts %}
                 <div class="w-96">
-                    {% include "billing/components/billing_account_card.html" with ba=ba owner=user_details.first_name %}
+                    {% include "billing/components/billing_account_card_backoffice.html" with ba=ba owner=user_details.first_name %}
                 </div>
             {% endfor %}
         </div>
@@ -51,7 +51,7 @@
         <div class="flex flex-wrap gap-5 px-5">
             {% for ba in member_billing_accounts %}
                 <div class="w-96">
-                    {% include "billing/components/billing_account_card.html" with ba=ba owner=ba.owner %}
+                    {% include "billing/components/billing_account_card_backoffice.html" with ba=ba owner=ba.owner %}
                 </div>
             {% endfor %}
         </div>
