@@ -5,14 +5,13 @@
 <script type="module" src="{% static "get-telemetry.js" %}" defer></script>
 {% endblock %}
 
-{% block heading %}<h2 class="bg-yellow-400 text-black font-bold text-xl px-6 py-2 rounded-md border-4 border-black tracking-widest shadow-md w-fit">{{ vehicle.registration }}</h2>{% endblock %}
+{% block heading %}Vehicle: {{ vehicle.registration }}{% endblock %}
 {% block buttons %}
 
 {% endblock %}
 
 {% block main %}
 
-<a class="hidden" href="{{ request.get_host }}" id="base_url"></a>
 <a href="{% url "get_telemetry" %}" class="hidden" id="telemetry_url"></a>
 <input type="hidden" id="vehicle_id" value="{{ vehicle.id }}">
 {% csrf_token %}
@@ -33,7 +32,7 @@ stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-l
 {% endif %}
     </svg>
     <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">
-      {{ most_recent.soc.value }}%
+      {{ most_recent.soc.value|default:"no data"}}%
     </div>
   </div>
 </div>
@@ -91,6 +90,7 @@ stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-l
 
     
 <h3 class="text-xl font-semibold text-gray-900 mt-8 ml-8">State of Charge for Last 7 Days</h3>
+    <div id="graph_message" class="ml-8 mt-8 text-gray-900"></div>
     <svg id="graph" width="1000"></svg>
 
 {% endblock %}
