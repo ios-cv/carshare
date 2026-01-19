@@ -519,6 +519,7 @@ def vehicle_details(request, vehicle_id):
         most_recent["soc"]={
             "value":t.soc_percent,
             "age":timezone.now()-t.created_at,
+            "created_at":t.created_at,
             }
     t=Telemetry.objects.filter(box=vehicle.box, box_free_heap_bytes__isnull=False).order_by("-created_at").first()
     if t is not None:
@@ -579,7 +580,7 @@ def get_telemetry(request):
     if request.body:
         data = json.loads(request.body)
         vehicle_id = int(data.get("vehicle_id", None))
-        
+
     if vehicle_id is not None:
         vehicle = Vehicle.objects.get(pk=vehicle_id)
     else:
