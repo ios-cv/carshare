@@ -30,20 +30,20 @@
     {% endif %}
     {% if most_recent.soc.value %}
         <div class="relative w-32 h-32">
-    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-        <circle class="text-gray-200 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent" />
-{% if most_recent.soc.value > 75 %}
-        <circle class="text-green-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
-stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
-{% elif most_recent.soc.value > 50 %}
-        <circle class="text-amber-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
-stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
-{% else %}
-        <circle class="text-red-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
-stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
-{% endif %}
-    </svg>
-    <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">
+        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle class="text-gray-200 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent" />
+            {% if most_recent.soc.value > 75 %}
+                    <circle class="text-green-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+            stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+            {% elif most_recent.soc.value > 50 %}
+                    <circle class="text-amber-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+            stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+            {% else %}
+                    <circle class="text-red-500 stroke-current" cx="50" cy="50" r="40" stroke-width="10" fill="transparent"
+            stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-linecap="round" />
+            {% endif %}
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">
         {{ most_recent.soc.value }}%
         </div>
     </div>
