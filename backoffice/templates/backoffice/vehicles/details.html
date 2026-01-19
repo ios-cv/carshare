@@ -44,9 +44,11 @@ stroke-dasharray="251.2" stroke-dashoffset="{{ most_recent.soc_dial }}" stroke-l
 {% endif %}
     </svg>
     <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">
-      {{ most_recent.soc.value|default:"no data"}}%
+        {{ most_recent.soc.value }}%
+        </div>
     </div>
-  </div>
+  {% endif %}
+  <div>{{ most_recent.soc.age|default:"State of charge telemetry not received" }}<br>({{ most_recent.soc.created_at|default:"na" }})</div>
 </div>
 <h3 class="text-xl font-semibold text-gray-900 m-8">Previous, Current and Next Bookings for {{ vehicle.registration }}</h3>
 {% include "backoffice/bookings/bookings_list.html" with bookings=bookings %}
