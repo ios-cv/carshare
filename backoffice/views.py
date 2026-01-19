@@ -508,40 +508,36 @@ def vehicle_details(request, vehicle_id):
         "doors_locked": None,
         "miles": None,
     }
-    for t in telemetry:
-        if most_recent["battery"] is None and t.aux_battery_voltage is not None:
-            most_recent["battery"] = {
-                "value": t.aux_battery_voltage,
-                "age": timezone.now() - t.created_at,
-            }
-        if most_recent["soc"] is None and t.soc_percent is not None:
-            most_recent["soc"] = {
-                "value": t.soc_percent,
-                "age": timezone.now() - t.created_at,
-            }
-        if most_recent["free_heap"] is None and t.box_free_heap_bytes is not None:
-            most_recent["free_heap"] = {
-                "value": t.free_heap_bytes_to_str(),
-                "age": timezone.now() - t.created_at,
-            }
-        if most_recent["uptime"] is None and t.box_uptime_s is not None:
-            most_recent["uptime"] = {
-                "value": t.uptime_to_str(),
-                "age": timezone.now() - t.created_at,
-            }
-        if most_recent["doors_locked"] is None and t.doors_locked is not None:
-            most_recent["doors_locked"] = {
-                "value": t.doors_locked,
-                "age": timezone.now() - t.created_at,
-            }
-        if most_recent["miles"] is None and t.odometer_miles is not None:
-            most_recent["miles"] = {
-                "value": t.odometer_miles,
-                "age": timezone.now() - t.created_at,
-            }
-        # Stop looking through telemetry if all most_recent values found
-        if all(value is not None for value in most_recent.values()):
-            break
+    t=Telemetry.objects.filter(box=vehicle.box, aux_battery_voltage__isnull=False).order_by("-created_at").first()
+    most_recent["battery"]={
+        "value":t.aux_battery_voltage,
+        "age":timezone.now()-t.created_at,
+        }
+    t=Telemetry.objects.filter(box=vehicle.box, soc_percent__isnull=False).order_by("-created_at").first()
+    most_recent["soc"]={
+        "value":t.soc_percent,
+        "age":timezone.now()-t.created_at,
+        }
+    t=Telemetry.objects.filter(box=vehicle.box, box_free_heap_bytes__isnull=False).order_by("-created_at").first()
+    most_recent["free_heap"]={
+        "value":t.free_heap_bytes_to_str(),
+        "age":timezone.now()-t.created_at,
+        }
+    t=Telemetry.objects.filter(box=vehicle.box, box_uptime_s__isnull=False).order_by("-created_at").first()
+    most_recent["uptime"]={
+        "value":breakdown_timedelta(t.box_uptime_s),
+        "age":timezone.now()-t.created_at,
+        }
+    t=Telemetry.objects.filter(box=vehicle.box, doors_locked__isnull=False).order_by("-created_at").first()
+    most_recent["doors_locked"]={
+        "value":t.doors_locked,
+        "age":timezone.now()-t.created_at,
+        }
+    t=Telemetry.objects.filter(box=vehicle.box, odometer_miles__isnull=False).order_by("-created_at").first()
+    most_recent["miles"]={
+        "value":t.odometer_miles,
+        "age":timezone.now()-t.created_at,
+        }
 
     for key in most_recent:
         if most_recent[key] is not None:
