@@ -42,9 +42,11 @@ get_telemetry();
 function drawChart(svgElement, points) {
     if (!svgElement || !Array.isArray(points) || points.length <= 1) {
         graphMessage.textContent="Not enough telemetry recieved to draw graph."
+        graphMessage.parentElement.classList.remove("hidden")
         return;
     }
     graphMessage.textContent="";
+    graphMessage.parentElement.classList.add("hidden")
 
     // Determine min and max values for scaling
     const minX = Math.min(...points.map(p => p.x));
