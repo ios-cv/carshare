@@ -579,6 +579,7 @@ def get_telemetry(request):
     if request.body:
         data = json.loads(request.body)
         vehicle_id = int(data.get("vehicle_id", None))
+        
     if vehicle_id is not None:
         vehicle = Vehicle.objects.get(pk=vehicle_id)
     else:
