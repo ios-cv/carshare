@@ -570,6 +570,7 @@ def vehicle_details(request, vehicle_id):
         "page": page_obj,
         "page_range": page_range,
         "bookings": bookings,
+        "menu": "vehicles",
     }
     return render(request, "backoffice/vehicles/details.html", context)
 
