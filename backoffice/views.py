@@ -487,6 +487,17 @@ def vehicle_details(request, vehicle_id):
         .order_by("-reservation_time")
         .first()
     )
+
+    bookings=[]
+    if last_booking is not None:
+        bookings.append(last_booking)
+    
+    if current_booking is not None:
+        bookings.append(current_booking)
+
+    if next_booking is not None:
+        bookings.append(next_booking)
+
     telemetry = Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
 
     most_recent = {
@@ -555,7 +566,7 @@ def vehicle_details(request, vehicle_id):
         "most_recent": most_recent,
         "page": page_obj,
         "page_range": page_range,
-        "bookings": [last_booking, current_booking, next_booking],
+        "bookings": bookings,
     }
     return render(request, "backoffice/vehicles/details.html", context)
 
