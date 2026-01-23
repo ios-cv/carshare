@@ -1,10 +1,9 @@
 {% load crispy_forms_field %}
 
 <div class="pb-6" x-data="{
-  hasUpload: '{{ field.value }}'.length > 0,
-  uploadType: '{{ field.value }}'.length > 0 ? '{{ field.value }}'.split('.').at(-1) : undefined,
-  nodeName: '{{ field.value }}'.length > 0 && '{{ field.value }}'.split('.').at(-1) != 'pdf' ? 'IMG' : 'SVG',
-  src : '{{ field.value }}'.length ? '/media/{{ field.value }}' : undefined,
+  hasUpload: '{{ field.value|default:''|escapejs }}'.length > 0,
+  nodeName: '{{ field.value|default:''|escapejs }}'.length > 0 && '{{ field.value|default:''|escapejs }}'.split('.').at(-1) != 'pdf' ? 'IMG' : 'SVG',
+  src : '{{ field.value|default:''|escapejs }}'.length ? '/media/{{ field.value|default:''|escapejs }}' : undefined,
   readyToDrop:false,
   errorText:false,
   dropped:false,
@@ -31,22 +30,30 @@
 
   <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md text-gray-200"
   @drop="
-  const fileInput = document.getElementById('{{ field.id_for_label }}')
-  const {type}=$event.dataTransfer.files[0];
-  if(type === 'application/pdf' || type === 'image/png' || type === 'image/jpeg'){
-    fileInput.files = $event.dataTransfer.files;
-    setPreview(fileInput);
-    readyToDrop=false;
-    errorText=false;
-    dropped=true;
+  const fileInput = document.getElementById('{{ field.id_for_label|escapejs }}')
+  if($event?.dataTransfer?.files?.length>0){
+    const {type}=$event.dataTransfer.files[0];
+    if(type === 'application/pdf' || type === 'image/png' || type === 'image/jpeg'){
+      fileInput.files = $event.dataTransfer.files;
+      setPreview(fileInput);
+      readyToDrop=false;
+      errorText=false;
+      dropped=true;
+    }
+    else{
+      errorText=true;
+      $event.target.classList.add('border-dashed');
+      $event.target.classList.remove('border-teal-600');
+      $event.target.classList.add('border-gray-300');
+    }
+    $event.preventDefault();
   }
   else{
-    errorText=true;
-    $event.target.classList.add('border-dashed');
-    $event.target.classList.remove('border-teal-600');
-    $event.target.classList.add('border-gray-300');
+      errorText=true;
+      $event.target.classList.add('border-dashed');
+      $event.target.classList.remove('border-teal-600');
+      $event.target.classList.add('border-gray-300');
   }
-  $event.preventDefault();
 " @dragover="
   $event.preventDefault();
   readyToDrop=true;
@@ -63,7 +70,7 @@
     <div class="space-y-1 text-center">
       
       <div id="preview">
-        <iframe x-show="nodeName==='IFRAME'" src="" x-bind:src="src" class="mx-auto p-1 pb-3 bg-white" scrolling="no" style="max-height: 200px;"></iframe>
+        <iframe x-show="nodeName==='IFRAME'" src="" title="PDF preview" x-bind:src="src" class="mx-auto p-1 pb-3 bg-white overflow-hidden" scrolling="no" style="max-height: 200px;"></iframe>
         <a x-show="nodeName==='IMG'" href="" x-bind:href="src" target="_blank"><img src="" x-bind:src="src" class="mx-auto pb-3" style="max-height: 200px;"></img></a>
         <svg class="mx-auto h-12 w-12 text-gray-400 bg-white p-1" stroke="currentColor" fill="none" viewBox="0 0 48 48"
            aria-hidden="true" x-show="nodeName === 'SVG' && !readyToDrop && !hasUpload">
@@ -99,6 +106,3 @@
   <div x-show="errorText" class="text-red-500 text-xs italic"><strong>Please choose a PDF, PNG or JPG file.</strong></div>
   {% include 'tailwind/layout/help_text_and_errors.html' %}
 </div>
-<script>
-
-</script>
