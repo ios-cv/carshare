@@ -517,7 +517,7 @@ def user_details(request, id):
             billing_account.successfully_updated = False
 
     context = {
-        "menu": "user",
+        "menu": "users",
         "user": request.user,
         "user_details": selected_user_details,
         "driver_profiles": selected_user_driver_profiles,
