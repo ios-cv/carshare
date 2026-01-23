@@ -27,8 +27,8 @@
             {% else %}
                 <p class="text-red-800 checked"> User Disabled</p>
             {% endif %}
-            <p class="text-gray-600 has-tooltip"><strong>Is Staff:</strong> {{ user_details.is_staff }}<span class="tooltip rounded shadow-lg p-1 bg-gray-100 -mt-8">Staff have access to Admin page.</span></p>
-            <p class="text-gray-600 has-tooltip"><strong>Is Operator:</strong> {{ user_details.is_operator }}<span class="tooltip rounded shadow-lg p-1 bg-gray-100 -mt-8">Operators can access the back office and don't get charged a fee.</span></p>
+            <p class="text-gray-600"><strong>Admin access:</strong> {{ user_details.is_staff }}</p>
+            <p class="text-gray-600"><strong>Backoffice access:</strong> {{ user_details.is_operator }}</p>
         </div>
     </div>
 
