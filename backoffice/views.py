@@ -463,7 +463,7 @@ def perform_box_action(request, vehicle, action_to_perform, user):
 
 
 @require_backoffice_access
-def user_details(request, id):
+def user_details(request, id, anchor=None):
     selected_user_details = get_object_or_404(User, pk=id)
     selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
     selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
@@ -483,39 +483,6 @@ def user_details(request, id):
         number=page_number, on_each_side=1, on_ends=1
     )
 
-    # Process and add purchase order update forms
-    update_success = False
-    ba_id = None
-    if request.method == "POST":
-        form = UpdatePurchaseOrderForm(request.POST)
-        if form.is_valid():
-            ba_id = form.cleaned_data["ba_id"]
-            updated_billing_account = get_object_or_404(BillingAccount, id=ba_id)
-            # backoffice user is allowed to edit any account
-            update_purchase_order_form = UpdatePurchaseOrderForm(
-                request.POST,
-                instance=updated_billing_account,
-            )
-            update_purchase_order_form.save()
-            update_success = True
-        else:
-            ba_id = form.cleaned_data["ba_id"]
-
-    for billing_account in chain(
-        selected_user_owned_billing_accounts, selected_user_member_billing_accounts
-    ):
-        if billing_account.id == ba_id:
-            billing_account.purchase_order_update_form = form
-            billing_account.successfully_updated = update_success
-        else:
-            billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
-                initial={
-                    "ba_id": billing_account.id,
-                    "business_purchase_order": billing_account.business_purchase_order,
-                }
-            )
-            billing_account.successfully_updated = False
-
     context = {
         "menu": "users",
         "user": request.user,
@@ -528,7 +495,10 @@ def user_details(request, id):
         "page_range": page_range,
         "filter": filtered_bookings,
     }
-    return render(request, "backoffice/users/details.html", context)
+    if anchor is None:
+        return render(request, "backoffice/users/details.html", context)
+    else:
+        return redirect(f"{reverse('backoffice_user_details', args=[id])}#{anchor}")
 
 
 @require_backoffice_access
@@ -551,3 +521,38 @@ def add_card(request, id):
         "user_details": selected_user_details,
     }
     return render(request, "backoffice/users/add_card.html", context)
+
+@require_backoffice_access
+def edit_purchase_order(request, id, ba_id):
+    
+    billing_account=get_object_or_404(BillingAccount, id=ba_id)
+    
+    update_success = False
+    
+    if request.method == "POST":
+        form = UpdatePurchaseOrderForm(
+            request.POST, 
+            instance=billing_account,
+        )
+        if form.is_valid():
+            form.save()
+            update_success = True
+    else:
+        form = UpdatePurchaseOrderForm(
+            initial={
+                "ba_id": ba_id,
+                "business_purchase_order": billing_account.business_purchase_order,
+            }
+        )
+
+    if update_success:
+        return user_details(request, id, anchor=ba_id)
+    
+    context={
+        "ba":billing_account,
+        "update_success":update_success,
+        "user":request.user,
+        "form":form,
+        "menu":"users",
+    }
+    return render(request, "backoffice/users/edit_po.html", context)
