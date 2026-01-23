@@ -539,7 +539,7 @@ def edit_purchase_order(request, id, ba_id):
             form.save()
             update_success = True
     else:
-        form = UpdatePurchaseOrderForm(
+        billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
             initial={
                 "ba_id": ba_id,
                 "business_purchase_order": billing_account.business_purchase_order,
@@ -553,7 +553,6 @@ def edit_purchase_order(request, id, ba_id):
         "ba": billing_account,
         "update_success": update_success,
         "user": request.user,
-        "form": form,
         "menu": "users",
     }
     return render(request, "backoffice/users/edit_po.html", context)
