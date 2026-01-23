@@ -522,16 +522,17 @@ def add_card(request, id):
     }
     return render(request, "backoffice/users/add_card.html", context)
 
+
 @require_backoffice_access
 def edit_purchase_order(request, id, ba_id):
-    
-    billing_account=get_object_or_404(BillingAccount, id=ba_id)
-    
+
+    billing_account = get_object_or_404(BillingAccount, id=ba_id)
+
     update_success = False
-    
+
     if request.method == "POST":
         form = UpdatePurchaseOrderForm(
-            request.POST, 
+            request.POST,
             instance=billing_account,
         )
         if form.is_valid():
@@ -547,12 +548,12 @@ def edit_purchase_order(request, id, ba_id):
 
     if update_success:
         return user_details(request, id, anchor=ba_id)
-    
-    context={
-        "ba":billing_account,
-        "update_success":update_success,
-        "user":request.user,
-        "form":form,
-        "menu":"users",
+
+    context = {
+        "ba": billing_account,
+        "update_success": update_success,
+        "user": request.user,
+        "form": form,
+        "menu": "users",
     }
     return render(request, "backoffice/users/edit_po.html", context)
