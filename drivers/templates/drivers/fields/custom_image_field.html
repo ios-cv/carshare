@@ -2,11 +2,12 @@
 
 <div class="pb-6" x-data="{
   hasUpload: '{{ field.value }}'.length > 0,
-  uploadType: '{{ field.value }}'.length > 0 ? '{{ field.value }}'.split('.')[1] : undefined,
-  nodeName: '{{ field.value }}'.length > 0 && '{{ field.value }}'.split('.')[1] != 'pdf' ? 'IMG' : 'SVG',
+  uploadType: '{{ field.value }}'.length > 0 ? '{{ field.value }}'.split('.').at(-1) : undefined,
+  nodeName: '{{ field.value }}'.length > 0 && '{{ field.value }}'.split('.').at(-1) != 'pdf' ? 'IMG' : 'SVG',
   src : '{{ field.value }}'.length ? '/media/{{ field.value }}' : undefined,
   readyToDrop:false,
   errorText:false,
+  dropped:false,
   setPreview(input) {
       const [file] = input.files;
       if (file) {
@@ -17,6 +18,7 @@
           this.nodeName = 'IMG';
         }
         this.src = URL.createObjectURL(file);
+        dropped=true;
       }
   },
 }">
@@ -27,7 +29,7 @@
     </label>
   {% endif %}
 
-  <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md text-gray-200 drop-zone"
+  <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md text-gray-200"
   @drop="
   const fileInput = document.getElementById('{{ field.id_for_label }}')
   const {type}=$event.dataTransfer.files[0];
@@ -36,9 +38,13 @@
     setPreview(fileInput);
     readyToDrop=false;
     errorText=false;
+    dropped=true;
   }
   else{
     errorText=true;
+    $event.target.classList.add('border-dashed');
+    $event.target.classList.remove('border-teal-600');
+    $event.target.classList.add('border-gray-300');
   }
   $event.preventDefault();
 " @dragover="
@@ -46,6 +52,13 @@
   readyToDrop=true;
 " @dragleave="
   readyToDrop=false;
+  $event.target.classList.add('border-dashed');
+  $event.target.classList.remove('border-teal-600');
+  $event.target.classList.add('border-gray-300');
+" @dragenter="
+  $event.target.classList.remove('border-dashed');
+  $event.target.classList.remove('border-gray-300');
+  $event.target.classList.add('border-teal-600');
 ">
     <div class="space-y-1 text-center">
       
@@ -70,12 +83,14 @@
       <div class="flex flex-col text-sm text-gray-600">
         <label for="{{ field.id_for_label }}"
                class="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-          <span x-show="hasUpload" class="p-1 bg-white">Upload successful, you may upload a different file</span>
-          <span x-show="!hasUpload" class="p-1 bg-white">Upload a file</span>
+          <span x-show="hasUpload && !dropped" class="p-1 bg-white">Upload successful, you may select a different file</span>
+          <span x-show="!hasUpload && !dropped" class="p-1 bg-white">Select a file</span>
+          <span x-show="dropped" class="p-1 bg-white">Select a different file (if you like)</span>
+
           <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="file" class="sr-only"
                  accept=".png,.jpg,.jpeg,.pdf"
                  x-on:change.debounce="setPreview($el)"/>
-        </label>
+        </label> or drag and drop
         <!--<p class="pl-1"> or drag and drop</p>-->
         <p class="text-xs text-gray-500 p-1 bg-white">PDF, PNG or JPG up to 10MB</p>
       </div>
