@@ -16,7 +16,7 @@ ALLOWED_FILE_EXTENSIONS = ["pdf", "jpg", "jpeg", "png"]
 
 
 def validate_file_extension(value):
-    extension = value.name.split(".")[1].lower()
+    extension = value.name.split(".")[-1].lower()
     if extension not in ALLOWED_FILE_EXTENSIONS:
         raise ValidationError("Please choose a PDF, PNG or JPG file.")
 
