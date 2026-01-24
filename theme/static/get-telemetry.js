@@ -41,7 +41,7 @@ get_telemetry();
 
 function drawChart(svgElement, points) {
     if (!svgElement || !Array.isArray(points) || points.length <= 1) {
-        graphMessage.textContent="Not enough telemetry recieved to draw graph."
+        graphMessage.textContent="Not enough telemetry received to draw graph."
         graphMessage.parentElement.classList.remove("hidden")
         return;
     }
