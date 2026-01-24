@@ -1,0 +1,35 @@
+<div class="max-w-3xl shadow rounded-lg">
+            <div>
+                <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-gray-300">
+                    <h2 class="text-lg leading-6 font-medium text-gray-900">
+                        {{user_details}}
+                    </h2>
+                </div>
+            </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6">
+        <div>
+            <h3 class="font-semibold text-gray-700 mb-2">Basic Information</h3>
+            <p class="text-gray-600"><strong>First Name:</strong> {{ user_details.first_name|title }}</p>
+            <p class="text-gray-600"><strong>Last Name:</strong> {{ user_details.last_name|title }}</p>
+            <p class="text-gray-600"><strong>Email:</strong> <a href="mailto:{{ user_details.email }}" class="underline hover:no-underline text-fg-brand">{{ user_details.email }}</a></p>
+            {% if user_details.mobile %}
+                <p class="text-gray-600"><strong>Mobile:</strong> <a href="tel:{{ user_details.mobile }}" class="underline hover:no-underline text-fg-brand">{{ user_details.mobile }}</a></p>
+            {% elif user_details.pending_mobile %}
+                <p class="text-gray-600"><strong>Pending Mobile:</strong> {{ user_details.pending_mobile }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <h3 class="font-semibold text-gray-700 mb-2">Account Information</h3>
+            <p class="text-gray-600"><strong>Date Joined:</strong> {{ user_details.date_joined }}</p>
+            <p class="text-gray-600"><strong>Last Login:</strong> {{ user_details.last_login }}</p>
+            {% if user_details.is_active %}
+                <p class="text-green-700 checked"> User Enabled</p>
+            {% else %}
+                <p class="text-red-800 crossed"> User Disabled</p>
+            {% endif %}
+            <p class="text-gray-600"><strong>Admin access:</strong> {{ user_details.is_staff }}</p>
+            <p class="text-gray-600"><strong>Backoffice access:</strong> {{ user_details.is_operator }}</p>
+        </div>
+    </div>
+
+</div>

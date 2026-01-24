@@ -113,9 +113,17 @@
     animation: colored-circle 0.6s ease-in-out 0.7s backwards;
 } 
 .tooltip {
-    @apply invisible absolute;
-  }
+  @apply invisible absolute;
+}
   
-  .has-tooltip:hover .tooltip {
-    @apply visible z-50;
-  }
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
+
+.checked::before{
+  content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' width='1rem' height='1rem' stroke-width='1.5' stroke='currentColor' class='size-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' /%3E%3C/svg%3E%0A")
+}
+
+.crossed::before{
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' width='1rem' height='1rem' stroke-width='1.5' stroke='currentColor' class='size-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18 18 6M6 6l12 12' /%3E%3C/svg%3E ");
+}

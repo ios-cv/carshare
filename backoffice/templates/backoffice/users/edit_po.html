@@ -1,0 +1,10 @@
+{% extends "backoffice_base.html" %}
+{% load crispy_forms_tags %}
+{% block heading %}<div class="text-lg font-medium leading-6 text-gray-900 sm:truncate">Edit Purchase Order number for {{ ba.account_name }}</div>{% endblock %}
+
+
+{% block main %}
+<div class="px-4 py-5 sm:px-6">
+    {% crispy ba.purchase_order_update_form %}
+</div>
+{% endblock %}

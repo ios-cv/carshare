@@ -5,6 +5,13 @@ urlpatterns = [
     path("", views.home, name="backoffice_home"),
     path("bookings/", views.bookings, name="backoffice_bookings"),
     path("users/", views.users, name="backoffice_users"),
+    path("users/<int:id>/cards/add/", views.add_card, name="backoffice_add_card"),
+    path("users/<int:id>/", views.user_details, name="backoffice_user_details"),
+    path(
+        "users/<int:id>/billingaccounts/<int:ba_id>/po",
+        views.edit_purchase_order,
+        name="backoffice_edit_po",
+    ),
     path("accounts/", views.accounts, name="backoffice_accounts"),
     path("approvals/", views.approvals, name="backoffice_approvals"),
     path("vehicles/", views.vehicles, name="backoffice_vehicles"),
