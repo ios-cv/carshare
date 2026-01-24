@@ -10,7 +10,7 @@
     </div>
   </td>
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
-    {{ t.registration }}
+    <a href="{% url "vehicle_details" t.vehicle_id %}" class="hover:text-gray-600 underline"> {{ t.registration }} </a>
   </td>
   <td class="whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ t.soc }} %
