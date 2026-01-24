@@ -8,7 +8,7 @@ urlpatterns = [
     path("users/<int:id>/cards/add/", views.add_card, name="backoffice_add_card"),
     path("users/<int:id>/", views.user_details, name="backoffice_user_details"),
     path(
-        "users/<int:id>/po/<int:ba_id>",
+        "users/<int:id>/billingaccounts/<int:ba_id>/po",
         views.edit_purchase_order,
         name="backoffice_edit_po",
     ),
