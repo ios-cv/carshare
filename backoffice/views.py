@@ -2,8 +2,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
 
-from itertools import chain
-
 from django.conf import settings
 from django.contrib.postgres.fields import RangeBoundary
 from django.contrib import messages
