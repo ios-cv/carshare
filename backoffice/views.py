@@ -1,3 +1,5 @@
+import json
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from crispy_forms.bootstrap import InlineField
@@ -9,13 +11,12 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms import ModelChoiceField
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.http import JsonResponse
-
-import json
+from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
@@ -25,12 +26,14 @@ from billing.models import (
     get_all_pending_approval as get_all_billing_accounts_pending_approval,
     BillingAccount,
 )
+from billing.forms import UpdatePurchaseOrderForm
 from bookings.models import Booking
 from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction, Telemetry
+from hardware.models import Vehicle, Box, BoxAction, Telemetry, Card
+from hardware.forms import CreateCard
 from users.models import User
 from backoffice.utils import breakdown_timedelta
 
@@ -460,6 +463,101 @@ def perform_box_action(request, vehicle, action_to_perform, user):
     message = f"{user.username} has {action_to_perform}ed vehicle {vehicle.name} ({vehicle.registration})"
     messages.success(request, message)
 
+
+@require_backoffice_access
+def user_details(request, id, anchor=None):
+    selected_user_details = get_object_or_404(User, pk=id)
+    selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
+    selected_user_owned_billing_accounts = BillingAccount.objects.filter(owner__id=id)
+    selected_user_member_billing_accounts = BillingAccount.objects.filter(members=id)
+    selected_user_cards = Card.objects.filter(user__id=id)
+    selected_user_bookings = Booking.objects.filter(user__id=id).order_by(
+        "-reservation_time"
+    )
+
+    filtered_bookings = BookingsFilter(request.GET, queryset=selected_user_bookings)
+    bookings = filtered_bookings.qs
+    paginator = Paginator(bookings, 5)
+
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(
+        number=page_number, on_each_side=1, on_ends=1
+    )
+
+    context = {
+        "menu": "users",
+        "user": request.user,
+        "user_details": selected_user_details,
+        "driver_profiles": selected_user_driver_profiles,
+        "owned_billing_accounts": selected_user_owned_billing_accounts,
+        "member_billing_accounts": selected_user_member_billing_accounts,
+        "cards": selected_user_cards,
+        "page": page_obj,
+        "page_range": page_range,
+        "filter": filtered_bookings,
+    }
+    if anchor is None:
+        return render(request, "backoffice/users/details.html", context)
+    else:
+        return redirect(f"{reverse('backoffice_user_details', args=[id])}#{anchor}")
+
+
+@require_backoffice_access
+def add_card(request, id):
+    try:
+        selected_user_details = User.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        messages.error(request, "No such user.")
+        return redirect("backoffice_users")
+    if request.method == "POST":
+        form = CreateCard(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("backoffice_user_details", id=id)
+    else:
+        form = CreateCard(initial={"user": id})
+    context = {
+        "user": request.user,
+        "form": form,
+        "user_details": selected_user_details,
+    }
+    return render(request, "backoffice/users/add_card.html", context)
+
+
+@require_backoffice_access
+def edit_purchase_order(request, id, ba_id):
+
+    billing_account = get_object_or_404(BillingAccount, id=ba_id)
+
+    update_success = False
+
+    if request.method == "POST":
+        form = UpdatePurchaseOrderForm(
+            request.POST,
+            instance=billing_account,
+        )
+        if form.is_valid():
+            form.save()
+            update_success = True
+    else:
+        billing_account.purchase_order_update_form = UpdatePurchaseOrderForm(
+            initial={
+                "ba_id": ba_id,
+                "business_purchase_order": billing_account.business_purchase_order,
+            }
+        )
+
+    if update_success:
+        return user_details(request, id, anchor=ba_id)
+
+    context = {
+        "ba": billing_account,
+        "update_success": update_success,
+        "user": request.user,
+        "menu": "users",
+    }
+    return render(request, "backoffice/users/edit_po.html", context)
 
 @require_backoffice_access
 def vehicle_details(request, vehicle_id):

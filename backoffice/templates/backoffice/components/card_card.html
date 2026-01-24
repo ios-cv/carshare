@@ -1,0 +1,12 @@
+<div class="w-72 border shadow rounded-lg h-36 flex flex-col gap-3 items-center justify-center {% if card.enabled %}bg-green-400{% else %}bg-red-500{% endif %} {% if card.operator %}border-red-700 border-4{% endif %}">
+    <p>Card id: {{ card.id }}</p>
+    <p>Serial no.: {{ card.key }}</p>
+    <p>
+        {% if card.enabled %}
+            ENABLED
+        {% else %}
+            DISABLED
+        {% endif %}
+    </p>
+    {% if card.operator %}<p>OPERATOR</p>{% endif %}
+</div>
