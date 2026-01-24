@@ -559,6 +559,7 @@ def edit_purchase_order(request, id, ba_id):
     }
     return render(request, "backoffice/users/edit_po.html", context)
 
+
 @require_backoffice_access
 def vehicle_details(request, vehicle_id):
     vehicle = Vehicle.objects.get(pk=vehicle_id)
