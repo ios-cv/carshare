@@ -1,0 +1,28 @@
+{% extends "backoffice_base.html" %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+<script src="{% static "handle-available-vehicles.js" %}" defer></script>
+{% endblock %}
+
+{% block heading %}Edit Booking {{ booking.vehicle.name }} | {{ booking.reservation_time.lower }}{% endblock %}
+{% block buttons %}
+{% endblock %}
+
+{% block main %}
+<div class="w-fit">
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{% url "backoffice_edit_booking" booking.id %}" id="edit_booking_form">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded" value="Update Booking">
+    </form>
+</div>
+<a class="hidden" href="{{ request.get_host }}" id="base_url"></a>
+<a class="hidden" href="{% url "backoffice_available_vehicles" %}" id="available_vehicles_url"></a>
+<input type="hidden" value="{{ booking.id }}" id="booking_id"/>
+<input type="hidden" value="{{ booking.vehicle.name }}" id="booking_vehicle_name"/>
+<input type="hidden" value="{{ booking.vehicle.id }}" id="booking_vehicle_id"/>
+<input type="hidden" value="{{ booking.vehicle.registration }}" id="booking_vehicle_registration"/>
+{% endblock %}
