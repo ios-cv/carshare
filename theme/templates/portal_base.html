@@ -151,7 +151,9 @@
     <main>
 
       <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {% include "components/messages.html" %}
+        <div class="mb-6">
+          {% include "components/messages.html" %}
+        </div>
 
         {% if not hide_driver_profile_warnings %}
           {% if request.user.can_make_bookings or request.user.can_view_bookings %}

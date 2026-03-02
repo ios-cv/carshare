@@ -1,0 +1,124 @@
+<li class="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200">
+    <div>
+    {% if profile.is_expired %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-orange-300">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Driver Profile #{{ profile.id }} (Expired)
+            </h3>
+        </div>
+    {% elif profile.approved_to_drive %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-green-300">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Driver Profile #{{ profile.id }} (Approved)
+            </h3>
+        </div>
+    {% elif profile.admin__is_submitted %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-purple-300">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Driver Profile #{{ profile.id }} (Submitted)
+            </h3>
+        </div>
+    {% elif profile.admin__is_submitted == False %}
+        <div class="px-4 py-5 sm:px-6 rounded-t-lg bg-yellow-300">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Driver Profile #{{ profile.id }} (Incomplete)
+            </h3>
+        </div>
+    {% endif %}
+    </div>
+    <div class="flex-col items-center justify-between p-6 space-x-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">{{ profile.full_name }}</h2>
+        
+        <p class="mt-1 text-gray-500 text-sm truncate">
+            <strong>Created At:</strong> {{ profile.created_at }}
+        </p>
+        <p class="mt-1 text-gray-500 text-sm truncate">
+            <strong>Updated At:</strong> {{ profile.updated_at }}
+        </p>
+        <p class="mt-1 text-gray-500 text-sm truncate">
+            <strong>Submitted At:</strong> {{ profile.submitted_at }}
+        </p>
+        <p class="mt-1 text-gray-500 text-sm truncate">
+            <strong>Approved At:</strong> {{ profile.approved_at }}
+        </p>
+        <p class="mt-1 text-gray-500 text-sm truncate">
+            <strong>Expires At:</strong> {{ profile.expires_at }}
+        </p>
+
+        <div class="mt-1">
+            <h3 class="font-semibold text-gray-700 mb-2">Driver Details</h3>
+            <p class="mt-1 text-gray-500 text-sm truncate"><strong>Licence Number:</strong> {{ profile.licence_number }}</p>
+            <p class="mt-1 text-gray-500 text-sm truncate"><strong>Issue Date:</strong> {{ profile.licence_issue_date }}</p>
+            <p class="mt-1 text-gray-500 text-sm truncate"><strong>Expiry Date:</strong> {{ profile.licence_expiry_date }}</p>
+        </div>
+
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-700 mb-2">Address</h3>
+            <p class="mt-1 text-gray-500 text-sm truncate">{{ profile.address_line_1 }}</p>
+            {% if profile.address_line_2 %}<p class="mt-1 text-gray-500 text-sm truncate">{{ profile.address_line_2 }}</p>{% endif %}
+            {% if profile.address_line_3 %}<p class="mt-1 text-gray-500 text-sm truncate">{{ profile.address_line_3 }}</p>{% endif %}
+            <p class="mt-1 text-gray-500 text-sm truncate">{{ profile.postcode }}</p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <h3 class="font-semibold text-gray-700 mb-2">Licence Images</h3>
+                <p class="mt-1 text-gray-500 text-sm truncate"><strong>Front:</strong> 
+                    {% if profile.licence_front %}
+                        <a href="{{ profile.licence_front.url }}" target="_blank" class="text-blue-500">View</a>
+                    {% else %}
+                        Not Provided
+                    {% endif%}
+                </p>
+                <p class="mt-1 text-gray-500 text-sm truncate"><strong>Back:</strong> 
+                    {% if profile.licence_back %}
+                        <a href="{{ profile.licence_back.url }}" target="_blank" class="text-blue-500">View</a>
+                    {% else %}
+                        Not Provided
+                    {% endif %}
+                </p>
+                <p class="mt-1 text-gray-500 text-sm truncate"><strong>Selfie:</strong> 
+                    {% if profile.licence_selfie %}
+                        <a href="{{ profile.licence_selfie.url }}" target="_blank" class="text-blue-500">View</a>
+                    {% else %}
+                        Not Provided
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-700 mb-2">Proof of Address</h3>
+                <p class="mt-1 text-gray-500 text-sm truncate"><strong>Document:</strong> 
+                    {% if profile.proof_of_address %}
+                        <a href="{{ profile.proof_of_address.url }}" target="_blank" class="text-blue-500">View</a>
+                    {% else %}
+                        Not Provided
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-700 mb-2">Approvals</h3>
+            <ul class="list-inside">
+                <li class="{% if profile.approved_full_name %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Full Name</li>
+                <li class="{% if profile.approved_address %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Address</li>
+                <li class="{% if profile.approved_date_of_birth %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Date of Birth</li>
+                <li class="{% if profile.approved_licence_number %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Number</li>
+                <li class="{% if profile.approved_proof_of_address %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Proof of Address</li>
+                <li class="{% if profile.approved_licence_issue_date %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Issue Date</li>
+                <li class="{% if profile.approved_licence_expiry_date %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Expiry Date</li>
+                <li class="{% if profile.approved_licence_front %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Front</li>
+                <li class="{% if profile.approved_licence_back %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Back</li>
+                <li class="{% if profile.approved_licence_selfie %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Licence Selfie</li>
+                <li class="{% if profile.approved_driving_record %}text-green-700 checked{% else %}text-red-800 crossed{% endif %} ">
+                    Driving Record</li>
+            </ul>
+        </div>
+    </div>
+</li>
