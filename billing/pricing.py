@@ -11,7 +11,7 @@ HOUR_RATE_2024 = 5
 DAY_RATE_2026 = 33
 HOUR_RATE_2026 = 6
 ID_CUTOFF_2026 = 8612
-TIME_CUTOFF_2026 = datetime.datetime(
+TIME_CUTOFF_2026 = timezone.datetime(
     2026, 4, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
 )
 SPECIAL_BILLING_ACCOUNTS_2026 = [
