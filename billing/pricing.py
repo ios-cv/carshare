@@ -11,11 +11,17 @@ HOUR_RATE_2024 = 5
 DAY_RATE_2026 = 33
 HOUR_RATE_2026 = 6
 ID_CUTOFF_2026 = 8612
-TIME_CUTOFF_2026 = datetime.datetime(2026, 4, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc)
-SPECIAL_BILLING_ACCOUNTS_2026 = [29,]
+TIME_CUTOFF_2026 = datetime.datetime(
+    2026, 4, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
+)
+SPECIAL_BILLING_ACCOUNTS_2026 = [
+    29,
+]
 
 
-def calculate_booking_cost(user, vehicle, start, end, billing_account=None, booking=None):
+def calculate_booking_cost(
+    user, vehicle, start, end, billing_account=None, booking=None
+):
     """Calculates the cost of a rental."""
 
     # If user is an operator/admin then don't charge them.
@@ -33,7 +39,11 @@ def calculate_booking_cost(user, vehicle, start, end, billing_account=None, book
             day_rate = DAY_RATE_2024
             hour_rate = HOUR_RATE_2024
     else:
-        if billing_account is not None and billing_account.id in SPECIAL_BILLING_ACCOUNTS_2026 and start >= TIME_CUTOFF_2026:
+        if (
+            billing_account is not None
+            and billing_account.id in SPECIAL_BILLING_ACCOUNTS_2026
+            and start >= TIME_CUTOFF_2026
+        ):
             day_rate = DAY_RATE_2026
             hour_rate = HOUR_RATE_2026
         elif booking.id >= ID_CUTOFF_2026 and start >= TIME_CUTOFF_2026:
