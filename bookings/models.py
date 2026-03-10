@@ -188,6 +188,8 @@ class Booking(models.Model):
             self.vehicle,
             self.reservation_time.lower,
             self.reservation_time.upper,
+            self.billing_account,
+            self,
         )
 
     @property
