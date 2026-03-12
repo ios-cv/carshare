@@ -1,7 +1,7 @@
 <div class="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
     <div class="flex flex-row border-b border-gray-200">
         <span class="w-28 text-center"></span>
-        <div class="relative h-10 flex-grow flex flex-col">
+        <div class="relative h-10 flex-grow flex flex-col font-mono">
             <div class="grid grid-rows-1 grid-flow-col h-full" style="grid-template-columns: repeat({{days_in_period}},minmax(0,1fr));">
                 {% for day in name_days_in_period %}
                     <div class="text-xs text-gray-400 border-l border-gray-200 text-center">{{day|date:"D jS M"}}</div>
