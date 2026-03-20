@@ -120,7 +120,7 @@ function drawChart(svgElement, points) {
         const xStep=document.createElementNS("http://www.w3.org/2000/svg", "text");
         xStep.setAttribute("x", minTX + gridWidth/5 * step );
         xStep.setAttribute("y", 0 + padding);
-        xStep.setAttribute("font-size", scaleFactor*2.8);
+        xStep.setAttribute("font-size", scaleFactor*1.8);
         xStep.textContent=`${stepDateTime.toDateString()} ${stepDateTime.toLocaleTimeString()}`;
         svgElement.appendChild(xStep);
         const gridDash = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -135,7 +135,7 @@ function drawChart(svgElement, points) {
     const xStart=document.createElementNS("http://www.w3.org/2000/svg", "text");
     xStart.setAttribute("x", minTX);
     xStart.setAttribute("y", 0 + padding);
-    xStart.setAttribute("font-size", scaleFactor*2.8);
+    xStart.setAttribute("font-size", scaleFactor*1.8);
     xStart.textContent=`${startDateTime.toDateString()} ${startDateTime.toLocaleTimeString()}`;
     svgElement.appendChild(xStart);
     const gridStartDash = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -149,7 +149,7 @@ function drawChart(svgElement, points) {
     const xEnd=document.createElementNS("http://www.w3.org/2000/svg", "text");
     xEnd.setAttribute("x", maxTX );
     xEnd.setAttribute("y", 0 + padding);
-    xEnd.setAttribute("font-size", scaleFactor*2.8);
+    xEnd.setAttribute("font-size", scaleFactor*1.8);
     xEnd.textContent=`${endDateTime.toDateString()} ${endDateTime.toLocaleTimeString()}`;
     svgElement.appendChild(xEnd);
     const gridEndDash = document.createElementNS("http://www.w3.org/2000/svg", "line");
