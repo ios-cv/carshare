@@ -36,6 +36,7 @@ from hardware.models import Vehicle, Box, BoxAction, Telemetry, Card
 from hardware.forms import CreateCard
 from users.models import User
 from backoffice.utils import breakdown_timedelta
+from carshare.settings import TELEMETRY_AGE_DAYS
 
 from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBookingForm
@@ -689,6 +690,7 @@ def vehicle_details(request, vehicle_id):
     context = {
         "vehicle": vehicle,
         "telemetry": telemetry,
+        "telemetry_max_age": timezone.timedelta(days=TELEMETRY_AGE_DAYS),
         "most_recent": most_recent,
         "page": page_obj,
         "page_range": page_range,
