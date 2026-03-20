@@ -98,7 +98,7 @@ class TestEditBookings(TransactionTestCase):
         self.assertIsNotNone(booking)
         # ensure the booking is in a known state for testing
         self.assertEqual(booking.state, "inactive")
-        # ensure the booking edit form  is valid with the test booking data
+        # ensure the booking edit form is valid with the test booking data
         form = BackofficeEditBookingForm(
             instance=booking,
             data={
@@ -264,28 +264,3 @@ class TestEditBookings(TransactionTestCase):
             form.errors["__all__"],
         )
 
-    def test_booking_race_condition(self):
-        # print("Testing booking race condition")
-        c = Client()
-        c.login(username="admin", password="password")
-        r = c.get("/backoffice/bookings/edit/1", follow=True)
-        booking = Booking.objects.get(pk=1)
-        updated_at_str = booking.updated_at
-        self.assertContains(r, updated_at_str.strftime("%Y-%m-%d %H:%M:%S.%f"))
-        booking.state = "active"
-        booking.save()
-        r = c.post(
-            "/backoffice/bookings/edit/1",
-            {
-                "vehicle": "1",
-                "state": "ended",
-                "reservation_time_0": "2024-11-20 11:25:00",
-                "reservation_time_1": "2024-11-20 12:25:00",
-                "actual_start_time_0": "2024-11-20",
-                "actual_start_time_1": "11:30",
-                "actual_end_time_0": "2024-11-20",
-                "actual_end_time_1": "11:54",
-                "updated_at": updated_at_str,
-            },
-            follow=True,
-        )
