@@ -264,7 +264,7 @@ class Telemetry(models.Model):
     aux battery @ {self.aux_battery_voltage}v
     {self.soc_percent}% charged
     ibutton_id: {self.ibutton_id}
-    uptime: {breakdown_timedelta(self.box_uptime_s)}
+    uptime: {breakdown_timedelta(timedelta(seconds=self.box_uptime_s))}
     free heap: {self.free_heap_bytes_to_str}"""
 
     class Meta:
