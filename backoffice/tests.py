@@ -263,4 +263,3 @@ class TestEditBookings(TransactionTestCase):
             "This booking has been updated by a different process!",
             form.errors["__all__"],
         )
-
