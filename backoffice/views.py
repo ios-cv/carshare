@@ -646,7 +646,7 @@ def vehicle_details(request, vehicle_id):
     )
     if t is not None:
         most_recent["uptime"] = {
-            "value": breakdown_timedelta(t.box_uptime_s),
+            "value": breakdown_timedelta(timezone.timedelta(seconds=t.box_uptime_s)),
             "age": timezone.now() - t.created_at,
         }
     t = (
