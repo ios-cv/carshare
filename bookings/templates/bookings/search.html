@@ -45,8 +45,6 @@ Find a Vehicle
     function updateEnd(){
       const startDateTime= new Date(`${startDate.value}T${startTime.value}`);
       const endDateTime= new Date(`${endDate.value}T${endTime.value}`);
-      console.log("Start: ",startDateTime);
-      console.log("End: ",endDateTime);
       if( startDateTime>=endDateTime ){
         const newEndDateTime=new Date(startDateTime.getTime() + 60*60*1000);
         console.log("New: ",newEndDateTime);
