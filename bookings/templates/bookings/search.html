@@ -47,7 +47,6 @@ Find a Vehicle
       const endDateTime= new Date(`${endDate.value}T${endTime.value}`);
       if( startDateTime>=endDateTime ){
         const newEndDateTime=new Date(startDateTime.getTime() + 60*60*1000);
-        console.log("New: ",newEndDateTime);
         endDate.value=toLocalISOString(newEndDateTime).slice(0,10);
         endTime.value=newEndDateTime.toLocaleTimeString().slice(0,5);
       }
