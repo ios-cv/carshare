@@ -291,3 +291,5 @@ CONTACT_INTERNATIONAL_PHONE = os.environ.get(
 
 # old telemetry is deleted on the first of every month at 3am, it will be kept if younger than this value
 TELEMETRY_AGE_DAYS = int(os.environ.get("TELEMETRY_AGE_DAYS", 180))
+
+POLICY_BUFFER_TIME = int(os.environ.get("POLICY_BUFFER_TIME", 15))
