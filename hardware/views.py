@@ -221,6 +221,10 @@ def api_v1_touch(request, box, data):
     except ObjectDoesNotExist:
         log.debug(f"No card with ID {card_id} found in the database")
         return JsonResponse({"action": "reject"})
+    
+    if not card.enabled:
+        log.debug(f"Card with ID {card_id} is disabled.")
+        return JsonResponse({"action": "reject"})
 
     # Fetch the vehicle
     vehicle = box.vehicle
