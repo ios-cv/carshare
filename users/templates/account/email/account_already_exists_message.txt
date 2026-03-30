@@ -16,4 +16,6 @@ remeber your password, please use the link below to reset it:
 Regards,
 
 The GO-EV Team
+{{ CONTACT_EMAIL }}
+{{ CONTACT_PHONE }}
 {% endblocktrans %}{% endautoescape %}{% endblock content %}

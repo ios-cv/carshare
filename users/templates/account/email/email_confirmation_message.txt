@@ -11,4 +11,6 @@ by clicking the following link: {% autoescape off %}{{ activate_url }}{% endauto
 Regards,
 
 The GO-EV Team
+{{ CONTACT_EMAIL }}
+{{ CONTACT_PHONE }}
 {% endblock %}

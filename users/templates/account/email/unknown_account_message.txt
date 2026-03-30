@@ -20,5 +20,6 @@ the link below.
 Regards,
 
 The GO-EV Team
-
+{{ CONTACT_EMAIL }}
+{{ CONTACT_PHONE }}
 {% endblocktrans %}{% endautoescape %}{% endblock %}
