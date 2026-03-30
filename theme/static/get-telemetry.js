@@ -82,7 +82,6 @@ function drawChart(svgElement, points) {
     const transformedPoints=points.map((p)=>transformPoint(p));
     const minTX = Math.min(...transformedPoints.map(p => p.x));
     const maxTX = Math.max(...transformedPoints.map(p => p.x));
-    const minTY = 0;
     const maxTY = 100;
 
     svgElement.setAttribute("viewBox", `${minTX-padding-20} -${maxTY+padding} ${chartWidth+2*padding+20} ${chartHeight+2*padding}`);
