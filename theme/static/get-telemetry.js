@@ -52,7 +52,7 @@ function drawChart(svgElement, points) {
     const minX = Math.min(...points.map(p => p.x));
     const maxX = Math.max(...points.map(p => p.x));
     
-    const minY = 0//Math.min(...points.map(p => p.y));
+    const minY = 0;
     const maxY = 100;
 
     const padding = (maxY-minY)/8;
