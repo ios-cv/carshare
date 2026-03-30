@@ -8,6 +8,8 @@ Thank you for signing up for GO-EV Car Share.
 To continue setting up your account, please confirm your email address
 by clicking the following link: {% autoescape off %}{{ activate_url }}{% endautoescape %}
 
+If you are having trouble confirming you email address please contact us by email ({{ CONTACT_EMAIL }}) or phone ({{ CONTACT_PHONE }}).
+
 Regards,
 
 The GO-EV Team
