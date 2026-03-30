@@ -46,7 +46,7 @@ function drawChart(svgElement, points) {
         return;
     }
     graphMessage.textContent="";
-    graphMessage.parentElement.classList.add("hidden")
+    graphMessage.parentElement.classList.add("hidden");
 
     // Determine min and max values for scaling
     const minX = Math.min(...points.map(p => p.x));
