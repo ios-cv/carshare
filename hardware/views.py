@@ -240,8 +240,10 @@ def api_v1_touch(request, box, data):
         return JsonResponse({"action": "reject"})
 
     # Fetch the vehicle
-    vehicle = box.vehicle
-    if not vehicle:
+    vehicle = None
+    try:
+        vehicle = box.vehicle
+    except ObjectDoesNotExist:
         log.info(f"Box {box.id} is not assigned to any vehicle.")
         return JsonResponse(
             {"error": "box is not assigned to any vehicle", "action": "reject"}
