@@ -15,6 +15,7 @@ from bookings.models import (
     user_can_access_booking,
 )
 
+from django.conf import settings
 from .decorators import require_authenticated_box, json_payload
 from .models import Card, BoxAction, Telemetry
 
@@ -24,6 +25,18 @@ log = logging.getLogger(__name__)
 def parse_card_id(card_id):
     return struct.unpack("<I", binascii.unhexlify(card_id))[0]
 
+def strip_errors_from_api_response(json_object):
+    if settings.STRIP_ERRORS is False:
+        return json_object
+    else:
+        if isinstance(json_object, dict):
+            return {
+                k: strip_errors(v) for k, v in json_object.items() if k != "error"
+            }
+        elif isinstance(json_object, list):
+            return [strip_errors(item) for item in json_object]
+        else:
+            return json_object
 
 @csrf_exempt
 @require_POST
