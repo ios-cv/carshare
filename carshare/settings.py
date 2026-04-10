@@ -40,6 +40,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "nothing")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
+# DEBUG is over written to False in testing, so we need to set STRIP_ERRORS based on the environment variable instead of using DEBUG
+STRIP_ERRORS = not DEBUG
 
 
 def env_get_list(variable, default):
