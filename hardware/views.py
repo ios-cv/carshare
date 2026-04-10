@@ -26,15 +26,15 @@ def parse_card_id(card_id):
     return struct.unpack("<I", binascii.unhexlify(card_id))[0]
 
 def strip_errors_from_api_response(json_object):
-    if settings.STRIP_ERRORS is False:
+    if settings.STRIP_ERRORS_FROM_API_RESPONSE is False:
         return json_object
     else:
         if isinstance(json_object, dict):
             return {
-                k: strip_errors(v) for k, v in json_object.items() if k != "error"
+                k: strip_errors_from_api_response(v) for k, v in json_object.items() if k != "error"
             }
         elif isinstance(json_object, list):
-            return [strip_errors(item) for item in json_object]
+            return [strip_errors_from_api_response(item) for item in json_object]
         else:
             return json_object
 
