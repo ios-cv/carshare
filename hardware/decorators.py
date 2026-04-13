@@ -52,7 +52,11 @@ def json_payload(view_func=None):
     """
 
     def wrapper_func(request, *args, **kwargs):
-        data = json.loads(request.body)
+        data = None
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "invalid JSON payload"}, status=400)
         return view_func(request, *args, data=data, **kwargs)
 
     return wrapper_func
