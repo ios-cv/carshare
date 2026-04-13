@@ -223,6 +223,7 @@ def api_v1_touch(request, box, data):
         log.debug(f"No card with ID {card_id} found in the database")
         return JsonResponse({"error": "no card with that ID found","action": "reject"})
     
+    # Is the card enabled
     if not card.enabled:
         log.debug(f"Card with ID {card_id} is disabled.")
         return JsonResponse({"error": "card is disabled","action": "reject"})
