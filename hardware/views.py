@@ -16,7 +16,7 @@ from bookings.models import (
 )
 
 from django.conf import settings
-from .decorators import require_authenticated_box, json_payload, strip_errors_from_api_response
+from .decorators import require_authenticated_box, json_payload, strip_errors_and_debug_from_api_response
 from .models import Card, BoxAction, Telemetry
 
 log = logging.getLogger(__name__)
@@ -179,7 +179,7 @@ def api_v1_telemetry(request, box, data):
 @require_POST
 @require_authenticated_box
 @json_payload
-@strip_errors_from_api_response
+@strip_errors_and_debug_from_api_response
 def api_v1_touch(request, box, data):
     """View that is called by the box when a card is touched on it."""
 
