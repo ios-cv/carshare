@@ -470,7 +470,7 @@ class ApiTouchReject(TestCase):
 
     def test_touch_card_disabled(self):
         payload={
-            "card_id": "05000000"
+            "card_id": "05000000"#enabled=False, operator=False, user=1 (is_operator, is_super_user, is_staff)
         }
         response = self.client.post(
             TOUCH_URL,
@@ -480,6 +480,17 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"card is disabled\"", status_code=200)
+        payload={
+            "card_id": "06000000"#enabled=False, operator=True, user=1 (is_operator, is_super_user, is_staff)
+        }
+        response = self.client.post(
+            TOUCH_URL,
+            data=json.dumps(payload),
+            content_type="application/json",
+            HTTP_X_CARSHARE_BOX_ID="7B",
+            HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
+        )
+        self.assertContains(response, "\"error\": \"card is disabled\"", status_code=200)#still rejected even though operator_card
 
     def test_touch_lock_no_booking(self):
         box=Box.objects.get(pk=3)
