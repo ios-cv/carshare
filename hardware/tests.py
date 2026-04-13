@@ -206,6 +206,21 @@ class ApiTouchHappyPath(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"action\": \"lock\"", status_code=200)
+        self.assertNotContains(response, "\"debug\": \"lock because operator card\"")
+
+        box=Box.objects.get(pk=1)
+        box.locked=False
+        box.save()
+        with override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False):
+            response = self.client.post(
+                TOUCH_URL,
+                data=json.dumps(payload),
+                content_type="application/json",
+                HTTP_X_CARSHARE_BOX_ID="7B",
+                HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
+            )
+            print(response.content)
+            self.assertContains(response, "\"debug\": \"lock because operator card\"", status_code=200)
 
 class ApiTouchDecoratorsFail(TestCase):
     fixtures = FIXTURES
