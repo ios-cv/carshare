@@ -1,5 +1,6 @@
 import json
 import logging
+import string
 
 from django.http import JsonResponse
 from django.utils import timezone
@@ -21,6 +22,7 @@ def require_authenticated_box(view_func=None):
 
         if (
             box_id is None
+            or not all(c in string.hexdigits for c in box_id)
             or box_secret is None
             or len(box_id) > 16
             or len(box_secret) != 36
