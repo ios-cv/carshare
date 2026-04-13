@@ -16,7 +16,7 @@ from bookings.models import (
 )
 
 from django.conf import settings
-from .decorators import require_authenticated_box, json_payload
+from .decorators import require_authenticated_box, json_payload, strip_errors_from_api_response
 from .models import Card, BoxAction, Telemetry
 
 log = logging.getLogger(__name__)
@@ -24,19 +24,6 @@ log = logging.getLogger(__name__)
 
 def parse_card_id(card_id):
     return struct.unpack("<I", binascii.unhexlify(card_id))[0]
-
-def strip_errors_from_api_response(json_object):
-    if settings.STRIP_ERRORS_FROM_API_RESPONSE is False:
-        return json_object
-    else:
-        if isinstance(json_object, dict):
-            return {
-                k: strip_errors_from_api_response(v) for k, v in json_object.items() if k != "error"
-            }
-        elif isinstance(json_object, list):
-            return [strip_errors_from_api_response(item) for item in json_object]
-        else:
-            return json_object
 
 @csrf_exempt
 @require_POST
@@ -192,6 +179,7 @@ def api_v1_telemetry(request, box, data):
 @require_POST
 @require_authenticated_box
 @json_payload
+@strip_errors_from_api_response
 def api_v1_touch(request, box, data):
     """View that is called by the box when a card is touched on it."""
 
@@ -216,7 +204,7 @@ def api_v1_touch(request, box, data):
     card_id = data.get("card_id", None)
     if not card_id:
         log.info("Missing card ID.")
-        return JsonResponse({"error": "missing card_id"}, status=400)
+        return JsonResponse({"error": "missing card_id","action": "reject"}, status=400)
 
     # Parse the card_id
     try:
@@ -233,11 +221,11 @@ def api_v1_touch(request, box, data):
         card = Card.objects.get(key=card_id)
     except ObjectDoesNotExist:
         log.debug(f"No card with ID {card_id} found in the database")
-        return JsonResponse({"action": "reject"})
+        return JsonResponse({"error": "no card with that ID found","action": "reject"})
     
     if not card.enabled:
         log.debug(f"Card with ID {card_id} is disabled.")
-        return JsonResponse({"action": "reject"})
+        return JsonResponse({"error": "card is disabled","action": "reject"})
 
     # Fetch the vehicle
     vehicle = None
@@ -298,11 +286,11 @@ def api_v1_touch(request, box, data):
     if box.locked:
         # To unlock, the card must be for a booking that hasn't ended yet.
         if booking is None:
-            return JsonResponse({"action": "reject"})
+            return JsonResponse({"error": "no active booking found","action": "reject"})
 
         # Verify that the user has the right to unlock the booking.
         if not user_can_access_booking(card.user, booking):
-            return JsonResponse({"action": "reject"})
+            return JsonResponse({"error": "user cannot access this booking to unlock","action": "reject"})
 
         if booking.state in Booking.ALLOW_USER_UNLOCK_STATES:
             box.locked = False
@@ -317,7 +305,7 @@ def api_v1_touch(request, box, data):
             return JsonResponse({"action": "unlock"})
 
         # If in doubt, don't unlock.
-        return JsonResponse({"action": "reject"})
+        return JsonResponse({"error": "booking not in a state that allows unlocking","action": "reject"})
 
     # Handle the "lock" case for a non-operator.
     else:
@@ -337,7 +325,7 @@ def api_v1_touch(request, box, data):
         # Failing that, see if the booking that's supposed to be now can trigger a lock.
         elif booking:
             if not user_can_access_booking(card.user, booking):
-                return JsonResponse({"action": "reject"})
+                return JsonResponse({"error": "user cannot access this booking to lock","action": "reject"})
             box.locked = True
             box.current_booking = None
             box.unlocked_by = None
@@ -348,7 +336,7 @@ def api_v1_touch(request, box, data):
             return JsonResponse({"action": "lock"})
 
         # If in doubt, reject.
-        return JsonResponse({"action": "reject"})
+        return JsonResponse({"error": "box is unlocked fallback","action": "reject"})
 
     # If in doubt, reject.
-    return JsonResponse({"action": "reject"})
+    return JsonResponse({"error": "box is locked fallback","action": "reject"})
