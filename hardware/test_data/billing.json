@@ -1,0 +1,55 @@
+[{
+    "model": "billing.billingaccount", 
+    "pk": 1, 
+    "fields": {
+        "owner": 1, 
+        "account_type": "b", 
+        "account_name": "Test Account", 
+        "driver_profile_type": "f", 
+        "stripe_customer_id": "cus_RO0MIilLTUCCrI", 
+        "stripe_setup_intent_active": true, 
+        "credit_account": false, 
+        "approved_at": "2024-12-20T11:22:01Z", 
+        "business_name": "Test Name", 
+        "business_address_line_1": "Test House", 
+        "business_address_line_2": "Test Road", 
+        "business_address_line_3": "Testton", 
+        "business_address_line_4": null, 
+        "business_postcode": "TE3 1ST", 
+        "business_tax_id": "22134", 
+        "business_purchase_order": "last test"
+    }
+},
+{
+    "model": "billing.billingaccount", 
+    "pk": 2, 
+    "fields": {
+        "owner": 2, 
+        "account_type": "b", 
+        "account_name": "Test Account 2", 
+        "driver_profile_type": "f", 
+        "stripe_customer_id": "cus_RO0MIilLTUCCrI", 
+        "stripe_setup_intent_active": true, 
+        "credit_account": false, 
+        "approved_at": "2024-12-20T11:22:01Z", 
+        "business_name": "Test Name", 
+        "business_address_line_1": "Test House", 
+        "business_address_line_2": "Test Road", 
+        "business_address_line_3": "Testton", 
+        "business_address_line_4": null, 
+        "business_postcode": "TE3 1ST", 
+        "business_tax_id": "22134", 
+        "business_purchase_order": "last test"
+    }
+},
+{
+    "model": "billing.billingaccountmember", 
+    "pk": 1, 
+    "fields": {
+        "user": 1, 
+        "billing_account": 1, 
+        "created_at": "2025-01-09T15:19:06.652Z", 
+        "updated_at": "2025-01-09T15:19:06.652Z", 
+        "can_make_bookings": false
+    }
+}]

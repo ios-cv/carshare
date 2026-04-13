@@ -13,6 +13,15 @@ from hardware.decorators import strip_errors_and_debug_from_api_response
 from drivers.models import FullDriverProfile
 
 TOUCH_URL = reverse("api_v1_touch")
+FIXTURES=["./hardware/test_data/station.json",
+          "./hardware/test_data/bay.json",
+          "./hardware/test_data/box.json",
+          "./hardware/test_data/vehicletype.json",
+          "./hardware/test_data/vehicle.json",
+          "./hardware/test_data/card.json",
+          "./hardware/test_data/user.json",
+          "./hardware/test_data/billing.json",
+          "./hardware/test_data/booking.json"]
 
 @strip_errors_and_debug_from_api_response
 def dummy_view(request):
@@ -184,7 +193,7 @@ class StripErrorsDisabledTest(TestCase):
         self.assertEqual(jsonOutput, input_data)
     
 class ApiTouchHappyPath(TestCase):
-    fixtures = ["station","bay","box","vehicletype","vehicle","card","user","billing","booking"]
+    fixtures = FIXTURES
     def test_touch_happy_path(self):
         payload={
             "card_id": "01000000"
@@ -199,7 +208,7 @@ class ApiTouchHappyPath(TestCase):
         self.assertContains(response, "\"action\": \"lock\"", status_code=200)
 
 class ApiTouchDecoratorsFail(TestCase):
-    fixtures = ["station","bay","box","vehicletype","vehicle","card","user","billing","booking"]
+    fixtures = FIXTURES
     def test_touch_wrong_secret(self):
         payload={
             "card_id": "01000000"
@@ -319,7 +328,7 @@ class ApiTouchDecoratorsFail(TestCase):
 
 @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
 class ApiTouchReject(TestCase):
-    fixtures = ["station","bay","box","vehicletype","vehicle","card","user","billing","booking"]
+    fixtures = FIXTURES
     def test_touch_card_doesnt_exist(self):
         payload={
             "card_id": "02000000" #Card doesn't exist
@@ -333,7 +342,6 @@ class ApiTouchReject(TestCase):
         )
         self.assertContains(response, "\"error\": \"no card with that ID found\"", status_code=200)
 
-    @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
     def test_touch_card_not_provided(self):
         payload={
         }
@@ -510,7 +518,7 @@ class ApiTouchReject(TestCase):
 
 @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
 class ApiTouchLock(TestCase):
-    fixtures = ["station","bay","box","vehicletype","vehicle","card","user","billing","booking"]
+    fixtures = FIXTURES
     def test_touch_waiting_box_action(self):
         box=Box.objects.get(pk=1)
         time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
@@ -616,7 +624,7 @@ class ApiTouchLock(TestCase):
 
 @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
 class ApiTouchUnlock(TestCase):
-    fixtures = ["station","bay","box","vehicletype","vehicle","card","user","billing","booking"]
+    fixtures = FIXTURES
     def test_touch_waiting_box_action(self):
         box=Box.objects.get(pk=3)
         time_to_expire = timezone.now() + timezone.timedelta(minutes=10)
