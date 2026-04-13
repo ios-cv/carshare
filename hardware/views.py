@@ -340,4 +340,5 @@ def api_v1_touch(request, box, data):
         return JsonResponse({"error": "box is unlocked fallback","action": "reject"})
 
     # If in doubt, reject.
+    # This code is unreachable as either condition of box.locked is fully handled
     return JsonResponse({"error": "box is locked fallback","action": "reject"})
