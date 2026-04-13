@@ -195,10 +195,10 @@ def api_v1_touch(request, box, data):
         box_action = box_actions.first()
         if box_action.action == BoxAction.LOCK:
             box_action.delete()
-            return JsonResponse({"action": "lock"})
+            return JsonResponse({"debug":"perform waiting box_action lock","action": "lock"})
         elif box_action.action == BoxAction.UNLOCK:
             box_action.delete()
-            return JsonResponse({"action": "unlock"})
+            return JsonResponse({"debug":"perform waiting box_action unlock","action": "unlock"})
 
     # Check a card ID has been provided.
     card_id = data.get("card_id", None)
@@ -262,7 +262,7 @@ def api_v1_touch(request, box, data):
                 booking.save()
             box.locked = False
             box.save()
-            return JsonResponse({"action": "unlock"})
+            return JsonResponse({"debug":"unlock because operator card","action": "unlock"})
 
         else:
             # Locking the box.
@@ -281,7 +281,7 @@ def api_v1_touch(request, box, data):
             box.current_booking = None
             box.unlocked_by = None
             box.save()
-            return JsonResponse({"action": "lock"})
+            return JsonResponse({"debug":"lock because operator card","action": "lock"})
 
     # Handle the cases where it is not an operator card being used.
     if box.locked:
@@ -303,7 +303,7 @@ def api_v1_touch(request, box, data):
                 booking.actual_start_time = timezone.now()
             booking.actual_end_time = None
             booking.save()
-            return JsonResponse({"action": "unlock"})
+            return JsonResponse({"debug":"unlock because user with permission requested","action": "unlock"})
 
         # If in doubt, don't unlock.
         return JsonResponse({"error": "booking not in a state that allows unlocking","action": "reject"})
@@ -321,7 +321,7 @@ def api_v1_touch(request, box, data):
             box.current_booking = None
             box.unlocked_by = None
             box.save()
-            return JsonResponse({"action": "lock"})
+            return JsonResponse({"debug":"lock because user with access to booking on box requested","action": "lock"})
 
         # Failing that, see if the booking that's supposed to be now can trigger a lock.
         elif booking:
@@ -334,7 +334,7 @@ def api_v1_touch(request, box, data):
             booking.state = Booking.STATE_INACTIVE
             booking.actual_end_time = timezone.now()
             booking.save()
-            return JsonResponse({"action": "lock"})
+            return JsonResponse({"debug":"lock because user with permission requested","action": "lock"})
 
         # If in doubt, reject.
         return JsonResponse({"error": "box is unlocked fallback","action": "reject"})
