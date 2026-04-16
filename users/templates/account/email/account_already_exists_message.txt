@@ -13,7 +13,11 @@ remeber your password, please use the link below to reset it:
 
 {{ password_reset_url }}
 
+If you are still having trouble accessing your account please contact us by email ({{ CONTACT_EMAIL }}) or phone ({{ CONTACT_PHONE }}).
+
 Regards,
 
 The GO-EV Team
+{{ CONTACT_EMAIL }}
+{{ CONTACT_PHONE }}
 {% endblocktrans %}{% endautoescape %}{% endblock content %}
