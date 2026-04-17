@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models import Func, Q, Subquery, DateTimeField
 from django.utils import timezone
 from psycopg2.extras import DateTimeTZRange
+from django.forms import ValidationError
 
 from billing.models import BillingAccount
 from billing.pricing import calculate_booking_cost
@@ -48,6 +49,22 @@ class Booking(models.Model):
     STATE_ENDED = STATE_ENDED
     STATE_BILLED = STATE_BILLED
 
+    ALLOWED_TRANSITIONS = {
+        STATE_PENDING: {
+            STATE_PENDING,
+            STATE_ACTIVE,
+            STATE_INACTIVE,
+            STATE_ENDED,
+            STATE_CANCELLED,
+        },
+        STATE_CANCELLED: {STATE_CANCELLED},
+        STATE_ACTIVE: {STATE_ACTIVE, STATE_INACTIVE, STATE_LATE},
+        STATE_INACTIVE: {STATE_INACTIVE, STATE_ENDED, STATE_ACTIVE},
+        STATE_LATE: {STATE_LATE, STATE_INACTIVE},
+        STATE_ENDED: {STATE_ENDED, STATE_BILLED},
+        STATE_BILLED: {STATE_BILLED},
+    }
+
     STATE_CHOICES = [
         (STATE_PENDING, "pending"),
         (STATE_CANCELLED, "cancelled"),
@@ -78,6 +95,9 @@ class Booking(models.Model):
         BillingAccount,
         on_delete=models.PROTECT,
         related_name="bookings",
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
     )
 
     state = models.CharField(
@@ -218,6 +238,10 @@ class Booking(models.Model):
             if member.user == user:
                 return member.can_make_bookings
 
+    def can_transition_to(self, new_state):
+        allowed = self.ALLOWED_TRANSITIONS.get(self.state)
+        return allowed is not None and new_state in allowed
+
 
 def get_available_vehicles(start, end, vehicle_types):
     return Vehicle.objects.exclude(
@@ -234,6 +258,24 @@ def get_available_vehicles(start, end, vehicle_types):
             .order_by("vehicle_id")
             .distinct("vehicle_id")
         )
+    ).filter(vehicle_type__in=vehicle_types)
+
+
+def get_available_vehicles_plus(start, end, vehicle_types, ignore_booking=None):
+    bookings_queryset = Booking.objects.values("vehicle_id").filter(
+        ~Q(state=Booking.STATE_CANCELLED),
+        block_time__overlap=TsTzRange(
+            start,
+            end + timezone.timedelta(minutes=POLICY_BUFFER_TIME),
+            RangeBoundary(),
+        ),
+    )
+
+    if ignore_booking:
+        bookings_queryset = bookings_queryset.exclude(id=ignore_booking)
+
+    return Vehicle.objects.exclude(
+        id__in=Subquery(bookings_queryset.order_by("vehicle_id").distinct("vehicle_id"))
     ).filter(vehicle_type__in=vehicle_types)
 
 
