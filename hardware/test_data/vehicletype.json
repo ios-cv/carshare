@@ -1,0 +1,8 @@
+[{
+    "model": "hardware.vehicletype", 
+    "pk": 1, 
+    "fields": {
+        "name": "Fancy", 
+        "description": "a fancy car"
+    }
+}]

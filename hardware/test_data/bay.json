@@ -1,0 +1,16 @@
+[{
+    "model": "hardware.bay", 
+    "pk": 1, 
+    "fields": {
+        "name": "Mermaid1", 
+        "station": 1
+        }
+},
+{
+    "model": "hardware.bay", 
+    "pk": 2, 
+    "fields": {
+        "name": "Mermaid2", 
+        "station": 1
+        }
+}]
