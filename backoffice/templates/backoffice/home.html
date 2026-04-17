@@ -37,7 +37,7 @@
         <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
           <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
 
-            {% include "backoffice/bookings/bookings_list.html" with bookings=bookings %}
+            {% include "backoffice/bookings/bookings_list.html" with bookings=bookings_for_table %}
 
           </div>
         </div>
@@ -76,6 +76,14 @@
       </div>
     </div>
   </div>
+
+
+  <div class="sm:flex sm:items-center my-8">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Calendar</h1>
+    </div>
+  </div>
+  {% include "backoffice/components/calendar.html" %}
 
 
 {% endblock %}

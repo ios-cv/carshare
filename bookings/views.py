@@ -183,6 +183,7 @@ def confirm_booking(request):
         Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
         form.cleaned_data["start"],
         form.cleaned_data["end"],
+        "user booking",
     )
 
     return render(request, "bookings/confirm_booking.html", context)
