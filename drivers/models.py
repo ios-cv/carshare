@@ -3,10 +3,10 @@ import os
 import uuid
 
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.forms import ValidationError
 
 from polymorphic.models import PolymorphicModel
 
