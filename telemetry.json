@@ -1,0 +1,17 @@
+[
+    {
+        "model": "hardware.telemetry", 
+        "pk": 32, 
+        "fields": {
+            "box": 8, 
+            "created_at": "2026-02-28T10:29:51Z", 
+            "odometer_miles": null, 
+            "doors_locked": true, 
+            "aux_battery_voltage": 12.134, 
+            "ibutton_id": null, 
+            "box_uptime_s": 1234567, 
+            "box_free_heap_bytes": 16378, 
+            "soc_percent": null
+        }
+    }
+]
