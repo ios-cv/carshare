@@ -1,12 +1,12 @@
-def breakdown_timedelta(timedelta):
-    if timedelta is None:
+def breakdown_timedelta(delta):
+    if delta is None:
         return None
     seconds_in_an_hour = 60 * 60
     seconds_in_a_day = 24 * seconds_in_an_hour
     seconds_in_a_month = 30 * seconds_in_a_day
     seconds_in_a_year = 365 * seconds_in_a_day
 
-    all_seconds = timedelta.days * seconds_in_a_day + timedelta.seconds
+    all_seconds = delta.days * seconds_in_a_day + delta.seconds
     years, seconds_remaining = divmod(all_seconds, seconds_in_a_year)
     months, seconds_remaining = divmod(seconds_remaining, seconds_in_a_month)
     days, seconds_remaining = divmod(seconds_remaining, seconds_in_a_day)
