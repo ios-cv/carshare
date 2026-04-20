@@ -356,6 +356,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"no card with that ID found\"", status_code=200)
+        box = Box.objects.get(pk=1)
+        self.assertFalse(box.locked)# Box should still be unlocked
 
     def test_touch_card_not_provided(self):
         payload={
@@ -368,6 +370,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"missing card_id\"", status_code=400)
+        box = Box.objects.get(pk=1)
+        self.assertFalse(box.locked)# Box should still be unlocked
 
     def test_touch_box_not_assigned_to_vehicle(self):
         payload={
@@ -381,6 +385,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890cd"
         )
         self.assertContains(response, "\"error\": \"box is not assigned to any vehicle\"", status_code=200)
+        box = Box.objects.get(pk=2)
+        self.assertFalse(box.locked)# Box should still be unlocked
 
     def test_touch_no_active_booking(self):
         payload={
@@ -394,6 +400,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ac"
         )
         self.assertContains(response, "\"error\": \"no active booking found\"", status_code=200)
+        box = Box.objects.get(pk=3)
+        self.assertTrue(box.locked)
 
 
     def test_touch_user_doesnt_have_permission(self):
@@ -419,6 +427,7 @@ class ApiTouchReject(TestCase):
         )
         self.assertContains(response, "\"error\": \"user cannot access this booking to lock\"", status_code=200)
         box=vehicle.box
+        self.assertFalse(box.locked)
         box.locked=True
         box.save()
         response = self.client.post(
@@ -429,6 +438,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"user cannot access this booking to unlock\"", status_code=200)
+        box.refresh_from_db()
+        self.assertTrue(box.locked) #Box should still be locked
         box.locked=False
         box.save()
 
@@ -461,10 +472,12 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"action\": \"lock\"", status_code=200)
+        box.refresh_from_db()
+        self.assertTrue(box.locked) #Box should have been locked
 
         box.locked=True
         box.save()
-        booking.state=Booking.STATE_ENDED #Should not be possible for a booking to end up in STATE_ENDED whilst also being current
+        booking.state=Booking.STATE_ENDED #Should not be possible for a booking to end up in STATE_ENDED whilst also being current but this is the only way to test this scenario
         booking.save()
         response = self.client.post(
             TOUCH_URL,
@@ -474,6 +487,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"booking not in a state that allows unlocking\"", status_code=200)
+        box.refresh_from_db()
+        self.assertTrue(box.locked) #Box should still be locked
         box.locked=False
         box.save()
 
@@ -490,6 +505,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"unable to parse card_id\"", status_code=400)
+        box = Box.objects.get(pk=1)
+        self.assertFalse(box.locked) #Box should still be unlocked
 
     def test_touch_card_disabled(self):
         payload={
@@ -514,6 +531,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"error\": \"card is disabled\"", status_code=200)#still rejected even though operator_card
+        box = Box.objects.get(pk=1)
+        self.assertFalse(box.locked) #Box should still be unlocked
 
     def test_touch_lock_no_booking(self):
         box=Box.objects.get(pk=3)
@@ -530,6 +549,8 @@ class ApiTouchReject(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ac"
         )
         self.assertContains(response, "\"error\": \"box is unlocked fallback\"", status_code=200)
+        box.refresh_from_db()
+        self.assertFalse(box.locked) #Box should still be unlocked
 
 @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
 class ApiTouchLock(TestCase):
@@ -556,6 +577,11 @@ class ApiTouchLock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"debug\": \"perform waiting box_action lock\"", status_code=200)
+        box_actions= BoxAction.objects.all()
+        self.assertEqual(len(box_actions), 0) #Waiting box action should have been deleted after being performed
+        #box.refresh_from_db()
+        #self.assertTrue(box.locked) #Box should be locked after performing the waiting lock action
+        #This is not the case, the database isn't changed but the lock command is sent
     
     def test_touch_operator_lock(self):
         payload={
@@ -569,6 +595,10 @@ class ApiTouchLock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"debug\": \"lock because operator card\"", status_code=200)
+        box=Box.objects.get(pk=1)
+        self.assertTrue(box.locked) #Box should be locked after operator locks
+        self.assertIsNone(box.current_booking) #Box's current booking should be cleared by the lock
+        self.assertIsNone(box.unlocked_by) #Box's unlocked_by should be cleared by the lock
 
     def test_touch_user_with_permission_from_booking_on_box_lock(self):
         user=User.objects.get(pk=1)
@@ -598,6 +628,10 @@ class ApiTouchLock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"debug\": \"lock because user with access to booking on box requested\"", status_code=200)
+        box=Box.objects.get(pk=1)
+        self.assertIsNone(box.current_booking) #actual end time should have been set by the lock
+        self.assertTrue(box.locked) #Box should be locked after user with permission locks
+        self.assertIsNone(box.unlocked_by) #Box's unlocked_by should be cleared by the lock
 
     def test_touch_user_with_permission_from_current_booking_lock(self):
         user= User.objects.get(id=2)
@@ -636,6 +670,13 @@ class ApiTouchLock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ab"
         )
         self.assertContains(response, "\"debug\": \"lock because user with permission requested\"", status_code=200)
+        box=Box.objects.get(pk=1)
+        booking= Booking.objects.last()
+        self.assertTrue(box.locked) #Box should be locked after user with permission locks
+        self.assertIsNone(box.current_booking) #Box's current booking should be cleared
+        self.assertIsNone(box.unlocked_by) #Box's unlocked_by should have been cleared
+        self.assertEqual(booking.state, Booking.STATE_INACTIVE) #Booking should have been set to inactive by the lock
+        self.assertIsNotNone(booking.actual_end_time) #actual end time should have been set by the lock
 
 @override_settings(STRIP_ERRORS_FROM_API_RESPONSE=False)
 class ApiTouchUnlock(TestCase):
@@ -662,8 +703,11 @@ class ApiTouchUnlock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ac"
         )
         self.assertContains(response, "\"debug\": \"perform waiting box_action unlock\"", status_code=200)
+        box_actions= BoxAction.objects.all()
+        self.assertEqual(len(box_actions), 0) #Waiting box action should have been deleted after being performed
     
     def test_touch_operator_unlock(self):
+        #operator unlocks vehicle that doesn't have a current booking, should succeed and box should be unlocked at the end of the request
         payload={
             "card_id": "01000000"#operator card
         }
@@ -675,6 +719,8 @@ class ApiTouchUnlock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ac"
         )
         self.assertContains(response, "\"debug\": \"unlock because operator card\"", status_code=200)
+        box=Box.objects.get(pk=3)
+        self.assertFalse(box.locked) #Box should be unlocked after operator unlocks, even if there is no active booking
 
     def test_touch_user_with_permission_from_current_booking_unlock(self):
         user= User.objects.get(id=2)
@@ -713,6 +759,16 @@ class ApiTouchUnlock(TestCase):
             HTTP_X_CARSHARE_BOX_SECRET="12345678-9012-3456-7890-1234567890ac"
         )
         self.assertContains(response, "\"debug\": \"unlock because user with permission requested\"", status_code=200)
+        booking= Booking.objects.last()
+        self.assertEqual(booking.state, Booking.STATE_ACTIVE) #Booking should have been activated by the unlock
+        self.assertIsNotNone(booking.actual_start_time) #actual start time should have been set by the unlock
+        self.assertIsNone(booking.actual_end_time) #actual end time should have been cleared by the unlock
+        box=Box.objects.get(pk=3)
+        self.assertFalse(box.locked) #Box should be unlocked after user with permission unlocks
+        self.assertEqual(box.current_booking, booking) #Box's current booking should be the booking that was just created
+        self.assertEqual(box.unlocked_by.key, '4') #Box's unlocked_by should be the card that was used to unlock
+
+        
 
 
         
