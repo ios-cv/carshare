@@ -239,9 +239,9 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", None)
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", None)
 stripe.api_key = STRIPE_API_KEY
 
-#Recaptcha
-RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY",None)
-RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY",None)
+# Recaptcha
+RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY", None)
+RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY", None)
 
 # Base URL
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
