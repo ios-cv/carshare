@@ -62,16 +62,21 @@ def json_payload(view_func=None):
 
     return wrapper_func
 
+
 def strip_errors_and_debug_from_api_response(view_func=None):
-    """Utility function to strip error messages from API responses, to avoid exposing internal details to the hardware.
     """
+    Utility function to strip error messages from API responses, to avoid exposing internal details to the hardware.
+    """
+
     def strip_errors(json_object):
         if settings.STRIP_ERRORS_FROM_API_RESPONSE is False:
             return json_object
         else:
             if isinstance(json_object, dict):
                 return {
-                    k: strip_errors(v) for k, v in json_object.items() if not(k == "error" or k == "debug")
+                    k: strip_errors(v)
+                    for k, v in json_object.items()
+                    if not (k == "error" or k == "debug")
                 }
             elif isinstance(json_object, list):
                 return [strip_errors(item) for item in json_object]
