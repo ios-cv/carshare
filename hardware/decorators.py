@@ -1,8 +1,10 @@
 import json
 import logging
+import string
 
 from django.http import JsonResponse
 from django.utils import timezone
+from django.conf import settings
 
 from .models import Box
 
@@ -21,6 +23,7 @@ def require_authenticated_box(view_func=None):
 
         if (
             box_id is None
+            or not all(c in string.hexdigits for c in box_id)
             or box_secret is None
             or len(box_id) > 16
             or len(box_secret) != 36
@@ -50,7 +53,45 @@ def json_payload(view_func=None):
     """
 
     def wrapper_func(request, *args, **kwargs):
-        data = json.loads(request.body)
+        data = None
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "invalid JSON payload"}, status=400)
         return view_func(request, *args, data=data, **kwargs)
+
+    return wrapper_func
+
+
+def strip_errors_and_debug_from_api_response(view_func=None):
+    """
+    Utility function to strip error messages from API responses, to avoid exposing internal details to the hardware.
+    """
+
+    def strip_errors(json_object):
+        if settings.STRIP_ERRORS_FROM_API_RESPONSE is False:
+            return json_object
+        else:
+            if isinstance(json_object, dict):
+                return {
+                    k: strip_errors(v)
+                    for k, v in json_object.items()
+                    if not (k == "error" or k == "debug")
+                }
+            elif isinstance(json_object, list):
+                return [strip_errors(item) for item in json_object]
+            else:
+                return json_object
+
+    def wrapper_func(request, *args, **kwargs):
+        response = view_func(request, *args, **kwargs)
+        if isinstance(response, JsonResponse):
+            try:
+                data = json.loads(response.content)
+                stripped_data = strip_errors(data)
+                response.content = json.dumps(stripped_data)
+            except Exception:
+                pass
+        return response
 
     return wrapper_func

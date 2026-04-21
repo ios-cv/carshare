@@ -1,0 +1,16 @@
+[{
+    "model": "bookings.booking", 
+    "pk": 1, 
+    "fields": {
+        "user": 1, 
+        "vehicle": 1, 
+        "billing_account": 1, 
+        "state": "inactive", 
+        "reservation_time": "{\"bounds\": \"[)\", \"lower\": \"2024-11-20T11:25:00+00:00\", \"upper\": \"2024-11-20T12:25:00+00:00\"}", 
+        "block_time": "{\"bounds\": \"[)\", \"lower\": \"2024-11-20T11:25:00+00:00\", \"upper\": \"2024-11-20T12:55:00+00:00\"}", 
+        "actual_start_time": "2024-11-20T11:30:11Z", 
+        "actual_end_time": "2024-11-20T11:54:25Z", 
+        "stripe_invoice_item_id": "ii_1Qco46QObycft9uwcp4GuZ6r"
+    }
+}]
+        
