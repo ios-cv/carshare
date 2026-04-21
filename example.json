@@ -1,0 +1,243 @@
+[
+{
+    "model": "billing.billingaccount",
+    "pk": 1,
+    "fields": {
+        "owner": 6,
+        "account_type": "b",
+        "account_name": "Test Account",
+        "driver_profile_type": "f",
+        "stripe_customer_id": "cus_RO0MIilLTUCCrI",
+        "stripe_setup_intent_active": true,
+        "credit_account": false,
+        "approved_at": "2024-12-20T11:22:01Z",
+        "business_name": "Test Business",
+        "business_address_line_1": "Test House",
+        "business_address_line_2": "Test Street",
+        "business_address_line_3": "Test Town",
+        "business_address_line_4": null,
+        "business_postcode": "TS1 2AB",
+        "business_tax_id": "12345",
+        "business_purchase_order": "testpo"
+    }
+},
+{
+    "model": "bookings.booking",
+    "pk": 1,
+    "fields": {
+        "user": 6,
+        "vehicle": 1,
+        "billing_account": 1,
+        "updated_at": "2026-02-13T13:44:41.585Z",
+        "state": "inactive",
+        "reservation_time": "{\"bounds\": \"[)\", \"lower\": \"2024-11-20T11:25:00+00:00\", \"upper\": \"2024-11-20T12:25:00+00:00\"}",
+        "block_time": "{\"bounds\": \"[)\", \"lower\": \"2024-11-20T11:25:00+00:00\", \"upper\": \"2024-11-20T12:55:00+00:00\"}",
+        "actual_start_time": "2024-11-20T11:30:11Z",
+        "actual_end_time": "2024-11-20T11:54:25Z",
+        "stripe_invoice_item_id": "ii_1Qco46QObycft9uwcp4GuZ6r"
+    }
+},
+{
+    "model": "drivers.driverprofile",
+    "pk": 1,
+    "fields": {
+        "user": 6,
+        "created_at": "2024-12-12T15:50:40Z",
+        "updated_at": "2024-12-12T15:50:40Z",
+        "submitted_at": "2024-12-12T15:53:45Z",
+        "approved_at": "2024-12-20T11:21:50Z",
+        "expires_at": "2025-12-20T23:59:59Z",
+        "approved_to_drive": true,
+        "approved_by": 1
+    }
+},
+{
+    "model": "drivers.fulldriverprofile",
+    "pk": 1,
+    "fields": {
+        "full_name": "Test User",
+        "address_line_1": "Test House",
+        "address_line_2": null,
+        "address_line_3": "Test Town",
+        "address_line_4": null,
+        "postcode": "TS1 2AB",
+        "country": null,
+        "date_of_birth": "2001-01-01",
+        "licence_number": "559922AA4477DD22EE",
+        "licence_issue_date": "2010-10-10",
+        "licence_expiry_date": "2050-10-10",
+        "licence_front": "drivers/profiles/licence_front/0a65596e-54c8-4475-a951-a21af8b5a3c0.jpeg",
+        "licence_back": "drivers/profiles/licence_back/e32e6ea3-d068-4723-b752-94ded3f92505.jpeg",
+        "licence_selfie": "drivers/profiles/licence_selfie/41c74e24-0042-4a32-a8e8-e6e44b3d82c0.jpeg",
+        "licence_check_code": "22",
+        "proof_of_address": "drivers/profiles/proof_of_address/3549575f-9511-446d-b7cc-3588d9f0399c.jpeg",
+        "approved_full_name": true,
+        "approved_address": true,
+        "approved_date_of_birth": true,
+        "approved_licence_number": true,
+        "approved_licence_issue_date": true,
+        "approved_licence_expiry_date": true,
+        "approved_licence_front": true,
+        "approved_licence_back": true,
+        "approved_licence_selfie": true,
+        "approved_proof_of_address": true,
+        "approved_driving_record": true,
+        "dvla_summary": ""
+    }
+},
+{
+    "model": "hardware.card",
+    "pk": 1,
+    "fields": {
+        "key": "firstcardstripe",
+        "enabled": true,
+        "operator": false,
+        "user": 6
+    }
+},
+{
+    "model": "hardware.firmware",
+    "pk": 1,
+    "fields": {
+        "version": 0,
+        "created_at": "2024-11-18T09:34:32.052Z",
+        "bin_file": "",
+        "notes": "Dummy version that will never be sent to board."
+    }
+},
+{
+    "model": "hardware.box",
+    "pk": 1,
+    "fields": {
+        "serial": 123,
+        "secret": "12345678-9012-3456-7890-1234567890ab",
+        "locked": false,
+        "current_booking": 1,
+        "unlocked_by": null,
+        "firmware_version": 0,
+        "desired_firmware_version": 1,
+        "last_seen_at": "2025-03-13T21:39:40.899Z"
+    }
+},
+{
+    "model": "hardware.station",
+    "pk": 1,
+    "fields": {
+        "name": "Test Station",
+        "location": "http://localhost:8000/mock"
+    }
+},
+{
+    "model": "hardware.bay",
+    "pk": 1,
+    "fields": {
+        "name": "Test Bay1",
+        "station": 1
+    }
+},
+{
+    "model": "hardware.vehicletype",
+    "pk": 1,
+    "fields": {
+        "name": "Test Car",
+        "description": "a test car"
+    }
+},
+{
+    "model": "hardware.vehicle",
+    "pk": 1,
+    "fields": {
+        "name": "car1",
+        "display_model": "car",
+        "registration": "54FC AR1",
+        "vin": "AS",
+        "vehicle_type": 1,
+        "bay": 1,
+        "firmware_model": "V1",
+        "box": 1,
+        "operator_cards_etag": 0,
+        "picture": "",
+        "description": null,
+        "operator_cards": []
+    }
+},
+{
+    "model": "hardware.telemetry",
+    "pk": 1,
+    "fields": {
+        "box": 1,
+        "created_at": "2026-02-13T15:29:51Z",
+        "odometer_miles": null,
+        "doors_locked": null,
+        "aux_battery_voltage": null,
+        "ibutton_id": null,
+        "box_uptime_s": null,
+        "box_free_heap_bytes": null,
+        "soc_percent": 80
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$720000$SqWxCWNcwjWiPeSEsxTQec$xSJKb7NNRrvKI/Pkps1UTZwJnCVAzsFxNPSGBRdDgg0=",
+        "last_login": "2026-02-09T12:04:01.168Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "test@test.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2024-11-18T09:35:38Z",
+        "mobile": "07786123456",
+        "pending_mobile": null,
+        "mobile_verification_code": null,
+        "is_operator": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$720000$W1EdAQVTPUJm5U8yd8zGdq$hyrCAjwAISWS+8LgyuCRV0zw877x5OKh74/cU7sY1PI=",
+        "last_login": "2026-01-02T15:46:09.989Z",
+        "is_superuser": false,
+        "username": "TestUser",
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "test@test.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-12-12T15:05:46Z",
+        "mobile": "07786123456",
+        "pending_mobile": null,
+        "mobile_verification_code": "403323",
+        "is_operator": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "account.emailaddress",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "email": "test@htest.com",
+        "verified": true,
+        "primary": true
+    }
+},
+{
+    "model": "account.emailaddress",
+    "pk": 6,
+    "fields": {
+        "user": 6,
+        "email": "teste@test.com",
+        "verified": true,
+        "primary": true
+    }
+}
+]

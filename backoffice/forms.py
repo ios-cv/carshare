@@ -3,12 +3,13 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 
 from django import forms
-from django.forms import ValidationError
+from django.forms import ValidationError, ModelForm
 from django.urls import reverse_lazy
 from django.utils import timezone
 
 from drivers.fields import CustomImageField
 from drivers.models import DriverProfile, FullDriverProfile
+from bookings.models import Booking
 
 
 class DriverProfileReviewForm(forms.ModelForm):
@@ -191,3 +192,60 @@ class CloseBookingForm(forms.Form):
     return_url = forms.CharField(
         required=False, initial=reverse_lazy("backoffice_home")
     )
+
+
+class BackofficeEditBookingForm(ModelForm):
+    class Meta:
+        model = Booking
+        fields = [
+            "vehicle",
+            "state",
+            "reservation_time",
+            "actual_start_time",
+            "actual_end_time",
+        ]
+
+    actual_start_time = forms.SplitDateTimeField(
+        label="Actual start time",
+        required=False,
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+    actual_end_time = forms.SplitDateTimeField(
+        label="Actual end time",
+        required=False,
+        widget=forms.SplitDateTimeWidget(
+            date_attrs={"type": "date"},
+            time_attrs={"type": "time", "step": "60"},
+            date_format="%Y-%m-%d",
+            time_format="%H:%M",
+        ),
+    )
+    updated_at = forms.DateTimeField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+        if instance:
+            self.fields["updated_at"].initial = instance.updated_at
+            allowed = Booking.ALLOWED_TRANSITIONS.get(instance.state)
+            self.fields["state"].choices = [(s, s) for s in allowed]
+
+    def clean(self):
+        cleaned = super().clean()
+        if not self.instance.pk:
+            return cleaned
+        if cleaned.get("updated_at") != self.instance.updated_at:
+            raise ValidationError(
+                f"This booking has been updated by a different process!"
+            )
+        new_state = cleaned.get("state")
+        if not self.instance.can_transition_to(new_state):
+            raise ValidationError(
+                f"Transition from {self.instance.state} to {new_state} not allowed."
+            )
+        return cleaned

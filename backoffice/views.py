@@ -8,11 +8,17 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db import IntegrityError, transaction
 from django.forms import ModelChoiceField
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.db.utils import DatabaseError
+from django.utils.dateparse import parse_datetime
+from django.http import JsonResponse
+
+import json
 from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
@@ -29,12 +35,18 @@ from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
 )
-from hardware.models import Vehicle, Box, BoxAction, Telemetry, Card
+from hardware.models import Vehicle, Box, BoxAction, VehicleType, Telemetry, Card
 from hardware.forms import CreateCard
 from users.models import User
+from bookings.models import get_available_vehicles_plus
 
 from .decorators import require_backoffice_access
-from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBookingForm
+from .forms import (
+    DriverProfileApprovalForm,
+    DriverProfileReviewForm,
+    BackofficeEditBookingForm,
+    CloseBookingForm,
+)
 
 
 @require_backoffice_access
@@ -461,6 +473,76 @@ def perform_box_action(request, vehicle, action_to_perform, user):
 
 
 @require_backoffice_access
+def edit_booking(request, booking_id):
+    booking = None
+    if request.method == "POST":
+        with transaction.atomic():
+            try:
+                booking = Booking.objects.select_for_update(nowait=True).get(
+                    pk=booking_id
+                )
+            except DatabaseError:
+                message = f"Booking #{booking_id} is being edited by another process."
+                messages.error(request, message)
+                context = {
+                    "user": request.user,
+                    "menu": "bookings",
+                }
+                return render(request, "backoffice/bookings/edit_booking.html", context)
+            form = BackofficeEditBookingForm(request.POST, instance=booking)
+            if form.is_valid():
+                reservation_time = form.cleaned_data.get("reservation_time")
+                booking.update_times(reservation_time.lower, reservation_time.upper)
+                try:
+                    form.save()
+                    return redirect(reverse("backoffice_bookings"))
+                except IntegrityError as err:
+                    form.add_error(
+                        None,
+                        "Your booking could not be changed because the vehicle is not available then.",
+                    )
+
+    else:
+        booking = Booking.objects.get(pk=booking_id)
+        form = BackofficeEditBookingForm(instance=booking)
+    context = {
+        "booking": booking,
+        "menu": "bookings",
+        "user": request.user,
+        "form": form,
+    }
+    return render(request, "backoffice/bookings/edit_booking.html", context)
+
+
+@require_backoffice_access
+def get_all_available_vehicles(request):
+    # if not request.method=="POST":
+    #     return JsonResponse({"error":{"message":"POST REQUIRED","status":421}})
+    if request.body:
+        data = json.loads(request.body)
+        start = data.get("start")
+        end = data.get("end")
+        booking_id = data.get("booking_id")
+    else:
+        start = None
+    if start and end:
+        start = parse_datetime(start)
+        end = parse_datetime(end)
+        vehicle_types = VehicleType.objects.all()
+        available_vehicles = get_available_vehicles_plus(
+            start, end, vehicle_types, booking_id
+        )
+    else:
+        available_vehicles = Vehicle.objects.all()
+    available_vehicles = available_vehicles.values_list("name", "id", "registration")
+    available_vehicles_json = [
+        dict({"name": name, "id": int(id), "registration": registration})
+        for name, id, registration in available_vehicles
+    ]
+    # return HttpResponse(available_vehicles_json,content_type="application/json")
+    return JsonResponse(available_vehicles_json, safe=False)
+
+
 def user_details(request, id, anchor=None):
     selected_user_details = get_object_or_404(User, pk=id)
     selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
