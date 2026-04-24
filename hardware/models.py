@@ -258,14 +258,20 @@ class Telemetry(models.Model):
         return f"{free_bytes:.2f} {units[unit_index]}"
 
     def __str__(self):
+        uptime_s = "None"
+        if self.box_uptime_s is not None:
+            uptime_s = breakdown_timedelta(timedelta(seconds=self.box_uptime_s))
+        free_heap = "None"
+        if self.box_free_heap_bytes is not None:
+            free_heap=self.free_heap_bytes_to_str()
         return f"""telemetry for box {self.box.id} at {self.created_at}: 
     {self.odometer_miles} miles
     doors locked = {self.doors_locked}
     aux battery @ {self.aux_battery_voltage}v
     {self.soc_percent}% charged
     ibutton_id: {self.ibutton_id}
-    uptime: {breakdown_timedelta(timedelta(seconds=self.box_uptime_s))}
-    free heap: {self.free_heap_bytes_to_str}"""
+    uptime: {uptime_s}
+    free heap: {free_heap}"""
 
     class Meta:
         indexes = [
