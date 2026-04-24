@@ -263,7 +263,7 @@ class Telemetry(models.Model):
             uptime_s = breakdown_timedelta(timedelta(seconds=self.box_uptime_s))
         free_heap = "None"
         if self.box_free_heap_bytes is not None:
-            free_heap=self.free_heap_bytes_to_str()
+            free_heap = self.free_heap_bytes_to_str()
         return f"""telemetry for box {self.box.id} at {self.created_at}: 
     {self.odometer_miles} miles
     doors locked = {self.doors_locked}

@@ -706,7 +706,9 @@ def get_telemetry(request):
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
     if request.content_type != "application/json":
-        return JsonResponse({"error": "Content-Type must be application/json"}, status=400)
+        return JsonResponse(
+            {"error": "Content-Type must be application/json"}, status=400
+        )
 
     try:
         data = json.loads(request.body)
