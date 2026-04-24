@@ -5,7 +5,6 @@
 {% block portal_header_text %}
 Find a Vehicle
 {% endblock %}
-
 {% block portal_content %}
 {% if form %}
 <div class="max-w-2xl mx-auto bg-white overflow-hidden shadow sm:rounded-lg">
@@ -18,6 +17,48 @@ Find a Vehicle
     </form>
   </div>
 </div>
+<script>
+  function toLocalISOString(date) {
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    const offset = -date.getTimezoneOffset(); // minutes
+    const sign = offset >= 0 ? '+' : '-';
+    const offsetHours = pad(Math.floor(Math.abs(offset) / 60));
+    const offsetMinutes = pad(Math.abs(offset) % 60);
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetMinutes}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const startDate = document.getElementById("id_start_0");
+    const startTime = document.getElementById("id_start_1");
+    const endDate = document.getElementById("id_end_0");
+    const endTime = document.getElementById("id_end_1");
+
+    function updateEnd(){
+      const startDateTime= new Date(`${startDate.value}T${startTime.value}`);
+      const endDateTime= new Date(`${endDate.value}T${endTime.value}`);
+      if( startDateTime>=endDateTime ){
+        const newEndDateTime=new Date(startDateTime.getTime() + 60*60*1000);
+        endDate.value=toLocalISOString(newEndDateTime).slice(0,10);
+        endTime.value=newEndDateTime.toLocaleTimeString().slice(0,5);
+      }
+    }
+    
+    if (startDate && startTime && endDate && endTime) {
+      startDate.addEventListener("change", updateEnd);
+      startTime.addEventListener("change", updateEnd);
+    }
+
+  });
+</script>
 {% else %}
 <div class="max-w-4xl mx-auto bg-white shadow overflow-hidden sm:rounded-md">
   <ul role="list" class="divide-y divide-gray-200">
