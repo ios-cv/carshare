@@ -5,6 +5,8 @@ from allauth.account.forms import SignupForm as AllAuthSignupForm
 from allauth.account.forms import LoginForm as AllAuthLoginForm
 from allauth.account.forms import ResetPasswordForm as AllAuthResetPasswordForm
 from allauth.account.forms import ResetPasswordKeyForm as AllAuthResetPasswordKeyForm
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from crispy_forms.bootstrap import InlineField
 from crispy_forms.helper import FormHelper
@@ -53,6 +55,8 @@ class SignupForm(AllAuthSignupForm):
         widget=forms.TextInput(attrs={"placeholder": "Last name"}),
     )
 
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
+
     accept = forms.BooleanField()
 
     field_order = [
@@ -61,6 +65,7 @@ class SignupForm(AllAuthSignupForm):
         "email",
         "password1",
         "password2",
+        "captcha",
         "accept",
     ]
 
@@ -77,6 +82,7 @@ class SignupForm(AllAuthSignupForm):
             "email",
             "password1",
             "password2",
+            "captcha",
             InlineField("accept"),
         )
 

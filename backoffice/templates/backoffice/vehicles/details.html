@@ -22,7 +22,7 @@
         {% if vehicle.picture %}
             <img class="h-32 w-32 object-cover rounded-md"
                     src="{{ vehicle.picture.url }}"
-                    alt="">
+                    alt="Vehicle {{ vehicle.registration }}">
         {% endif %}
         {% if most_recent.soc.value %}
             <div class="relative w-32 h-32">
