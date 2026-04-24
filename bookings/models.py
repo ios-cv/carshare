@@ -205,6 +205,7 @@ class Booking(models.Model):
             self.vehicle,
             self.reservation_time.lower,
             self.reservation_time.upper,
+            self.reason,
             billing_account=self.billing_account,
             booking=self,
         )
