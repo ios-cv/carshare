@@ -20,7 +20,7 @@ SPECIAL_BILLING_ACCOUNTS_2026 = [
 
 
 def calculate_booking_cost(
-    user, vehicle, start, end, billing_account=None, booking=None
+    user, vehicle, start, end, reason, billing_account=None, booking=None
 ):
     """Calculates the cost of a rental."""
 
