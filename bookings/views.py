@@ -29,7 +29,7 @@ from .models import (
     POLICY_CANCELLATION_CUTOFF_HOURS,
     MAX_BOOKING_END_DAYS,
     user_can_access_booking,
-    REASON_USER_BOOKING
+    REASON_USER_BOOKING,
 )
 
 log = logging.getLogger(__name__)
