@@ -43,11 +43,7 @@ from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBook
 def home(request):
     now_local = timezone.localtime()
 
-    start_today = datetime.combine(
-        now_local.date(),
-        time.min,
-        tzinfo=now_local.tzinfo
-    )
+    start_today = datetime.combine(now_local.date(), time.min, tzinfo=now_local.tzinfo)
 
     days_in_period = 2
 
