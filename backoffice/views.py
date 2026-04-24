@@ -17,6 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
+from datetime import datetime, time, timedelta
+
 from bookings.models import TsTzRange, STATE_LATE
 
 from billing.models import (
@@ -39,10 +41,19 @@ from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBook
 
 @require_backoffice_access
 def home(request):
-    start_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    now_local = timezone.localtime()
+
+    start_today = datetime.combine(
+        now_local.date(),
+        time.min,
+        tzinfo=now_local.tzinfo
+    )
+
     days_in_period = 2
-    end_tomorrow = start_today + timezone.timedelta(days=days_in_period)
-    seconds_in_period = (end_tomorrow - start_today).total_seconds()
+
+    end_period = start_today + timedelta(days=days_in_period)
+
+    seconds_in_period = (end_period - start_today).total_seconds()
     hours_in_period = round((seconds_in_period + 1800) / 3600)
     name_days_in_period = []
     for day in range(days_in_period):
@@ -100,7 +111,7 @@ def home(request):
         Booking.objects.filter(
             reservation_time__overlap=TsTzRange(
                 start_today,
-                end_tomorrow,
+                end_period,
                 RangeBoundary(),
             ),
         ).order_by("vehicle", "reservation_time")
