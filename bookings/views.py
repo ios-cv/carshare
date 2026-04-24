@@ -29,6 +29,7 @@ from .models import (
     POLICY_CANCELLATION_CUTOFF_HOURS,
     MAX_BOOKING_END_DAYS,
     user_can_access_booking,
+    REASON_USER_BOOKING
 )
 
 log = logging.getLogger(__name__)
@@ -183,7 +184,7 @@ def confirm_booking(request):
         Vehicle.objects.get(pk=form.cleaned_data["vehicle_id"]),
         form.cleaned_data["start"],
         form.cleaned_data["end"],
-        "user booking",
+        REASON_USER_BOOKING,
     )
 
     return render(request, "bookings/confirm_booking.html", context)
