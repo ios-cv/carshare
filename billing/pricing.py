@@ -5,29 +5,53 @@ import math
 
 from django.utils import timezone
 
-DAY_RATE = 24
-HOUR_RATE = 4
-NEW_DAY_RATE = 30
-NEW_HOUR_RATE = 5
+DAY_RATE_2024 = 30
+HOUR_RATE_2024 = 5
+
+DAY_RATE_2026 = 33
+HOUR_RATE_2026 = 6
+ID_CUTOFF_2026 = 8622
+TIME_CUTOFF_2026 = timezone.datetime(
+    2026, 4, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
+)
+SPECIAL_BILLING_ACCOUNTS_2026 = [
+    29,
+]
 
 
-def calculate_booking_cost(user, vehicle, start, end):
+def calculate_booking_cost(
+    user, vehicle, start, end, billing_account=None, booking=None
+):
     """Calculates the cost of a rental."""
 
     # If user is an operator/admin then don't charge them.
     if user.is_operator:
         return 0
 
-    # If booking runs into 2024, then use new prices.
-    new_billing_start = timezone.datetime(
-        2024, 1, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
-    )
-    if end > new_billing_start:
-        day_rate = NEW_DAY_RATE
-        hour_rate = NEW_HOUR_RATE
+    # If booking ID is greater than ID_CUTOFF_2026 and booking start date is greater than 1st April 2026
+    # then use new pricing. Also use new pricing for certain billing accounts if booking is > 1/4/26 whatever
+    # the booking ID is.
+    if booking is None:
+        if start >= TIME_CUTOFF_2026:
+            day_rate = DAY_RATE_2026
+            hour_rate = HOUR_RATE_2026
+        else:
+            day_rate = DAY_RATE_2024
+            hour_rate = HOUR_RATE_2024
     else:
-        day_rate = DAY_RATE
-        hour_rate = HOUR_RATE
+        if (
+            billing_account is not None
+            and billing_account.id in SPECIAL_BILLING_ACCOUNTS_2026
+            and start >= TIME_CUTOFF_2026
+        ):
+            day_rate = DAY_RATE_2026
+            hour_rate = HOUR_RATE_2026
+        elif booking.id >= ID_CUTOFF_2026 and start >= TIME_CUTOFF_2026:
+            day_rate = DAY_RATE_2026
+            hour_rate = HOUR_RATE_2026
+        else:
+            day_rate = DAY_RATE_2024
+            hour_rate = HOUR_RATE_2024
 
     # We don't actually care about the vehicle type as they are all the same price.
 
