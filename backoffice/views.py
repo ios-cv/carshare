@@ -703,20 +703,22 @@ def vehicle_details(request, vehicle_id):
 @require_backoffice_access
 def get_telemetry(request):
     if request.method != "POST":
-        return JsonResponse({"error": "Method not allowed"}, status=405)
-
+        return JsonResponse({"error":"Method not allowed"}, status=405)
     if request.content_type != "application/json":
-        return JsonResponse(
-            {"error": "Content-Type must be application/json"}, status=400
-        )
+        return JsonResponse({"error":"content type must be application/json"}, status=400)
+    
+    vehicle_id = None
+    if request.body:
+        try:
+            data = json.loads(request.body)
+            vehicle_id = int(data.get("vehicle_id", None))
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return JsonResponse({"error":"Invalid vehicle id"}, status=400)
 
-    try:
-        data = json.loads(request.body)
-        vehicle_id = int(data.get("vehicle_id"))
-    except (json.JSONDecodeError, TypeError, ValueError):
-        return JsonResponse({"error": "Invalid vehicle id"}, status=400)
-
-    vehicle = Vehicle.objects.get(pk=vehicle_id)
+    if vehicle_id is not None:
+        vehicle = get_object_or_404(Vehicle,pk=vehicle_id)
+    else:
+        return JsonResponse({"error":"Invalid vehicle id"}, status=400)
 
     telemetry = Telemetry.objects.filter(box=vehicle.box).order_by("-created_at")[:5040]
     telemetry = telemetry.values_list(

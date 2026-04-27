@@ -18,8 +18,9 @@ const telemetry={
 function get_telemetry(){
     fetch(telemetry_url,{
         method:"POST",
-        headers:{"X-CSRFToken":csrftoken},
+        headers:{"X-CSRFToken":csrftoken,"content-type":"application/json"},
         mode:"same-origin",
+        
         body:JSON.stringify({
             "vehicle_id":vehicle_id
         })
@@ -40,6 +41,7 @@ function get_telemetry(){
 get_telemetry();
 
 function drawChart(svgElement, points) {
+    console.log("drawChart ran")
     if (!svgElement || !Array.isArray(points) || points.length <= 1) {
         graphMessage.textContent="Not enough telemetry received to draw graph."
         graphMessage.parentElement.classList.remove("hidden")
