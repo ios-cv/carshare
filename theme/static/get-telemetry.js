@@ -223,7 +223,7 @@ function drawChart(svgElement, points) {
             circle.addEventListener("mouseleave",()=>{
                 bubble.remove();    
                 circle.setAttribute("r", circleRadius);
-            });
+            },{once:true});
         })
         svgElement.appendChild(circle);
     });
