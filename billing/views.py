@@ -354,9 +354,11 @@ def accept_invitation(request, invitation):
 
 @login_required
 def profile_other_account_memberships(request):
-    billing_accounts=BillingAccount.objects.filter(billingaccountmember__user=request.user)
+    billing_accounts = BillingAccount.objects.filter(
+        billingaccountmember__user=request.user
+    )
     context = {
-        "billing_accounts":billing_accounts,
+        "billing_accounts": billing_accounts,
         "menu": "profile",
         "profile_menu": "memberships",
     }
