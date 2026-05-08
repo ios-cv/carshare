@@ -80,10 +80,10 @@ def build_profile(request, stage, driver_profile):
 
     # If the profile has been submitted for approval, send them to the "approval pending" screen.
     if driver_profile.submitted_at is not None:
-        billing_account_count=request.user.billing_accounts.count()
-        context={
-            "billing_account_setup":billing_account_count>=1,
-            "hide_driver_profile_warnings":True,
+        billing_account_count = request.user.billing_accounts.count()
+        context = {
+            "billing_account_setup": billing_account_count >= 1,
+            "hide_driver_profile_warnings": True,
         }
         return render(
             request,
