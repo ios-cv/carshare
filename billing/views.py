@@ -4,6 +4,7 @@ from django.forms import model_to_dict
 import stripe
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect, render, get_object_or_404
@@ -326,10 +327,13 @@ def accept_invitation(request, invitation):
     try:
         invitation = BillingAccountMemberInvitation.objects.get(secret=invitation)
     except:
+        message = f"Something went wrong with the invitation, please ask whoever sent it to check it is still valid or to send a new one."
+        messages.error(request, message)
         return redirect("users_incomplete")
 
     if invitation.billing_account.owner == request.user:
-        # TODO: display message to user.
+        message = f"You cannot become a member of a billing account you own."
+        messages.error(request, message)
         return redirect("users_incomplete")
     else:
         member = BillingAccountMember()
@@ -343,8 +347,9 @@ def accept_invitation(request, invitation):
         member.save()
         invitation.delete()
 
-    # TODO: Return to some page in the billing area instead.
-    return redirect("users_incomplete")
+        message = f"You are now a member of the billing account {invitation.billing_account.account_name}."
+        messages.success(request, message)
+    return redirect("billing_accounts_other_memberships")
 
 
 @login_required
