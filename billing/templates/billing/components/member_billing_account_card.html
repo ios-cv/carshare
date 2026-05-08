@@ -1,0 +1,41 @@
+{% load crispy_forms_tags %}
+<section>
+    <div class="bg-white shadow sm:rounded-lg">
+
+      {% if ba.account_type == "p" %}
+        <div class="px-4 py-5 sm:rounded-t-lg sm:px-6">
+          <h2 class="text-lg font-medium leading-6 text-gray-900">
+            Personal Billing Account for {{ ba.owner.first_name|title }} {{ ba.owner.last_name|title }}
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            {{ ba.owner.first_name|title }} {{ ba.owner.last_name|title }}'s billing account for personal usage.</p>
+        </div>
+      {% elif ba.account_type == "b" %}
+        <div class="px-4 py-5 sm:rounded-t-lg sm:px-6">
+          <h2 class="text-lg font-medium leading-6 text-gray-900">
+            {{ ba.account_name }}
+          </h2>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Business billing account for {{ ba.business_name }}</p>
+        </div>
+      {% endif %}
+
+      {% if manage_drivers %}
+      <div class="border-t px-4 py-5 sm:px-6 space-x-2">
+        <!--<a href="#"
+           class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Change Payment Card
+        </a>-->
+        <a href="{% url 'billing_account_members' billing_account=ba.id %}"
+           class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+          Manage Additional Drivers
+        </a>
+        <!--{% if ba.account_type == "b" %}
+          <a href="#"
+             class="inline-flex items-center rounded-md border border-transparent bg-teal-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+            Change Business Details
+          </a>
+        {% endif %}-->
+      </div>
+      {% endif %}
+    </div>
+</section>
