@@ -5,9 +5,11 @@
     <div class="shadow sm:overflow-hidden sm:rounded-md">
       <div class="bg-white py-6 px-4 sm:p-6">
         <h2 class="text-lg font-medium leading-6 text-gray-900">Other Billing Account Memberships</h2>
-        {% include "under_construction.html" %}
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">This section shows a list of all billing accounts which you are a member of.</p>
       </div>
     </div>
   </section>
-
+    {% for ba in billing_accounts %}
+      {% include "billing/components/member_billing_account_card.html" with ba=ba manage_drivers=False %}
+    {% endfor %}
 {% endblock %}
