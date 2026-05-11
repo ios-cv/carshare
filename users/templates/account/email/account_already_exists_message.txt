@@ -9,7 +9,7 @@ GO-EV Car Share using the email address:
 {{ email }}
 
 However, an account using that email address already exists.  If you do not
-remeber your password, please use the link below to reset it:
+remember your password, please use the link below to reset it:
 
 {{ password_reset_url }}
 
