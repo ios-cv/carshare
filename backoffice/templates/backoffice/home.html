@@ -28,8 +28,31 @@
   {% endif %}
   <div class="p-4 sm:p-6 lg:p-8">
     <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
+      <div class="flex flex-row flex-wrap gap-4">
         <h1 class="text-xl font-semibold text-gray-900">Today and Tomorrow's bookings</h1>
+        <label class="inline-flex items-center cursor-pointer" id="cancelled_label">
+          <input type="checkbox" value="" class="sr-only peer" id="cancelled_value">
+          <div class="relative w-9 h-5 bg-teal-400 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-800"></div>
+          <span class="select-none ms-1 text-sm font-medium text-heading">Show/Hide Cancelled Bookings</span>
+        </label>
+        <script>
+          const cancelled_value=document.getElementById('cancelled_value');
+          const cancelled_label=document.getElementById('cancelled_label');
+          
+          cancelled_value.checked = params.get('cancelled') === 'false';
+          cancelled_label.addEventListener('pointerup',(e)=>{
+            if(cancelled_value.checked){
+              document.querySelectorAll('.cancelled').forEach(row=>{
+                row.style.display='table-row';
+              })
+            }
+            else{
+              document.querySelectorAll('.cancelled').forEach(row=>{
+                row.style.display='none';
+              })
+            }
+          })
+        </script>
       </div>
     </div>
     <div class="mt-8 flex flex-col">
