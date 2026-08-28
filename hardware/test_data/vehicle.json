@@ -1,0 +1,35 @@
+[{
+    "model": "hardware.vehicle", 
+    "pk": 1, 
+    "fields": {
+        "name": "car1 name", 
+        "display_model": "car", 
+        "registration": "54FC AR1", 
+        "vin": "AS", 
+        "vehicle_type": 1, 
+        "bay": 1, 
+        "firmware_model": "V1", 
+        "box": 1, 
+        "operator_cards_etag": 0, 
+        "picture": "hardware/vehicles/picture/383e67a2-11e6-425d-8194-1729edbe0b15.jpeg", 
+        "description": null, 
+        "operator_cards": [1]
+    }
+},{
+    "model": "hardware.vehicle", 
+    "pk": 2, 
+    "fields": {
+        "name": "car2 name", 
+        "display_model": "car", 
+        "registration": "54FC AR2", 
+        "vin": "AT", 
+        "vehicle_type": 1, 
+        "bay": 2, 
+        "firmware_model": "V1", 
+        "box": 3, 
+        "operator_cards_etag": 0, 
+        "picture": "hardware/vehicles/picture/383e67a2-11e6-425d-8194-1729edbe0b15.jpeg", 
+        "description": null, 
+        "operator_cards": [1]
+    }
+}]

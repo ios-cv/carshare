@@ -1,0 +1,8 @@
+[{
+    "model": "hardware.station", 
+    "pk": 1, 
+    "fields": {
+        "name": "Mermaid", 
+        "location": "url"
+    }
+}]

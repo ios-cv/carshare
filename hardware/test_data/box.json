@@ -1,0 +1,42 @@
+[{
+    "model": "hardware.box", 
+    "pk": 1, 
+    "fields": {
+        "serial": 123, 
+        "secret": "12345678-9012-3456-7890-1234567890ab", 
+        "locked": false, 
+        "current_booking": 1, 
+        "unlocked_by": null, 
+        "firmware_version": 0, 
+        "desired_firmware_version": 1, 
+        "last_seen_at": "2025-03-13T21:39:40.899Z"
+        }
+},
+{
+    "model": "hardware.box", 
+    "pk": 2, 
+    "fields": {
+        "serial": 456, 
+        "secret": "12345678-9012-3456-7890-1234567890cd", 
+        "locked": false, 
+        "current_booking": null, 
+        "unlocked_by": null, 
+        "firmware_version": 0, 
+        "desired_firmware_version": 1, 
+        "last_seen_at": null
+        }
+},
+{
+    "model": "hardware.box", 
+    "pk": 3, 
+    "fields": {
+        "serial": 124, 
+        "secret": "12345678-9012-3456-7890-1234567890ac", 
+        "locked": true, 
+        "current_booking": null, 
+        "unlocked_by": null, 
+        "firmware_version": 0, 
+        "desired_firmware_version": 1, 
+        "last_seen_at": null
+        }
+}]

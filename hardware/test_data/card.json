@@ -1,0 +1,50 @@
+[{
+    "model": "hardware.card", 
+    "pk": 1, 
+    "fields": {
+        "key": "1", 
+        "enabled": true, 
+        "operator": true, 
+        "user": 1
+        }
+},
+{
+    "model": "hardware.card", 
+    "pk": 2, 
+    "fields": {
+        "key": "3", 
+        "enabled": true, 
+        "operator": false, 
+        "user": 1
+        }
+},
+{
+    "model": "hardware.card", 
+    "pk": 3, 
+    "fields": {
+        "key": "4", 
+        "enabled": true, 
+        "operator": false, 
+        "user": 2
+        }
+},
+{
+    "model": "hardware.card", 
+    "pk": 4, 
+    "fields": {
+        "key": "5", 
+        "enabled": false, 
+        "operator": false, 
+        "user": 1
+        }
+},
+{
+    "model": "hardware.card", 
+    "pk": 5, 
+    "fields": {
+        "key": "6", 
+        "enabled": false, 
+        "operator": true, 
+        "user": 1
+        }
+}]
