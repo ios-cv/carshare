@@ -27,6 +27,10 @@ def incomplete(request):
 
     user: User = request.user
 
+    # If the user has a driver profile already then skip account setup
+    if user.driver_profiles.count() >= 1:
+        return redirect("drivers_build_profile", stage=6)
+
     personal_state = "incomplete"
     if user.is_own_personal_account_validated():
         personal_state = "approved"

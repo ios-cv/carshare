@@ -116,15 +116,24 @@
               <div class="max-w-xl text-sm text-gray-500">
                 <p class="mt-2">
                   If you are resident on the Isles of Scilly and wish to drive GO-EV vehicles
-                  for your own use please create a "personal" account.
+                  for your own use please "Create personal account".
                 </p>
                 <p class="mt-2">
                   If you run a business on (or serving) the Isles of Scilly and you (or your
                   staff) would like to hire GO-EV vehicles on behalf of your business, please
-                  create a "business" account.
+                  "Create business account".
                 </p>
                 <p class="mt-2">
                   If both of these apply to you, you can create both types of account.
+                </p>
+                <p class="mt-2">
+                  If you do not want your own account but instead intend to join someone 
+                  elses account, choose "Join an existing account" to setup your driver 
+                  profile and then request an invitation from them.
+                </p>
+                <p class="mt-2">
+                  If you already have an invitation, choose "Join an existing account", 
+                  complete your driver profile and then click the link in the invitation again.
                 </p>
               </div>
 
@@ -157,6 +166,14 @@
                       Create business account
                     </button>
                   {% endif %}
+                  </a>
+                </div>
+                <div class="mt-5 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                  <a href="{% url 'drivers_create_profile' %}">
+                    <button type="button"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                      Join an existing account
+                    </button>
                   </a>
                 </div>
               </div>
