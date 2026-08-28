@@ -35,6 +35,16 @@ Initialise the database, and setup a super user.
     $ poetry run python manage.py migrate
     $ poetry run python manage.py createsuperuser
 
+Alternatively, for local development and testing you can populate the database with a fully
+working test data set (including a superuser, approved drivers, vehicles and bookings) instead
+of creating everything by hand:
+
+    $ make seed-db
+
+This runs the `seeddata` management command, which prints the login details of all the test
+users it creates (they all have the password `password`). It only runs against an empty
+database; use `make reset-db` to wipe an existing database and re-seed it.
+
 Install the customised version of `crispy-tailwind`.
 
     $ make setup-crispy-tailwind

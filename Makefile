@@ -1,4 +1,4 @@
-.PHONY: nothing start-docker stop-docker clean-docker format setup-crispy-tailwind
+.PHONY: nothing start-docker stop-docker clean-docker format setup-crispy-tailwind seed-db reset-db
 
 ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -18,6 +18,16 @@ clean-docker: ## Deletes the docker containers of dependencies for local develop
 
 nothing:
 	@echo Please specify a make target.
+
+seed-db: ## Populates an empty database with a fully working test data set.
+	@echo Seeding the database with test data
+	poetry run python manage.py migrate
+	poetry run python manage.py seeddata
+
+reset-db: ## Wipes the database and re-populates it with the test data set.
+	@echo Wiping and re-seeding the database with test data
+	poetry run python manage.py migrate
+	poetry run python manage.py seeddata --flush
 
 format:
 	poetry run black .
