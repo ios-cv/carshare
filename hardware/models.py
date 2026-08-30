@@ -4,6 +4,7 @@ import uuid
 from datetime import timedelta
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from backoffice.utils import breakdown_timedelta
 
 from users.models import User
 
@@ -246,6 +247,8 @@ class Telemetry(models.Model):
         db_table = "telemetry"
 
     def free_heap_bytes_to_str(self):
+        if self.box_free_heap_bytes is None:
+            return None
         units = ["bytes", "KiB", "MiB", "GiB"]
         free_bytes = self.box_free_heap_bytes
         unit_index = 0
@@ -254,18 +257,21 @@ class Telemetry(models.Model):
             unit_index += 1
         return f"{free_bytes:.2f} {units[unit_index]}"
 
-    def uptime_to_str(self):
-        return str(timedelta(self.box_uptime_s))
-
     def __str__(self):
+        uptime_s = "None"
+        if self.box_uptime_s is not None:
+            uptime_s = breakdown_timedelta(timedelta(seconds=self.box_uptime_s))
+        free_heap = "None"
+        if self.box_free_heap_bytes is not None:
+            free_heap = self.free_heap_bytes_to_str()
         return f"""telemetry for box {self.box.id} at {self.created_at}: 
     {self.odometer_miles} miles
     doors locked = {self.doors_locked}
     aux battery @ {self.aux_battery_voltage}v
     {self.soc_percent}% charged
     ibutton_id: {self.ibutton_id}
-    uptime: {self.uptime_to_str}
-    free heap: {self.free_heap_bytes_to_str}"""
+    uptime: {uptime_s}
+    free heap: {free_heap}"""
 
     class Meta:
         indexes = [

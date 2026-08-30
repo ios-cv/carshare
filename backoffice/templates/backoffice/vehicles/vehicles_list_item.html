@@ -1,4 +1,4 @@
-<tr>
+<tr class="hover:bg-teal-100">
   <td class="h-6 w-6 max-w-none whitespace-nowrap px-6 py-3 text-sm font-medium text-gray-900">
     <div class="flex items-center space-x-3 lg:pl-2">
       {% include "backoffice/vehicles/status.html" with locked=v.box.locked %}
@@ -10,7 +10,7 @@
     </div>
   </td>
   <td class="px-6 py-3 text-sm font-medium text-gray-500">
-    {{ v.registration }}
+    <a href="{% url "vehicle_details" v.id %}" class="hover:underline">{{ v.registration }}</a>
   </td>
   <td class="hidden md:table-cell whitespace-nowrap px-6 py-3 text-right text-sm text-gray-500">
     {{ v.vehicle_type.name }}
