@@ -1,0 +1,10 @@
+[run]
+omit =
+    */migrations/*
+    manage.py
+    carshare/asgi.py
+    carshare/wsgi.py
+    */tests.py
+    */tests/*.py
+    conftest.py
+    hardware/*
