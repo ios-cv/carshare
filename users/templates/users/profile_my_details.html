@@ -4,8 +4,19 @@
   <section>
     <div class="shadow sm:overflow-hidden sm:rounded-md">
       <div class="bg-white py-6 px-4 sm:p-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">My details</h2>
-        {% include "under_construction.html" %}
+        <h2 class="text-lg font-medium leading-6 text-gray-900">My Details</h2>
+        <p class="mt-1 text-sm text-gray-500">Manage your personal information and preferences.</p>
+        <div class="mt-4">
+          <p><strong>Email:</strong> {{ user_email }}</p>
+          <p><strong>Mobile:</strong> {{ user_mobile }}</p>
+          <h3 class="text-md font-medium"><strong>Driver Profiles:</strong></h3>
+          {% if driver_profiles %}
+            {% for driver_profile in driver_profiles %}
+              {% include "users/driver_profile_card.html" with driver_profile=driver_profile %}
+            {% endfor %}
+          {% else %}
+            <p class="text-sm text-gray-500">No driver profiles found. Please add a driver profile to use our services.</p>
+          {% endif %}
       </div>
     </div>
   </section>
