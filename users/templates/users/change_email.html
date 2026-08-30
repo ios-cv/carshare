@@ -1,0 +1,51 @@
+{% extends "profile_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block profile_content %}
+    {% url "account_email" as action_url %}
+    <section>
+        <div class="shadow sm:overflow-hidden sm:rounded-md">
+            <div class="bg-white py-6 px-4 sm:p-6">
+                <h2 class="text-lg font-medium leading-6 text-gray-900">Email Addresses linked to this account:</h2>
+                <form method="post" action="{{ action_url }}" class="w-fi inline">
+                    {% csrf_token %}
+                    <table class="divide-y divide-gray-200 pb-2 border-teal-700 border my-2">
+                        <tbody class="bg-white divide-y divide-gray-200">
+                    {% for email in emailaddresses %}
+                        {% include "users/email/email_item.html" with email=email num=forloop.counter0 %}
+                    {% endfor %}
+                    </tbody>
+                    </table>
+
+                    <button name="action_primary" class="border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 p-1" type="submit">
+                        Make Primary
+                    </button>
+                    <button name="action_send" class="border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 p-1" type="submit">
+                        Re-send Verification
+                    </button>
+                    <button name="action_remove" class="border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 p-1" type="submit">
+                        Remove Email
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    
+    <section>
+        <div class="shadow sm:overflow-hidden sm:rounded-md">
+            <div class="bg-white py-6 px-4 sm:p-6">
+                <h2 class="text-lg font-medium leading-6 text-gray-900">Add new email address:</h2>
+                <form class="space-y-6" action="{{ action_url }}" method="POST" id="email_form">
+                    {% crispy form %}
+                    {% csrf_token %}
+                    <button type="submit" name="action_add" form="email_form" class="border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 p-1 mt-2">
+                        Add new email
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+            
+{% endblock %}

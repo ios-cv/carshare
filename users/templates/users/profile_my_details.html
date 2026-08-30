@@ -4,8 +4,27 @@
   <section>
     <div class="shadow sm:overflow-hidden sm:rounded-md">
       <div class="bg-white py-6 px-4 sm:p-6">
-        <h2 class="text-lg font-medium leading-6 text-gray-900">My details</h2>
-        {% include "under_construction.html" %}
+        <h2 class="text-lg font-medium leading-6 text-gray-900">My Details</h2>
+        <p class="mt-1 text-sm text-gray-500">Manage your personal information and preferences.</p>
+        <div class="mt-4">
+          <p><strong>Email:</strong> {{ user_email }}
+            <a href="{% url 'account_email' %}" class="inline-block translate-y-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+                <rect width="20" height="20" rx="4" ry="4" fill="rgb(13,148,136)"/>
+                <path
+                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+              </svg>
+            </a>
+          </p>
+          <p><strong>Mobile:</strong> {{ user_mobile }}</p>
+          <h3 class="text-md font-medium"><strong>Driver Profiles:</strong></h3>
+          {% if driver_profiles %}
+            {% for driver_profile in driver_profiles %}
+              {% include "users/driver_profile_card.html" with driver_profile=driver_profile %}
+            {% endfor %}
+          {% else %}
+            <p class="text-sm text-gray-500">No driver profiles found. Please add a driver profile to use our services.</p>
+          {% endif %}
       </div>
     </div>
   </section>

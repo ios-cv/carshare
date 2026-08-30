@@ -161,3 +161,7 @@ class VerifyMobileForm(forms.ModelForm):
         if commit:
             m.save()
         return m
+
+
+class ChangeEmailForm(forms.Form):
+    email = forms.EmailField()

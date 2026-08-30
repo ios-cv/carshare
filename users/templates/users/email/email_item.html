@@ -1,0 +1,10 @@
+<tr class="w-fit even:bg-gray-100 odd:bg-white">
+    <td class="p-1 w-fit">
+        <label for="email_radio_{{ num }}"> {{ email.email }} </td>
+    <td class="p-1">
+        {%if email.verified %} <strong>Verified</strong>{% else %} <strong>Unverified</strong> {%endif%} {%if email.primary%} <strong>Primary</strong> {%endif%} </label> 
+    </td>
+    <td class="p-1">
+        <input type="radio" name="email" value="{{email.email}}" id="email_radio_{{ num }}" {% if email.primary %}checked{% endif %}>
+    </td>
+</tr>
