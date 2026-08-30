@@ -13,7 +13,9 @@
     </span>
   </td>
   <td class="px-2 py-3 text-sm font-medium">
-    {{ b.user.first_name|title }} {{ b.user.last_name|title }}
+    <a href="{% url 'backoffice_user_details' b.user.id %}" class="hover:text-gray-600 underline">
+      {{ b.user.first_name|title }} {{ b.user.last_name|title }}
+    </a>
   </td>
 
   <!--Large screens format the date in long form-->
