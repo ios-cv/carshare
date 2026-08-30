@@ -1,0 +1,10 @@
+<!-- Driver Profile Card -->
+<div class="border border-gray-300 rounded-lg p-4 mb-4">
+    <h3 class="text-lg font-medium text-gray-900">{{ driver_profile.full_name }}</h3>
+    <p class="text-sm text-gray-500">License: {{ driver_profile.license_number }}</p>
+    <p>Address: 
+        {% if driver_profile.address_line_1 %}{{ driver_profile.address_line_1 }}, {% endif %}
+        {% if driver_profile.address_line_2 %}{{ driver_profile.address_line_2 }}, {% endif %}
+        {% if driver_profile.city %}{{ driver_profile.city }}, {% endif %}
+        {% if driver_profile.postcode %}{{ driver_profile.postcode }}{% endif %}
+</div>
