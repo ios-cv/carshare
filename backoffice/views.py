@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone as datetime_timezone
 
 from bookings.models import TsTzRange, STATE_LATE
 
@@ -39,6 +39,40 @@ from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBookingForm
 
 
+def calendar_offset_seconds(value, period_start):
+    """Use elapsed time consistently, including repeated or missing DST hours."""
+    return (
+        value.astimezone(datetime_timezone.utc)
+        - period_start.astimezone(datetime_timezone.utc)
+    ).total_seconds()
+
+
+def calendar_period(start, days):
+    end = start + timedelta(days=days)
+    seconds = calendar_offset_seconds(end, start)
+    hours = [
+        timezone.localtime(
+            start.astimezone(datetime_timezone.utc) + timedelta(hours=hour),
+            start.tzinfo,
+        )
+        for hour in range(int(seconds / 3600))
+    ]
+    headings = []
+    for day in range(days):
+        day_start = start + timedelta(days=day)
+        headings.append(
+            {
+                "date": day_start,
+                "width_percent": calendar_offset_seconds(
+                    day_start + timedelta(days=1), day_start
+                )
+                / seconds
+                * 100,
+            }
+        )
+    return end, seconds, hours, headings
+
+
 @require_backoffice_access
 def home(request):
     now_local = timezone.localtime()
@@ -47,13 +81,9 @@ def home(request):
 
     days_in_period = 2
 
-    end_period = start_today + timedelta(days=days_in_period)
-
-    seconds_in_period = (end_period - start_today).total_seconds()
-    hours_in_period = round((seconds_in_period + 1800) / 3600)
-    name_days_in_period = []
-    for day in range(days_in_period):
-        name_days_in_period.append((start_today + timezone.timedelta(days=day)))
+    end_period, seconds_in_period, hours_in_period, name_days_in_period = (
+        calendar_period(start_today, days_in_period)
+    )
 
     drivers_pending = len(get_all_driver_profiles_pending_approval())
     accounts_pending = len(get_all_billing_accounts_pending_approval())
@@ -134,10 +164,10 @@ def home(request):
                 "reason": b.reason,
             }
             start_offset_seconds = int(
-                (b.reservation_time.lower - start_today).total_seconds()
+                calendar_offset_seconds(b.reservation_time.lower, start_today)
             )
             end_offset_seconds = int(
-                (b.reservation_time.upper - start_today).total_seconds()
+                calendar_offset_seconds(b.reservation_time.upper, start_today)
             )
             temp_booking["start_offset_percent"] = (
                 start_offset_seconds / seconds_in_period
@@ -175,8 +205,8 @@ def home(request):
         "user": request.user,
         "bookings": bookings_for_table,
         "calendar": bookings_for_calendar,
-        "hours_in_period": range(hours_in_period),
-        "num_hours_in_period": hours_in_period,
+        "hours_in_period": hours_in_period,
+        "num_hours_in_period": len(hours_in_period),
         "days_in_period": days_in_period,
         "name_days_in_period": name_days_in_period,
         "late_bookings": Booking.objects.filter(

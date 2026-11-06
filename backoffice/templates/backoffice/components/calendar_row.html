@@ -1,6 +1,6 @@
-<div class="flex flex-row border-b border-gray-200">
-    <span class="w-28 text-center">{{ vehicle.registration }}</span>
-    <div class="relative h-8 flex-grow">
+<div class="border-b border-gray-200" style="display:grid;grid-template-columns:7rem minmax(0,1fr);">
+    <span class="text-center">{{ vehicle.registration }}</span>
+    <div class="relative h-8" style="min-width:0;">
         {% for booking in vehicle.bookings %}
             {% if booking.reason == "user booking" %}
                 <div class="bg-teal-600 absolute h-full has-tooltip" style="left:{{booking.start_offset_percent}}%;width:{{booking.duration_percent}}%;top:0px;bottom:0px;">
