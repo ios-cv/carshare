@@ -1,0 +1,20 @@
+<div class="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+    <div class="border-b border-gray-200" style="display:grid;grid-template-columns:7rem minmax(0,1fr);">
+        <span class="text-center"></span>
+        <div class="relative h-10 flex flex-col font-mono" style="min-width:0;">
+            <div class="flex h-full">
+                {% for day in name_days_in_period %}
+                    <div class="text-xs text-gray-400 border-l border-gray-200 text-center" style="width:{{day.width_percent}}%;">{{day.date|date:"D jS M"}}</div>
+                {% endfor %}
+            </div>
+            <div class="grid grid-rows-1 grid-flow-col h-full" style="grid-template-columns: repeat({{num_hours_in_period}},minmax(0,1fr));">
+                {% for hour in hours_in_period %}
+                <div title="{{hour|date:'D j M H:i'}} {{hour.tzname}}" class="border-l border-gray-200 text-[clamp(0.01rem,0.9dvw,1rem)] text-gray-400 overflow-hidden text-center min-w-0">{{hour|date:"H"}}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+        {% for vehicle in calendar %}
+            {% include "backoffice/components/calendar_row.html" with vehicle=vehicle %}
+        {% endfor %}
+</div>

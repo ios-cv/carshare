@@ -17,6 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django_filters import FilterSet, ModelChoiceFilter
 
+from datetime import datetime, time, timedelta, timezone as datetime_timezone
+
 from bookings.models import TsTzRange, STATE_LATE
 
 from billing.models import (
@@ -24,7 +26,7 @@ from billing.models import (
     BillingAccount,
 )
 from billing.forms import UpdatePurchaseOrderForm
-from bookings.models import Booking
+from bookings.models import Booking, STATE_CANCELLED
 from drivers.models import (
     get_all_pending_approval as get_all_driver_profiles_pending_approval,
     DriverProfile,
@@ -37,10 +39,51 @@ from .decorators import require_backoffice_access
 from .forms import DriverProfileApprovalForm, DriverProfileReviewForm, CloseBookingForm
 
 
+def calendar_offset_seconds(value, period_start):
+    """Use elapsed time consistently, including repeated or missing DST hours."""
+    return (
+        value.astimezone(datetime_timezone.utc)
+        - period_start.astimezone(datetime_timezone.utc)
+    ).total_seconds()
+
+
+def calendar_period(start, days):
+    end = start + timedelta(days=days)
+    seconds = calendar_offset_seconds(end, start)
+    hours = [
+        timezone.localtime(
+            start.astimezone(datetime_timezone.utc) + timedelta(hours=hour),
+            start.tzinfo,
+        )
+        for hour in range(int(seconds / 3600))
+    ]
+    headings = []
+    for day in range(days):
+        day_start = start + timedelta(days=day)
+        headings.append(
+            {
+                "date": day_start,
+                "width_percent": calendar_offset_seconds(
+                    day_start + timedelta(days=1), day_start
+                )
+                / seconds
+                * 100,
+            }
+        )
+    return end, seconds, hours, headings
+
+
 @require_backoffice_access
 def home(request):
-    start_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_tomorrow = start_today + timezone.timedelta(days=2)
+    now_local = timezone.localtime()
+
+    start_today = datetime.combine(now_local.date(), time.min, tzinfo=now_local.tzinfo)
+
+    days_in_period = 2
+
+    end_period, seconds_in_period, hours_in_period, name_days_in_period = (
+        calendar_period(start_today, days_in_period)
+    )
 
     drivers_pending = len(get_all_driver_profiles_pending_approval())
     accounts_pending = len(get_all_billing_accounts_pending_approval())
@@ -90,16 +133,82 @@ def home(request):
 
     most_recent_soc.sort(key=lambda x: x["vehicle_id"], reverse=True)
 
+    bookings = list(
+        Booking.objects.filter(
+            reservation_time__overlap=TsTzRange(
+                start_today,
+                end_period,
+                RangeBoundary(),
+            ),
+        ).order_by("vehicle", "reservation_time")
+    )
+
+    bookings_for_table = sorted(
+        bookings, key=lambda x: x.reservation_time, reverse=True
+    )
+
+    vehicle = None
+    bookings_for_calendar = []
+    for b in bookings:
+        if b.state != STATE_CANCELLED:
+            if vehicle != b.vehicle:
+                vehicle = b.vehicle
+                bookings_for_calendar.append(
+                    {"registration": vehicle.registration, "bookings": []}
+                )
+            temp_booking = {
+                "state": b.state,
+                "from": b.reservation_time.lower,
+                "to": b.reservation_time.upper,
+                "user": b.user,
+                "reason": b.reason,
+            }
+            start_offset_seconds = int(
+                calendar_offset_seconds(b.reservation_time.lower, start_today)
+            )
+            end_offset_seconds = int(
+                calendar_offset_seconds(b.reservation_time.upper, start_today)
+            )
+            temp_booking["start_offset_percent"] = (
+                start_offset_seconds / seconds_in_period
+            ) * 100
+            duration_seconds = end_offset_seconds - start_offset_seconds
+            if temp_booking["start_offset_percent"] < 0:
+                duration_seconds += start_offset_seconds
+                temp_booking["start_offset_percent"] = 0
+            temp_booking["duration_percent"] = (
+                duration_seconds / seconds_in_period
+            ) * 100
+
+            if (
+                temp_booking["start_offset_percent"] + temp_booking["duration_percent"]
+                > 100
+            ):
+                temp_booking["duration_percent"] = (
+                    100 - temp_booking["start_offset_percent"]
+                )
+            bookings_for_calendar[-1]["bookings"].append(temp_booking)
+
+    for r in registrations:
+        found = False
+        for b in bookings_for_calendar:
+            if b["registration"] == r[0]:
+                found = True
+                break
+        if not found:
+            bookings_for_calendar.append({"registration": r[0], "bookings": []})
+
+    bookings_for_calendar.sort(key=lambda x: x["registration"])
+
     context = {
         "menu": "dashboard",
         "user": request.user,
-        "bookings": Booking.objects.filter(
-            reservation_time__overlap=TsTzRange(
-                start_today,
-                end_tomorrow,
-                RangeBoundary(),
-            ),
-        ).order_by("-reservation_time"),
+        "bookings": bookings_for_table,
+        "calendar": bookings_for_calendar,
+        "hours_in_period": hours_in_period,
+        "num_hours_in_period": len(hours_in_period),
+        "days_in_period": days_in_period,
+        "name_days_in_period": name_days_in_period,
         "late_bookings": Booking.objects.filter(
             state=STATE_LATE,
         ).order_by("-reservation_time"),
