@@ -273,6 +273,11 @@ class Telemetry(models.Model):
     uptime: {uptime_s}
     free heap: {free_heap}"""
 
+    def uptime_to_str(self):
+        if self.box_uptime_s is not None:
+            return breakdown_timedelta(timedelta(seconds=self.box_uptime_s))
+        return "None"
+
     class Meta:
         indexes = [
             models.Index(fields=["box_id", "-created_at"], name="idx_box_created_desc"),
