@@ -506,7 +506,7 @@ def edit_booking(request, booking_id):
                 if form.cleaned_data.get("state") == Booking.STATE_ACTIVE:
                     messages.error(
                         request,
-                        f"Booking #{booking_id} cannot be set to active from the backoffice."
+                        f"Booking #{booking_id} cannot be set to active from the backoffice.",
                     )
                     return redirect(reverse("backoffice_bookings"))
                 try:
