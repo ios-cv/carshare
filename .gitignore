@@ -24,4 +24,6 @@ documentation/model.dot
 documentation/model.svg
 documentation/model.SVG
 
+# Environment variables
+.env.zsh
 .env
