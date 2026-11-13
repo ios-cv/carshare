@@ -43,3 +43,6 @@ setup-crispy-tailwind:
 		cd ../crispy-tailwind && git checkout carshare && cd ../carshare && \
 		ln -s ../crispy-tailwind/crispy_tailwind crispy_tailwind \
 	)
+
+load-telemetry:
+	poetry run python manage.py loaddata ./documentation/fixtures/telemetry.json
