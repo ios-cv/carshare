@@ -43,3 +43,7 @@ setup-crispy-tailwind:
 		cd ../crispy-tailwind && git checkout carshare && cd ../carshare && \
 		ln -s ../crispy-tailwind/crispy_tailwind crispy_tailwind \
 	)
+
+.PHONY: test
+test:
+	poetry run python manage.py test --settings=carshare.test_settings $(TEST_ARGS)

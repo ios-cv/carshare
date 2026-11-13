@@ -81,3 +81,10 @@ View the diagram by opening the generated html file which allows you to pan and 
 
 Happy hacking!
 
+
+## Automated tests
+
+The suite uses Django’s built-in test runner and a separate PostgreSQL test
+database. Run `make test` after installing the project dependencies and
+customised crispy-tailwind templates. See [the testing guide](documentation/testing.md)
+for configuration, selected test commands, CI and documented known defects.
