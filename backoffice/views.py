@@ -559,7 +559,7 @@ def get_all_available_vehicles(request):
     # return HttpResponse(available_vehicles_json,content_type="application/json")
     return JsonResponse(available_vehicles_json, safe=False)
 
-
+@require_backoffice_access
 def user_details(request, id, anchor=None):
     selected_user_details = get_object_or_404(User, pk=id)
     selected_user_driver_profiles = DriverProfile.objects.filter(user__id=id)
