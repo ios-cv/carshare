@@ -68,7 +68,6 @@ class Booking(models.Model):
     EDITABLE_STATES = {
         STATE_PENDING,
         STATE_INACTIVE,
-        STATE_LATE,
         STATE_ENDED,
     }
 
