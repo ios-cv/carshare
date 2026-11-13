@@ -476,6 +476,20 @@ def perform_box_action(request, vehicle, action_to_perform, user):
 def edit_booking(request, booking_id):
     booking = None
     if request.method == "POST":
+        if Booking.objects.filter(pk=booking_id).exists():
+            state=Booking.objects.filter(pk=booking_id).first()
+            if state.state not in Booking.EDITABLE_STATES:
+                messages.error(
+                    request,
+                    f"Booking #{booking_id} is not in an editable state ({state.state}).",
+                )
+                return redirect(reverse("backoffice_bookings"))
+        else:
+            messages.error(
+                request,
+                f"Booking #{booking_id} does not exist.",
+            )
+            return redirect(reverse("backoffice_bookings"))
         with transaction.atomic():
             try:
                 booking = Booking.objects.select_for_update(nowait=True).get(
