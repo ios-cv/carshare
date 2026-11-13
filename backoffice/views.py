@@ -566,7 +566,10 @@ def vehicle_details(request, vehicle_id):
     vehicle = Vehicle.objects.get(pk=vehicle_id)
     next_booking = (
         Booking.objects.filter(
-            vehicle=vehicle, reservation_time__startswith__gt=timezone.now()
+            vehicle=vehicle, reservation_time__startswith__gt=timezone.now(),
+        )
+        .exclude(
+            state=Booking.STATE_CANCELLED,
         )
         .order_by("reservation_time")
         .first()
@@ -577,12 +580,18 @@ def vehicle_details(request, vehicle_id):
             reservation_time__startswith__lt=timezone.now(),
             reservation_time__endswith__gt=timezone.now(),
         )
+        .exclude(
+            state=Booking.STATE_CANCELLED,
+        )
         .order_by("reservation_time")
         .first()
     )
     last_booking = (
         Booking.objects.filter(
-            vehicle=vehicle, reservation_time__endswith__lt=timezone.now()
+            vehicle=vehicle, reservation_time__endswith__lt=timezone.now(),
+        )
+        .exclude(
+            state=Booking.STATE_CANCELLED,
         )
         .order_by("-reservation_time")
         .first()
