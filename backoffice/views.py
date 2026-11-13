@@ -477,7 +477,7 @@ def edit_booking(request, booking_id):
     booking = None
     if request.method == "POST":
         if Booking.objects.filter(pk=booking_id).exists():
-            state=Booking.objects.filter(pk=booking_id).first()
+            state = Booking.objects.filter(pk=booking_id).first()
             if state.state not in Booking.EDITABLE_STATES:
                 messages.error(
                     request,
@@ -558,6 +558,7 @@ def get_all_available_vehicles(request):
     ]
     # return HttpResponse(available_vehicles_json,content_type="application/json")
     return JsonResponse(available_vehicles_json, safe=False)
+
 
 @require_backoffice_access
 def user_details(request, id, anchor=None):

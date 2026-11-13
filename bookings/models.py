@@ -70,7 +70,7 @@ class Booking(models.Model):
         STATE_INACTIVE,
         STATE_LATE,
         STATE_ENDED,
-        }
+    }
 
     STATE_CHOICES = [
         (STATE_PENDING, "pending"),
